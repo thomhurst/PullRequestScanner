@@ -1,4 +1,5 @@
 ﻿using System.Net.Http.Headers;
+using System.Reflection;
 using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using TomLonghurst.PullRequestScanner.Http;
@@ -54,7 +55,8 @@ public static class DependencyInjectionExtensions
             .AddHttpClient<GithubHttpClient>(client =>
             {
                 var githubOptions = pullRequestScannerOptions.Github;
-                client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("pull-request-scanner", "1.0"));
+                client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("pull-request-scanner", Assembly.GetAssembly(typeof(PullRequestService)).GetName().Version.ToString()));
+
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",
                     Convert.ToBase64String(Encoding.ASCII.GetBytes(githubOptions.PersonalAccessToken)));
                 client.BaseAddress = new Uri("https://api.github.com/");
