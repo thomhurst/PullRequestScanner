@@ -2,7 +2,7 @@
 
 namespace TomLonghurst.PullRequestScanner.Services;
 
-internal interface IPullRequestScannerNotifier
+public interface IPullRequestScannerNotifier
 {
     Task NotifyTeamsChannel(MicrosoftTeamsPublishOptions microsoftTeamsPublishOptions);
     Task NotifyTeamsChannel(IReadOnlyList<PullRequest> pullRequests, MicrosoftTeamsPublishOptions microsoftTeamsPublishOptions);
