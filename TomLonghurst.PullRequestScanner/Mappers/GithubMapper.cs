@@ -141,6 +141,16 @@ internal class GithubMapper : IGithubMapper
         {
             return PullRequestStatus.MergeConflicts;
         }
+        
+        if (pullRequest.State == PullRequestState.Merged)
+        {
+            return PullRequestStatus.Completed;
+        }
+        
+        if (pullRequest.State == PullRequestState.Closed)
+        {
+            return PullRequestStatus.Abandoned;
+        }
     
         if (pullRequest.IsDraft)
         {
@@ -155,11 +165,6 @@ internal class GithubMapper : IGithubMapper
         if (pullRequest.Threads.Any(t => !t.IsResolved))
         {
             return PullRequestStatus.OutStandingComments;
-        }
-
-        if (pullRequest.State == PullRequestState.Merged)
-        {
-            return PullRequestStatus.Completed;
         }
 
         if(pullRequest.Reviewers.Any(r => r.State == PullRequestReviewState.Approved))

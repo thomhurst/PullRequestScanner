@@ -133,6 +133,16 @@ internal class DevOpsMapper : IDevOpsMapper
 
     private PullRequestStatus GetStatus(DevOpsPullRequestContext devOpsPullRequestContext)
     {
+        if (devOpsPullRequestContext.DevOpsPullRequest.Status == "completed")
+        {
+            return PullRequestStatus.Completed;
+        }
+        
+        if (devOpsPullRequestContext.DevOpsPullRequest.Status == "abandoned")
+        {
+            return PullRequestStatus.Abandoned;
+        }
+        
         if (devOpsPullRequestContext.DevOpsPullRequest.MergeStatus == "conflicts")
         {
             return PullRequestStatus.MergeConflicts;
@@ -172,11 +182,6 @@ internal class DevOpsMapper : IDevOpsMapper
         if (devOpsPullRequestContext.DevOpsPullRequest.Reviewers.Any(x => x.Vote <= 0 && x.IsRequired == true))
         {
             return PullRequestStatus.NeedsReviewing;
-        }
-        
-        if (devOpsPullRequestContext.DevOpsPullRequest.Status == "completed")
-        {
-            return PullRequestStatus.Completed;
         }
 
         if (devOpsPullRequestContext.DevOpsPullRequest.Status == "abandoned")
