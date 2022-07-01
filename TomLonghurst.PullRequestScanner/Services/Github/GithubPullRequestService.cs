@@ -30,6 +30,7 @@ internal class GithubPullRequestService : BaseGitHubApiService, IGithubPullReque
                 IsDraft = x.IsDraft,
                 Mergeable = x.Mergeable,
                 State = x.State,
+                IsClosed = x.Closed,
                 Created = x.CreatedAt,
                 Author = x.Author.Login,
                 ReviewDecision = x.ReviewDecision,

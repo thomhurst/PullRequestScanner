@@ -28,7 +28,7 @@ internal class GithubMapper : IGithubMapper
             Number = githubPullRequest.PullRequestNumber.ToString(),
             Repository = GetRepository(githubPullRequest),
             IsDraft = githubPullRequest.IsDraft,
-            IsActive = githubPullRequest.State == PullRequestState.Open,
+            IsActive = GetIsActive(githubPullRequest),
             PullRequestStatus = GetStatus(githubPullRequest),
             Author = GetPerson(githubPullRequest.Author),
             Approvers = githubPullRequest.Reviewers.Select(GetApprover).ToList(),
@@ -51,6 +51,16 @@ internal class GithubMapper : IGithubMapper
         }
         
         return pullRequestModel;
+    }
+
+    private static bool GetIsActive(GithubPullRequest githubPullRequest)
+    {
+        if (githubPullRequest.IsClosed)
+        {
+            return false;
+        }
+        
+        return githubPullRequest.State == PullRequestState.Open;
     }
 
     private Person GetPerson(string author)

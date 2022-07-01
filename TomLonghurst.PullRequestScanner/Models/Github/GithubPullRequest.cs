@@ -23,4 +23,5 @@ public record GithubPullRequest
     public List<GithubReviewer> Reviewers { get; set; }
     public List<GithubThread> Threads { get; set; }
     public StatusState ChecksStatus { get; set; }
+    public bool IsClosed { get; set; }
 }
