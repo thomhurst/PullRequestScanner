@@ -359,10 +359,11 @@ internal class PullRequestScannerNotifier : IPullRequestScannerNotifier
 
     private async Task PublishStatusCard(IReadOnlyList<PullRequest> pullRequests, PullRequestStatus pullRequestStatus)
     {
-        var pullRequestsWithMergeConflicts =
-            pullRequests.Where(x => x.PullRequestStatus == pullRequestStatus).ToList();
+        var pullRequestsWithStatus = pullRequests
+                .Where(x => x.PullRequestStatus == pullRequestStatus)
+                .ToList();
 
-        if (!pullRequestsWithMergeConflicts.Any())
+        if (!pullRequestsWithStatus.Any())
         {
             return;
         }
@@ -384,7 +385,7 @@ internal class PullRequestScannerNotifier : IPullRequestScannerNotifier
             }
         };
 
-        foreach (var pullRequestsInRepo in pullRequestsWithMergeConflicts.GroupBy(x => x.Repository.Id))
+        foreach (var pullRequestsInRepo in pullRequestsWithStatus.GroupBy(x => x.Repository.Id))
         {
             var adaptiveContainer = new AdaptiveContainer
             {
