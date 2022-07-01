@@ -6,4 +6,5 @@ public class MicrosoftTeamsPublishOptions
     public bool PublishPullRequestReviewerLeaderboardCard { get; set; } = true;
     public bool PublishPullRequestMergeConflictsCard { get; set; } = true;
     public bool PublishPullRequestReadyToMergeCard { get; set; } = true;
+    public bool PublishPullRequestFailingChecksCard { get; set; } = true;
 }

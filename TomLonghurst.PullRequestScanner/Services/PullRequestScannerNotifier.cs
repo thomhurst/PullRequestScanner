@@ -46,12 +46,17 @@ internal class PullRequestScannerNotifier : IPullRequestScannerNotifier
         
         if (microsoftTeamsPublishOptions.PublishPullRequestMergeConflictsCard)
         {
-            await PublishConflicts(pullRequests);
+            await PublishStatusCard(pullRequests, PullRequestStatus.MergeConflicts);
         }
         
         if (microsoftTeamsPublishOptions.PublishPullRequestReadyToMergeCard)
         {
-            await PublishReadyToMerge(pullRequests);
+            await PublishStatusCard(pullRequests, PullRequestStatus.ReadyToMerge);
+        }
+        
+        if (microsoftTeamsPublishOptions.PublishPullRequestFailingChecksCard)
+        {
+            await PublishStatusCard(pullRequests, PullRequestStatus.FailingChecks);
         }
     }
 
@@ -352,9 +357,10 @@ internal class PullRequestScannerNotifier : IPullRequestScannerNotifier
         await _microsoftTeamsWebhookClient.CreateTeamsNotification(teamsNotificationCard);
     }
 
-    private async Task PublishConflicts(IReadOnlyList<PullRequest> pullRequests)
+    private async Task PublishStatusCard(IReadOnlyList<PullRequest> pullRequests, PullRequestStatus pullRequestStatus)
     {
-        var pullRequestsWithMergeConflicts = pullRequests.Where(x => x.PullRequestStatus == PullRequestStatus.MergeConflicts).ToList();
+        var pullRequestsWithMergeConflicts =
+            pullRequests.Where(x => x.PullRequestStatus == pullRequestStatus).ToList();
 
         if (!pullRequestsWithMergeConflicts.Any())
         {
@@ -373,11 +379,11 @@ internal class PullRequestScannerNotifier : IPullRequestScannerNotifier
                 {
                     Weight = AdaptiveTextWeight.Bolder,
                     Size = AdaptiveTextSize.ExtraLarge,
-                    Text = "Merge conflicts"
+                    Text = pullRequestStatus.GetMessage()
                 }
             }
         };
-        
+
         foreach (var pullRequestsInRepo in pullRequestsWithMergeConflicts.GroupBy(x => x.Repository.Id))
         {
             var adaptiveContainer = new AdaptiveContainer
@@ -388,7 +394,8 @@ internal class PullRequestScannerNotifier : IPullRequestScannerNotifier
                 {
                     new AdaptiveTextBlock
                     {
-                        Text = $"**Repository:** [{pullRequestsInRepo.First().Repository.Name}]({pullRequestsInRepo.First().Repository.Url})"
+                        Text =
+                            $"**Repository:** [{pullRequestsInRepo.First().Repository.Name}]({pullRequestsInRepo.First().Repository.Url})"
                     },
                     new AdaptiveColumnSet
                     {
@@ -421,7 +428,7 @@ internal class PullRequestScannerNotifier : IPullRequestScannerNotifier
                     }
                 }
             };
-            
+
             foreach (var pullRequest in pullRequestsInRepo)
             {
                 adaptiveContainer.Items.Add(new AdaptiveColumnSet
@@ -452,119 +459,10 @@ internal class PullRequestScannerNotifier : IPullRequestScannerNotifier
                     }
                 });
             }
-            
+
             teamsNotificationCard.Body.Add(adaptiveContainer);
         }
 
-        await _microsoftTeamsWebhookClient.CreateTeamsNotification(teamsNotificationCard);
-    }
-
-    private async Task PublishReadyToMerge(IReadOnlyList<PullRequest> pullRequestsWithThreadsList)
-    {
-        var pullRequestsThatHaveBeenApprovedAndHaveNoConflicts = pullRequestsWithThreadsList
-            .Where(x => x.PullRequestStatus is PullRequestStatus.ReadyToMerge)
-            .ToList();
-        
-        if (!pullRequestsThatHaveBeenApprovedAndHaveNoConflicts.Any())
-        {
-            return;
-        }
-        
-        var teamsNotificationCard = new MicrosoftTeamsAdaptiveCard
-        {
-            MsTeams = new MicrosoftTeamsProperties
-            {
-                Width = "full"
-            },
-            Body = new List<AdaptiveElement>
-            {
-                new AdaptiveTextBlock
-                {
-                    Weight = AdaptiveTextWeight.Bolder,
-                    Size = AdaptiveTextSize.ExtraLarge,
-                    Text = "Ready to merge"
-                }
-            }
-        };
-        
-        foreach (var approvedPullRequestsByRepo in pullRequestsThatHaveBeenApprovedAndHaveNoConflicts.GroupBy(x => x.Repository.Id))
-        {
-            var adaptiveContainer = new AdaptiveContainer
-            {
-                Spacing = AdaptiveSpacing.ExtraLarge,
-                Style = AdaptiveContainerStyle.Emphasis,
-                Items = new List<AdaptiveElement>
-                {
-                    new AdaptiveTextBlock
-                    {
-                        Text = $"**Repository:** [{approvedPullRequestsByRepo.First().Repository.Name}]({approvedPullRequestsByRepo.First().Repository.Url})"
-                    },
-                    new AdaptiveColumnSet
-                    {
-                        Columns = new List<AdaptiveColumn>
-                        {
-                            new()
-                            {
-                                Items = new List<AdaptiveElement>
-                                {
-                                    new AdaptiveTextBlock
-                                    {
-                                        Weight = AdaptiveTextWeight.Bolder,
-                                        Text = "Pull Request"
-                                    }
-                                }
-                            },
-                            new()
-                            {
-                                Items = new List<AdaptiveElement>
-                                {
-                                    new AdaptiveTextBlock
-                                    {
-                                        Weight = AdaptiveTextWeight.Bolder,
-                                        Text = "Author"
-                                    }
-                                },
-                                Width = "auto"
-                            }
-                        }
-                    }
-                }
-            };
-
-            foreach (var pullRequest in approvedPullRequestsByRepo)
-            {
-                adaptiveContainer.Items.Add(new AdaptiveColumnSet
-                {
-                    Columns = new List<AdaptiveColumn>
-                    {
-                        new()
-                        {
-                            Items = new List<AdaptiveElement>
-                            {
-                                new AdaptiveTextBlock
-                                {
-                                    Text = $"[#{pullRequest.Number}]({pullRequest.Url}) {pullRequest.Title}"
-                                }
-                            }
-                        },
-                        new()
-                        {
-                            Items = new List<AdaptiveElement>
-                            {
-                                new AdaptiveTextBlock
-                                {
-                                    Text = pullRequest.Author.DisplayOrUniqueName
-                                }
-                            },
-                            Width = "auto"
-                        }
-                    }
-                });
-            }
-            
-            teamsNotificationCard.Body.Add(adaptiveContainer);
-        }
-        
         await _microsoftTeamsWebhookClient.CreateTeamsNotification(teamsNotificationCard);
     }
 
