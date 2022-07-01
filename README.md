@@ -1,2 +1,2 @@
 # PullRequestScanner
-A Github + Azure DevOps Pull Request Scanner that can notify Microsoft Team of current statuses
+A Github + Azure DevOps Pull Request Scanner that can notify Microsoft Teams of their current statuses (conflicts, outstanding comments, failing checks, etc.)
