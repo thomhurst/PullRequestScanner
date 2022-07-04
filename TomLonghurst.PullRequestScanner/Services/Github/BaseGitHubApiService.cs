@@ -4,11 +4,11 @@ namespace TomLonghurst.PullRequestScanner.Services.Github;
 
 internal abstract class BaseGitHubApiService
 {
-    protected readonly GithubHttpClient GithubGithubHttpClient;
+    private readonly GithubHttpClient _githubHttpClient;
 
     protected BaseGitHubApiService(GithubHttpClient githubHttpClient)
     {
-        GithubGithubHttpClient = githubHttpClient;
+        _githubHttpClient = githubHttpClient;
     }
     
     protected async Task<List<T>> Get<T>(string path)
@@ -19,7 +19,13 @@ internal abstract class BaseGitHubApiService
         var list = new List<T>();
         do
         {
-            var arrayResponse = await GithubGithubHttpClient.Get<List<T>>($"{path}?per_page=100&page={iteration}");
+            var arrayResponse = await _githubHttpClient.Get<List<T>>($"{path}?per_page=100&page={iteration}");
+
+            if (arrayResponse?.Count is null or 0)
+            {
+                break;
+            }
+            
             arrayCount = arrayResponse.Count;
             iteration++;
             list.AddRange(arrayResponse);

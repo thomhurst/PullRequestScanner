@@ -15,9 +15,7 @@ internal class GithubRepositoryService : BaseGitHubApiService, IGithubRepository
 
     public async Task<List<GithubRepository>> GetGitRepositories()
     {
-
-        var gitRepositoryResponse =
-            await Get<GithubRepository>(_githubOptions.CreateUriPathPrefix() + "repos");
+        var gitRepositoryResponse = await Get<GithubRepository>(_githubOptions.CreateUriPathPrefix() + "repos");
 
         return gitRepositoryResponse
             .Where(x => !x.Disabled)
