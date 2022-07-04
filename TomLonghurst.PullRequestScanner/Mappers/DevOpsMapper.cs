@@ -53,7 +53,7 @@ internal class DevOpsMapper : IDevOpsMapper
             Status = GetThreadStatus(devOpsPullRequestThread.ThreadStatus),
             Comments = devOpsPullRequestThread
                 .Comments
-                .Where(x => x.DevOpsAuthor.UniqueName != Constants.CustomerProfileTeamUniqueName)
+                .Where(x => !x.DevOpsAuthor.UniqueName.StartsWith(Constants.VSTFSUniqueNamePrefix))
                 .Where(x => x.DevOpsAuthor.DisplayName != Constants.VSTSDisplayName)
                 .Select(GetComment)
                 .ToList()

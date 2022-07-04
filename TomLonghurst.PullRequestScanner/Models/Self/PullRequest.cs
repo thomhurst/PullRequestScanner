@@ -52,7 +52,7 @@ public record PullRequest
                 .Select(a => a.Person)
                 .Concat(AllComments.Select(c => c.Author))
                 .Where(reviewer => reviewer.DisplayName != Constants.VSTSDisplayName)
-                .Where(reviewer => reviewer.UniqueName != Constants.CustomerProfileTeamUniqueName)
+                .Where(reviewer => !reviewer.UniqueName.StartsWith(Constants.VSTFSUniqueNamePrefix))
                 .Where(reviewer => reviewer != Author)
                 .Distinct()
                 .ToList();

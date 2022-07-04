@@ -104,9 +104,7 @@ internal class PullRequestService : IPullRequestService
         var githubOptions = _pullRequestScannerOptions?.Github;
         if (githubOptions?.IsEnabled == true)
         {
-            ValidatePopulated(githubOptions.OrganizationSlug, nameof(githubOptions.OrganizationSlug));
-            ValidatePopulated(githubOptions.TeamSlug, nameof(githubOptions.TeamSlug));
-            ValidatePopulated(githubOptions.PersonalAccessToken, nameof(githubOptions.PersonalAccessToken));
+            ValidateGithub(githubOptions);
         }
 
         var devOpsOptions = _pullRequestScannerOptions?.AzureDevOps;
@@ -116,5 +114,21 @@ internal class PullRequestService : IPullRequestService
             ValidatePopulated(devOpsOptions.TeamSlug, nameof(devOpsOptions.TeamSlug));
             ValidatePopulated(devOpsOptions.PersonalAccessToken, nameof(devOpsOptions.PersonalAccessToken));
         }
+    }
+
+    private void ValidateGithub(GithubOptions githubOptions)
+    {
+        if (githubOptions is GithubOrganizationTeamOptions githubOrganizationTeamOptions)
+        {
+            ValidatePopulated(githubOrganizationTeamOptions.OrganizationSlug, nameof(githubOrganizationTeamOptions.OrganizationSlug));
+            ValidatePopulated(githubOrganizationTeamOptions.TeamSlug, nameof(githubOrganizationTeamOptions.TeamSlug));
+        }
+
+        if (githubOptions is GithubUserOptions githubUserOptions)
+        {
+            ValidatePopulated(githubUserOptions.Username, nameof(githubUserOptions.Username));
+        }
+
+        ValidatePopulated(githubOptions.PersonalAccessToken, nameof(githubOptions.PersonalAccessToken));
     }
 }
