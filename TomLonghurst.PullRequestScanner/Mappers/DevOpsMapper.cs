@@ -184,11 +184,6 @@ internal class DevOpsMapper : IDevOpsMapper
             return PullRequestStatus.NeedsReviewing;
         }
 
-        if (devOpsPullRequestContext.DevOpsPullRequest.Status == "abandoned")
-        {
-            return PullRequestStatus.Abandoned;
-        }
-        
         if (devOpsPullRequestContext.DevOpsPullRequest.Reviewers.Any(r => r.Vote > 0))
         {
             return PullRequestStatus.ReadyToMerge;
