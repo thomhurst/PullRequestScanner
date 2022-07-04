@@ -1,17 +1,20 @@
 ﻿using Octokit.GraphQL;
 using TomLonghurst.PullRequestScanner.Models.Github;
+using TomLonghurst.PullRequestScanner.Options;
 
 namespace TomLonghurst.PullRequestScanner.Services.Github;
 
 internal class GithubUserService : IInitialize, IGithubUserService
 {
     private readonly IGithubGraphQlClientProvider _githubGraphQlClientProvider;
+    private readonly PullRequestScannerOptions _pullRequestScannerOptions;
     private GithubTeam _githubTeam;
     private bool _initialized;
 
-    public GithubUserService(IGithubGraphQlClientProvider githubGraphQlClientProvider)
+    public GithubUserService(IGithubGraphQlClientProvider githubGraphQlClientProvider, PullRequestScannerOptions pullRequestScannerOptions)
     {
         _githubGraphQlClientProvider = githubGraphQlClientProvider;
+        _pullRequestScannerOptions = pullRequestScannerOptions;
     }
     
     public async Task Initialize()
@@ -20,10 +23,54 @@ internal class GithubUserService : IInitialize, IGithubUserService
         {
             return;
         }
+
+        if (!_pullRequestScannerOptions.Github.IsEnabled)
+        {
+            _initialized = true;
+            return;
+        }
+
+        if (_pullRequestScannerOptions.Github is GithubOrganizationTeamOptions githubOrganizationTeamOptions)
+        {
+            await GetOrganisationTeam(githubOrganizationTeamOptions);
+        }
+        if (_pullRequestScannerOptions.Github is GithubUserOptions githubUserOptions)
+        {
+            await GetUser(githubUserOptions);
+        }
         
+        _initialized = true;
+    }
+
+    private async Task GetUser(GithubUserOptions githubUserOptions)
+    {
         var query = new Query()
-            .Organization("asosteam")
-            .Team("customer-profile-identity")
+            .User(githubUserOptions.Username)
+            .Select(x => new GithubTeam
+            {
+                Name = x.Login,
+                Id = x.Id.Value,
+                Members = new List<GithubMember>
+                {
+                    new()
+                    {
+                        Id = x.Id.Value,
+                        DisplayName = x.Name ?? x.Login,
+                        UniqueName = x.Login
+                    }
+                },
+                Slug = x.Login
+            })
+            .Compile();
+        
+        _githubTeam = await _githubGraphQlClientProvider.GithubGraphQlClient.Run(query);
+    }
+
+    private async Task GetOrganisationTeam(GithubOrganizationTeamOptions githubOrganizationTeamOptions)
+    {
+        var query = new Query()
+            .Organization(githubOrganizationTeamOptions.OrganizationSlug)
+            .Team(githubOrganizationTeamOptions.TeamSlug)
             .Select(x => new GithubTeam
             {
                 Name = x.Name,
@@ -39,7 +86,6 @@ internal class GithubUserService : IInitialize, IGithubUserService
             }).Compile();
 
         _githubTeam = await _githubGraphQlClientProvider.GithubGraphQlClient.Run(query);
-        _initialized = true;
     }
 
     public GithubTeam GetTeam()
