@@ -2,12 +2,12 @@
 
 public class PullRequestScannerOptions
 {
-    public PullRequestGithubOptions Github { get; set; } = new()
+    public GithubOptions Github { get; set; } = new GithubOrganizationTeamOptions
     {
         IsEnabled = false
     };
 
-    public PullRequestAzureDevOpsOptions AzureDevOps { get; set; } = new()
+    public AzureDevOpsOptions AzureDevOps { get; set; } = new()
     {
         IsEnabled = false
     };

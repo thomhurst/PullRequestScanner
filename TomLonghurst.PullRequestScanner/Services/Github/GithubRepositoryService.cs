@@ -1,19 +1,23 @@
 ﻿using TomLonghurst.PullRequestScanner.Http;
 using TomLonghurst.PullRequestScanner.Models.Github;
+using TomLonghurst.PullRequestScanner.Options;
 
 namespace TomLonghurst.PullRequestScanner.Services.Github;
 
 internal class GithubRepositoryService : BaseGitHubApiService, IGithubRepositoryService
 {
-    public GithubRepositoryService(GithubHttpClient githubHttpClient) : base(githubHttpClient)
+    private readonly GithubOptions _githubOptions;
+
+    public GithubRepositoryService(GithubHttpClient githubHttpClient, GithubOptions githubOptions) : base(githubHttpClient)
     {
+        _githubOptions = githubOptions;
     }
 
     public async Task<List<GithubRepository>> GetGitRepositories()
     {
 
         var gitRepositoryResponse =
-            await Get<GithubRepository>("orgs/asosteam/teams/customer-profile-identity/repos");
+            await Get<GithubRepository>(_githubOptions.CreateUriPathPrefix() + "repos");
 
         return gitRepositoryResponse
             .Where(x => !x.Disabled)
