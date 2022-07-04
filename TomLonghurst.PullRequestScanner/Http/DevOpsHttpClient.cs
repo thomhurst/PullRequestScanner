@@ -1,5 +1,6 @@
-﻿using System.Diagnostics;
-using System.Net.Http.Json;
+﻿using System.Net.Http.Json;
+using Polly;
+using Polly.Extensions.Http;
 
 namespace TomLonghurst.PullRequestScanner.Http;
 
@@ -14,20 +15,11 @@ internal class DevOpsHttpClient
     
     public async Task<T?> Get<T>(string path)
     {
-        var response = await _httpClient.GetAsync(path);
+        var response = await 
+            HttpPolicyExtensions.HandleTransientHttpError()
+                .WaitAndRetryAsync(5, i => TimeSpan.FromSeconds(i * 2))
+                .ExecuteAsync(() => _httpClient.GetAsync(path));
 
         return await response.EnsureSuccessStatusCode().Content.ReadFromJsonAsync<T>();
-    }
-    
-    public async Task<string> GetString(string path)
-    {
-        var response = await _httpClient.GetAsync(path);
-
-        if (!response.IsSuccessStatusCode)
-        {
-            Debugger.Break();
-        }
-
-        return await response.EnsureSuccessStatusCode().Content.ReadAsStringAsync();
     }
 }

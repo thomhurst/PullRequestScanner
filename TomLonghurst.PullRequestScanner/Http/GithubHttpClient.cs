@@ -1,6 +1,6 @@
-﻿using System.Diagnostics;
-using System.Net.Http.Json;
-using System.Text.Json;
+﻿using System.Net.Http.Json;
+using Polly;
+using Polly.Extensions.Http;
 
 namespace TomLonghurst.PullRequestScanner.Http;
 
@@ -15,7 +15,10 @@ internal class GithubHttpClient
     
     public async Task<T?> Get<T>(string path)
     {
-        var response = await Client.GetAsync(path);
+        var response = await 
+            HttpPolicyExtensions.HandleTransientHttpError()
+                .WaitAndRetryAsync(5, i => TimeSpan.FromSeconds(i * 2))
+                .ExecuteAsync(() => Client.GetAsync(path));
 
         if (!response.IsSuccessStatusCode)
         {
@@ -23,36 +26,5 @@ internal class GithubHttpClient
         }
 
         return await response.EnsureSuccessStatusCode().Content.ReadFromJsonAsync<T>();
-    }
-    
-    public async Task<string> GetString(string path)
-    {
-        var response = await Client.GetAsync(path);
-
-        if (!response.IsSuccessStatusCode)
-        {
-            Debugger.Break();
-        }
-
-        return await response.EnsureSuccessStatusCode().Content.ReadAsStringAsync();
-    }
-    
-    public async Task<T?> Post<T>(string path, object body)
-    {
-        var response = await Client.PostAsync(path, new StringContent(JsonSerializer.Serialize(body)));
-
-        return await response.EnsureSuccessStatusCode().Content.ReadFromJsonAsync<T>();
-    }
-    
-    public async Task<string> PostString(string path, object body)
-    {
-        var response = await Client.PostAsync(path, new StringContent(JsonSerializer.Serialize(body)));
-
-        if (!response.IsSuccessStatusCode)
-        {
-            Debugger.Break();
-        }
-
-        return await response.EnsureSuccessStatusCode().Content.ReadAsStringAsync();
     }
 }
