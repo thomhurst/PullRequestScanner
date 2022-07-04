@@ -61,7 +61,7 @@ internal class GithubPullRequestService : BaseGitHubApiService, IGithubPullReque
             }).Compile();
 
         var pullRequests = (await _githubGraphQlClientProvider.GithubGraphQlClient.Run(query))
-            .Where(IsActiveOrRecentlyClosed) // Exclude Merged PRs over a week old to reduce API calls.
+            .Where(IsActiveOrRecentlyClosed)
             .ToList();
 
         await pullRequests.ToAsyncProcessorBuilder()
