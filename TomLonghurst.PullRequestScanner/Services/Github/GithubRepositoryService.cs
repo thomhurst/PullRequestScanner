@@ -7,7 +7,6 @@ namespace TomLonghurst.PullRequestScanner.Services.Github;
 internal class GithubRepositoryService : BaseGitHubApiService, IGithubRepositoryService
 {
     private readonly PullRequestScannerOptions _pullRequestScannerOptions;
-    private readonly GithubOptions _githubOptions;
 
     public GithubRepositoryService(GithubHttpClient githubHttpClient, PullRequestScannerOptions pullRequestScannerOptions) : base(githubHttpClient)
     {
