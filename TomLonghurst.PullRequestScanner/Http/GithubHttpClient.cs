@@ -6,11 +6,11 @@ namespace TomLonghurst.PullRequestScanner.Http;
 
 internal class GithubHttpClient
 {
-    public HttpClient Client { get; }
+    private readonly HttpClient _client;
 
     public GithubHttpClient(HttpClient httpClient)
     {
-        Client = httpClient;
+        _client = httpClient;
     }
     
     public async Task<T?> Get<T>(string path)
@@ -18,7 +18,7 @@ internal class GithubHttpClient
         var response = await 
             HttpPolicyExtensions.HandleTransientHttpError()
                 .WaitAndRetryAsync(5, i => TimeSpan.FromSeconds(i * 2))
-                .ExecuteAsync(() => Client.GetAsync(path));
+                .ExecuteAsync(() => _client.GetAsync(path));
 
         if (!response.IsSuccessStatusCode)
         {
