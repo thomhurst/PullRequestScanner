@@ -1,6 +1,6 @@
-namespace TomLonghurst.PullRequestScanner;
+namespace TomLonghurst.PullRequestScanner.Options;
 
-public class PullRequestAzureDevOpsOptions
+public class PullRequestGithubOptions
 {
     public bool IsEnabled { get; set; } = true;
     public string OrganizationSlug { get; set; }

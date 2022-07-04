@@ -1,4 +1,4 @@
-﻿namespace TomLonghurst.PullRequestScanner;
+﻿namespace TomLonghurst.PullRequestScanner.Options;
 
 public class PullRequestScannerOptions
 {
@@ -12,8 +12,5 @@ public class PullRequestScannerOptions
         IsEnabled = false
     };
 
-    public MicrosoftTeamsOptions MicrosoftTeams { get; set; } = new()
-    {
-        IsEnabled = false
-    };
+    public MicrosoftTeamsOptions MicrosoftTeams { get; set; } = new();
 }

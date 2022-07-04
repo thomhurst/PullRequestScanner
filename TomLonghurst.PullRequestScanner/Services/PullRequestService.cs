@@ -2,6 +2,7 @@
 using TomLonghurst.EnumerableAsyncProcessor.Extensions;
 using TomLonghurst.PullRequestScanner.Mappers;
 using TomLonghurst.PullRequestScanner.Models.Self;
+using TomLonghurst.PullRequestScanner.Options;
 using TomLonghurst.PullRequestScanner.Services.DevOps;
 using TomLonghurst.PullRequestScanner.Services.Github;
 

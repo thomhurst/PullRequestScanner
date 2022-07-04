@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using Octokit.GraphQL;
+using TomLonghurst.PullRequestScanner.Options;
 
 namespace TomLonghurst.PullRequestScanner.Services.Github;
 

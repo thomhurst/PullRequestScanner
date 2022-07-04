@@ -1,4 +1,5 @@
 ﻿using TomLonghurst.PullRequestScanner.Models.Self;
+using TomLonghurst.PullRequestScanner.Options;
 
 namespace TomLonghurst.PullRequestScanner.Services;
 

@@ -7,6 +7,7 @@ using TomLonghurst.PullRequestScanner.Http;
 using TomLonghurst.PullRequestScanner.Mappers;
 using TomLonghurst.PullRequestScanner.Models.Self;
 using TomLonghurst.PullRequestScanner.Models.Teams;
+using TomLonghurst.PullRequestScanner.Options;
 using TomLonghurst.PullRequestScanner.Services.Github;
 
 namespace TomLonghurst.PullRequestScanner.Services;

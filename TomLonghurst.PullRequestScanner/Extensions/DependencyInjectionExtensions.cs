@@ -4,6 +4,7 @@ using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using TomLonghurst.PullRequestScanner.Http;
 using TomLonghurst.PullRequestScanner.Mappers;
+using TomLonghurst.PullRequestScanner.Options;
 using TomLonghurst.PullRequestScanner.Services;
 using TomLonghurst.PullRequestScanner.Services.DevOps;
 using TomLonghurst.PullRequestScanner.Services.Github;
