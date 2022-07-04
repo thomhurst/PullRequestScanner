@@ -1,5 +1,7 @@
 ﻿using AdaptiveCards;
 using Newtonsoft.Json;
+using Polly;
+using Polly.Extensions.Http;
 using TomLonghurst.PullRequestScanner.Models.Teams;
 using TomLonghurst.PullRequestScanner.Options;
 
@@ -18,22 +20,31 @@ internal class MicrosoftTeamsWebhookClient
 
     public async Task CreateTeamsNotification(AdaptiveCard adaptiveCard)
     {
-        var cardsRequest = new HttpRequestMessage
-        {
-            Method = HttpMethod.Post,
-            Content = new StringContent(JsonConvert.SerializeObject(TeamsNotificationCardWrapper.Wrap(adaptiveCard))),
-            RequestUri = _pullRequestScannerOptions.MicrosoftTeams.WebHookUri ?? throw new ArgumentNullException(nameof(MicrosoftTeamsOptions.WebHookUri))
-        };
+        var adaptiveTeamsCard = JsonConvert.SerializeObject(TeamsNotificationCardWrapper.Wrap(adaptiveCard));
 
-        var teamsNotificationResponse = await _httpClient.SendAsync(cardsRequest);
+        var teamsNotificationResponse = await HttpPolicyExtensions.HandleTransientHttpError()
+            .WaitAndRetryAsync(3, i => TimeSpan.FromSeconds(i))
+            .ExecuteAsync(() =>
+            {
+                var cardsRequest = new HttpRequestMessage
+                {
+                    Method = HttpMethod.Post,
+                    Content = new StringContent(adaptiveTeamsCard),
+                    RequestUri = _pullRequestScannerOptions.MicrosoftTeams.WebHookUri ??
+                                 throw new ArgumentNullException(nameof(MicrosoftTeamsOptions.WebHookUri))
+                };
 
-        teamsNotificationResponse.EnsureSuccessStatusCode();
+                return _httpClient.SendAsync(cardsRequest);
+            });
 
         var responseString = await teamsNotificationResponse.Content.ReadAsStringAsync();
 
-        if (responseString.StartsWith("Webhook message delivery failed with error:"))
+        if ((responseString.StartsWith("Webhook message delivery failed") || !teamsNotificationResponse.IsSuccessStatusCode)
+            && adaptiveTeamsCard.Length > 28000)
         {
-            throw new HttpRequestException(responseString);
+            throw new HttpRequestException($"Teams card payload is too big - {adaptiveTeamsCard.Length} bytes");
         }
+        
+        teamsNotificationResponse.EnsureSuccessStatusCode();
     }
 }
