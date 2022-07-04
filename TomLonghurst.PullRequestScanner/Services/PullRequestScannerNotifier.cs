@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using TomLonghurst.PullRequestScanner.Enums;
 using TomLonghurst.PullRequestScanner.Extensions;
 using TomLonghurst.PullRequestScanner.Http;
+using TomLonghurst.PullRequestScanner.Mappers;
 using TomLonghurst.PullRequestScanner.Models.Self;
 using TomLonghurst.PullRequestScanner.Models.Teams;
 using TomLonghurst.PullRequestScanner.Services.Github;

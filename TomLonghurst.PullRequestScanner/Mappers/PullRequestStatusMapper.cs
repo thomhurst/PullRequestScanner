@@ -1,6 +1,6 @@
 ﻿using TomLonghurst.PullRequestScanner.Enums;
 
-namespace TomLonghurst.PullRequestScanner;
+namespace TomLonghurst.PullRequestScanner.Mappers;
 
 public static class PullRequestStatusMapper
 {
