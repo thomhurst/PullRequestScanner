@@ -316,7 +316,9 @@ internal class PullRequestScannerNotifier : IPullRequestScannerNotifier
             });
         }
         foreach (var personsCommentsAndReview in personsCommentsAndReviews
-                     .Where(x => x.Value.CommentsCount != 0 && x.Value.ReviewedCount != 0))
+                     .Where(x => x.Value.CommentsCount != 0 && x.Value.ReviewedCount != 0)
+                     .OrderByDescending(x => x.Value.CommentsCount)
+                     .ThenByDescending(x => x.Value.ReviewedCount))
         {
             teamsNotificationCard.Body.Add(
                 new AdaptiveColumnSet
