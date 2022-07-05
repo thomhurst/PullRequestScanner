@@ -27,7 +27,7 @@ services
         },
         MicrosoftTeams = new MicrosoftTeamsOptions
         {
-            WebHookUri = new Uri("https://asos1.webhook.office.com/webhookb2/blahblahblah")
+            WebHookUri = new Uri("https://blah.webhook.office.com/webhookb2/blahblahblah")
         }
     });
 ```
@@ -62,7 +62,7 @@ public class Startup : IWebJobsStartup
               },
               MicrosoftTeams = new MicrosoftTeamsOptions
               {
-                  WebHookUri = new Uri("https://asos1.webhook.office.com/webhookb2/blahblahblah")
+                  WebHookUri = new Uri("https://blah.webhook.office.com/webhookb2/blahblahblah")
               }
           });
     }
