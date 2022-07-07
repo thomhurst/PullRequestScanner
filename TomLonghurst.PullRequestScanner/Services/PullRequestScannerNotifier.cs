@@ -195,7 +195,7 @@ internal class PullRequestScannerNotifier : IPullRequestScannerNotifier
                             {
                                 new AdaptiveTextBlock
                                 {
-                                    Text = $"<at>{pullRequest.Author.DisplayOrUniqueName}</at>",
+                                    Text = pullRequest.Author.ToAtMarkupTag(),
                                     Color = pullRequest.IsDraft ? AdaptiveTextColor.Accent : AdaptiveTextColor.Default
                                 }
                             },
@@ -337,7 +337,7 @@ internal class PullRequestScannerNotifier : IPullRequestScannerNotifier
                             {
                                 new AdaptiveTextBlock
                                 {
-                                    Text = $"<at>{personsCommentsAndReview.Key}</at>"
+                                    Text = personsCommentsAndReview.Key.ToAtMarkupTag()
                                 }
                             }
                         },
@@ -471,7 +471,7 @@ internal class PullRequestScannerNotifier : IPullRequestScannerNotifier
                             {
                                 new AdaptiveTextBlock
                                 {
-                                    Text = $"<at>{pullRequest.Author.DisplayOrUniqueName}</at>"
+                                    Text = pullRequest.Author.ToAtMarkupTag()
                                 }
                             },
                             Width = "auto"

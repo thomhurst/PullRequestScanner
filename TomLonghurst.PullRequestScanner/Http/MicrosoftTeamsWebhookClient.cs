@@ -45,6 +45,11 @@ internal class MicrosoftTeamsWebhookClient
             throw new HttpRequestException($"Teams card payload is too big - {adaptiveTeamsCard.Length} bytes");
         }
         
+        if (responseString.StartsWith("Webhook message delivery failed"))
+        {
+            throw new HttpRequestException(responseString, null, teamsNotificationResponse.StatusCode);
+        }
+        
         teamsNotificationResponse.EnsureSuccessStatusCode();
     }
 }
