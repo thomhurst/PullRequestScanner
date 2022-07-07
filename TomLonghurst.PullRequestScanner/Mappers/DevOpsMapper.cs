@@ -1,6 +1,7 @@
 ﻿using TomLonghurst.PullRequestScanner.Enums;
 using TomLonghurst.PullRequestScanner.Models.DevOps;
 using TomLonghurst.PullRequestScanner.Models.Self;
+using TomLonghurst.PullRequestScanner.Services;
 using DevOpsRepository = TomLonghurst.PullRequestScanner.Models.DevOps.Repository;
 using Repository = TomLonghurst.PullRequestScanner.Models.Self.Repository;
 
@@ -8,6 +9,13 @@ namespace TomLonghurst.PullRequestScanner.Mappers;
 
 internal class DevOpsMapper : IDevOpsMapper
 {
+    private readonly ITeamMembersService _teamMembersService;
+
+    public DevOpsMapper(ITeamMembersService teamMembersService)
+    {
+        _teamMembersService = teamMembersService;
+    }
+    
     public PullRequest ToPullRequestModel(DevOpsPullRequestContext pullRequestContext)
     {
         var pullRequest = pullRequestContext.DevOpsPullRequest;
@@ -23,7 +31,7 @@ internal class DevOpsMapper : IDevOpsMapper
             IsDraft = pullRequest.IsDraft,
             IsActive = pullRequest.Status == "active",
             PullRequestStatus = GetStatus(pullRequestContext),
-            Author = GetPerson(pullRequest.CreatedBy),
+            Author = GetPerson(pullRequest.CreatedBy.UniqueName, pullRequest.CreatedBy.DisplayName),
             Approvers = pullRequest.Reviewers.Where(x => x.Vote != 0).Select(GetApprover).ToList(),
             CommentThreads = pullRequestContext.PullRequestThreads.Select(GetCommentThread).ToList(),
             Platform = Platform.AzureDevOps
@@ -65,17 +73,24 @@ internal class DevOpsMapper : IDevOpsMapper
         return new Comment
         {
             LastUpdated = devOpsComment.LastUpdatedDate,
-            Author = GetPerson(devOpsComment.DevOpsAuthor)
+            Author = GetPerson(devOpsComment.DevOpsAuthor.UniqueName, devOpsComment.DevOpsAuthor.DisplayName)
         };
     }
 
-    private Person GetPerson(DevOpsAuthor devOpsAuthor)
+    private TeamMember GetPerson(string uniqueName, string displayName)
     {
-        return new Person
+        var foundTeamMember = _teamMembersService.FindDevOpsTeamMember(uniqueName);
+
+        if (foundTeamMember == null)
         {
-            DisplayName = devOpsAuthor.DisplayName,
-            UniqueName = devOpsAuthor.UniqueName
-        };
+            return new TeamMember
+            {
+                DevOpsUsername = uniqueName,
+                DisplayName = displayName
+            };
+        }
+
+        return foundTeamMember;
     }
 
     private ThreadStatus GetThreadStatus(string threadStatus)
@@ -94,7 +109,7 @@ internal class DevOpsMapper : IDevOpsMapper
         {
             Vote = GetVote(reviewer.Vote),
             IsRequired = reviewer.IsRequired == true,
-            Person = GetPerson(reviewer)
+            TeamMember = GetPerson(reviewer.UniqueName, reviewer.DisplayName)
         };
     }
     
@@ -111,24 +126,6 @@ internal class DevOpsMapper : IDevOpsMapper
         }
 
         return Vote.Rejected;
-    }
-    
-    private Person GetPerson(CreatedBy createdBy)
-    {
-        return new Person
-        {
-            DisplayName = createdBy.DisplayName,
-            UniqueName = createdBy.UniqueName
-        };
-    }
-    
-    private Person GetPerson(Reviewer reviewer)
-    {
-        return new Person
-        {
-            DisplayName = reviewer.DisplayName,
-            UniqueName = reviewer.UniqueName
-        };
     }
 
     private PullRequestStatus GetStatus(DevOpsPullRequestContext devOpsPullRequestContext)

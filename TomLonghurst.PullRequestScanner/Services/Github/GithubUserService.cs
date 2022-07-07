@@ -56,7 +56,8 @@ internal class GithubUserService : IInitialize, IGithubUserService
                     {
                         Id = x.Id.Value,
                         DisplayName = x.Name ?? x.Login,
-                        UniqueName = x.Login
+                        UniqueName = x.Login,
+                        Email = x.Email
                     }
                 },
                 Slug = x.Login
@@ -76,7 +77,9 @@ internal class GithubUserService : IInitialize, IGithubUserService
                 Name = x.Name,
                 Id = x.Id.Value,
                 Slug = x.Slug,
-                Members = x.Members(null, null, null, null, null, null, null, null).AllPages().Select(m =>
+                Members = x.Members(null, null, null, null, null, null, null, null)
+                    .AllPages()
+                    .Select(m =>
                     new GithubMember
                     {
                         DisplayName = m.Name,
@@ -88,8 +91,8 @@ internal class GithubUserService : IInitialize, IGithubUserService
         _githubTeam = await _githubGraphQlClientProvider.GithubGraphQlClient.Run(query);
     }
 
-    public GithubTeam GetTeam()
+    public List<GithubMember> GetTeamMembers()
     {
-        return _githubTeam;
+        return _githubTeam?.Members ?? new List<GithubMember>();
     }
 }

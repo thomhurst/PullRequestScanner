@@ -1,4 +1,5 @@
 ﻿using TomLonghurst.PullRequestScanner.Enums;
+using TomLonghurst.PullRequestScanner.Services;
 
 namespace TomLonghurst.PullRequestScanner.Models.Self;
 
@@ -10,7 +11,7 @@ public record PullRequest
     public string Id { get; set; }
     public string Number { get; set; }
     public Repository Repository { get; set;}
-    public Person Author { get; set; }
+    public TeamMember Author { get; set; }
     public List<CommentThread> CommentThreads { get; set; } = new();
     public List<Comment> AllComments => CommentThreads.SelectMany(t => t.Comments).ToList();
     public DateTimeOffset Created { get; set; }
@@ -43,25 +44,25 @@ public record PullRequest
         }
     }
 
-    public List<Person> UniqueReviewers
+    public List<TeamMember> UniqueReviewers
     {
         get
         {
             return Approvers
                 .Where(x => x.Vote != Vote.NoVote)
-                .Select(a => a.Person)
+                .Select(a => a.TeamMember)
                 .Concat(AllComments.Select(c => c.Author))
                 .Where(reviewer => reviewer.DisplayName != Constants.VSTSDisplayName)
-                .Where(reviewer => !reviewer.UniqueName.StartsWith(Constants.VSTFSUniqueNamePrefix))
+                .Where(reviewer => !reviewer.DevOpsUsername.StartsWith(Constants.VSTFSUniqueNamePrefix))
                 .Where(reviewer => reviewer != Author)
                 .Distinct()
                 .ToList();
         }
     }
 
-    public int GetCommentCount(Person person, Func<Comment, bool>? condition = null)
+    public int GetCommentCount(TeamMember teamMember, Func<Comment, bool>? condition = null)
     {
-        if (person == Author)
+        if (teamMember == Author)
         {
             // We don't count comments on your own PR!
             return 0;
@@ -70,19 +71,19 @@ public record PullRequest
         return CommentThreads
             .SelectMany(c => c.Comments)
             .Where(c => condition?.Invoke(c) ?? true)
-            .Count(c => c.Author == person);
+            .Count(c => c.Author == teamMember);
     }
     
-    public bool HasVoted(Person person, Func<Approver, bool>? condition = null)
+    public bool HasVoted(TeamMember teamMember, Func<Approver, bool>? condition = null)
     {
-        if (person == Author)
+        if (teamMember == Author)
         {
             // You can't vote for your own PR
             return false;
         }
         
         return Approvers
-            .Where(a => a.Person == person)
+            .Where(a => a.TeamMember == teamMember)
             .Where(a => condition?.Invoke(a) ?? true)
             .Any(x => x.Vote != Vote.NoVote);
     }

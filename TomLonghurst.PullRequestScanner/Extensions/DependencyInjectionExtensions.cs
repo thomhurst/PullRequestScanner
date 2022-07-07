@@ -49,7 +49,7 @@ public static class DependencyInjectionExtensions
                 var azureDevOpsOptions = pullRequestScannerOptions.AzureDevOps;
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",
                     Convert.ToBase64String(Encoding.ASCII.GetBytes(azureDevOpsOptions.PersonalAccessToken)));
-                client.BaseAddress = new Uri($"https://dev.azure.com/{azureDevOpsOptions.OrganizationSlug}/{azureDevOpsOptions.TeamSlug}/_apis/git/");
+                client.BaseAddress = new Uri($"https://dev.azure.com/{azureDevOpsOptions.OrganizationSlug}/{azureDevOpsOptions.ProjectSlug}/_apis/git/");
             });
 
         services
@@ -66,7 +66,8 @@ public static class DependencyInjectionExtensions
         services
             .AddHttpClient<MicrosoftTeamsWebhookClient>();
         
-        services.AddStartupInitializer<GithubUserService>();
+        services.AddStartupInitializer<GithubUserService>()
+            .AddStartupInitializer<DevOpsUserService>();
         
         services.AddTransient<IDevOpsGitRepositoryService, DevOpsGitRepositoryService>()
             .AddTransient<IDevOpsPullRequestService, DevOpsPullRequestService>()
@@ -75,6 +76,8 @@ public static class DependencyInjectionExtensions
         services
             .AddSingleton<IGithubGraphQlClientProvider, GithubGraphQlClientProvider>()
             .AddSingleton<IGithubUserService, GithubUserService>()
+            .AddSingleton<IDevOpsUserService, DevOpsUserService>()
+            .AddSingleton<ITeamMembersService, TeamMembersService>()
             .AddTransient<IGithubRepositoryService, GithubRepositoryService>()
             .AddTransient<IGithubPullRequestService, GithubPullRequestService>()
             .AddTransient<IGithubMapper, GithubMapper>();
