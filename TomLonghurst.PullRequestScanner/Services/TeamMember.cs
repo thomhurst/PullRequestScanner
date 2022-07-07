@@ -4,11 +4,12 @@ namespace TomLonghurst.PullRequestScanner.Services;
 
 public record TeamMember
 {
-    public string DisplayName { get; set; }
-    public string GithubUsername { get; set; }
-    public string DevOpsUsername { get; set; }
-    public string Email { get; set; }
-    public string Id { get; set; }
+    public string? DisplayName { get; set; }
+    public string? GithubUsername { get; set; }
+    public string? DevOpsUsername { get; set; }
+    public string? Email { get; set; }
+    public string GithubId { get; set; }
+    public string DevOpsId { get; set; }
     
     public string DisplayOrUniqueName
     {

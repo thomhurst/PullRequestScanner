@@ -43,7 +43,7 @@ internal class TeamMembersService : ITeamMembersService, IInitialize
                 _teamMembers.Add(new TeamMember
                 {
                     Email = githubUser.Email,
-                    Id = githubUser.Id,
+                    GithubId = githubUser.Id,
                     GithubUsername = githubUser.UniqueName,
                     DisplayName = githubUser.DisplayName
                 });
@@ -62,7 +62,7 @@ internal class TeamMembersService : ITeamMembersService, IInitialize
                 _teamMembers.Add(new TeamMember
                 {
                     Email = devOpsUser.Identity.UniqueName,
-                    Id = devOpsUser.Identity.Id,
+                    DevOpsId = devOpsUser.Identity.Id,
                     DevOpsUsername = devOpsUser.Identity.UniqueName,
                     DisplayName = devOpsUser.Identity.DisplayName
                 });
@@ -82,7 +82,7 @@ internal class TeamMembersService : ITeamMembersService, IInitialize
     {
         return
             FindUserWithMatchingProperty(x => x.Email, x => x.Email, githubUser)
-            ?? FindUserWithMatchingProperty(x => x.Id, x => x.Id, githubUser)
+            ?? FindUserWithMatchingProperty(x => x.Id, x => x.GithubId, githubUser)
             ?? FindUserWithMatchingProperty(x => x.UniqueName, x => x.GithubUsername, githubUser)
             ?? FindUserWithMatchingProperty(x => x.DisplayName, x => x.DisplayName, githubUser);
     }
@@ -125,9 +125,9 @@ internal class TeamMembersService : ITeamMembersService, IInitialize
             foundUser.Email = githubUser.Email;
         }
         
-        if (string.IsNullOrEmpty(foundUser.Id) && !string.IsNullOrEmpty(githubUser.Id))
+        if (string.IsNullOrEmpty(foundUser.GithubId) && !string.IsNullOrEmpty(githubUser.Id))
         {
-            foundUser.Id = githubUser.Id;
+            foundUser.GithubId = githubUser.Id;
         }
         
         if (string.IsNullOrEmpty(foundUser.GithubUsername) && !string.IsNullOrEmpty(githubUser.UniqueName))
@@ -145,7 +145,7 @@ internal class TeamMembersService : ITeamMembersService, IInitialize
     {
         return
             FindUserWithMatchingProperty(x => x.Identity.UniqueName, x => x.Email, devOpsTeamMember)
-            ?? FindUserWithMatchingProperty(x => x.Identity.Id, x => x.Id, devOpsTeamMember)
+            ?? FindUserWithMatchingProperty(x => x.Identity.Id, x => x.GithubId, devOpsTeamMember)
             ?? FindUserWithMatchingProperty(x => x.Identity.UniqueName, x => x.GithubUsername, devOpsTeamMember)
             ?? FindUserWithMatchingProperty(x => x.Identity.DisplayName, x => x.DisplayName, devOpsTeamMember);
     }
@@ -178,9 +178,9 @@ internal class TeamMembersService : ITeamMembersService, IInitialize
             foundUser.Email = devOpsTeamMember.Identity.UniqueName;
         }
         
-        if (string.IsNullOrEmpty(foundUser.Id) && !string.IsNullOrEmpty(devOpsTeamMember.Identity.Id))
+        if (string.IsNullOrEmpty(foundUser.DevOpsId) && !string.IsNullOrEmpty(devOpsTeamMember.Identity.Id))
         {
-            foundUser.Id = devOpsTeamMember.Identity.Id;
+            foundUser.DevOpsId = devOpsTeamMember.Identity.Id;
         }
         
         if (string.IsNullOrEmpty(foundUser.DevOpsUsername) && !string.IsNullOrEmpty(devOpsTeamMember.Identity.UniqueName))
