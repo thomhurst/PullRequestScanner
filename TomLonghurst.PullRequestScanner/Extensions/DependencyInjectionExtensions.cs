@@ -66,8 +66,7 @@ public static class DependencyInjectionExtensions
         services
             .AddHttpClient<MicrosoftTeamsWebhookClient>();
         
-        services.AddStartupInitializer<GithubUserService>()
-            .AddStartupInitializer<DevOpsUserService>();
+        services.AddStartupInitializer<TeamMembersService>();
         
         services.AddTransient<IDevOpsGitRepositoryService, DevOpsGitRepositoryService>()
             .AddTransient<IDevOpsPullRequestService, DevOpsPullRequestService>()

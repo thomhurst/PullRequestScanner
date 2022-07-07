@@ -25,15 +25,18 @@ internal class TeamMembersService : ITeamMembersService, IInitialize
         return _teamMembers;
     }
 
-    public Task Initialize()
+    public async Task Initialize()
     {
         if (_isInitialized)
         {
-            return Task.CompletedTask;
+            return;
         }
         
-        var githubUsers = _githubUserService.GetTeamMembers();
-        var devopsUsers = _devOpsUserService.GetTeamMembers();
+        var githubUsersTask = _githubUserService.GetTeamMembers();
+        var devopsUsersTask = _devOpsUserService.GetTeamMembers();
+        
+        var githubUsers = await githubUsersTask;
+        var devopsUsers = await devopsUsersTask;
         
         foreach (var githubUser in githubUsers)
         {
@@ -75,7 +78,7 @@ internal class TeamMembersService : ITeamMembersService, IInitialize
 
         _isInitialized = true;
         
-        return Task.CompletedTask;
+        return;
     }
     
     private TeamMember? FindGithubTeamMember(GithubMember githubUser)

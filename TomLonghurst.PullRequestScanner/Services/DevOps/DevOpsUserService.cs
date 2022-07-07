@@ -5,30 +5,22 @@ using TomLonghurst.PullRequestScanner.Options;
 
 namespace TomLonghurst.PullRequestScanner.Services.DevOps;
 
-internal class DevOpsUserService : IInitialize, IDevOpsUserService
+internal class DevOpsUserService : IDevOpsUserService
 {
     private readonly DevOpsHttpClient _devOpsHttpClient;
     private readonly PullRequestScannerOptions _pullRequestScannerOptions;
-    private bool _initialized;
-    private List<DevOpsTeamMember>? _teamMembers;
 
     public DevOpsUserService(DevOpsHttpClient devOpsHttpClient, PullRequestScannerOptions pullRequestScannerOptions)
     {
         _devOpsHttpClient = devOpsHttpClient;
         _pullRequestScannerOptions = pullRequestScannerOptions;
     }
-    
-    public async Task Initialize()
-    {
-        if (_initialized)
-        {
-            return;
-        }
 
+    public async Task<IReadOnlyList<DevOpsTeamMember>> GetTeamMembers()
+    {
         if (!_pullRequestScannerOptions.AzureDevOps.IsEnabled)
         {
-            _initialized = true;
-            return;
+            return new List<DevOpsTeamMember>();
         }
 
         var teamsInProject = await _devOpsHttpClient.Get<DevOpsTeamWrapper>(
@@ -40,17 +32,10 @@ internal class DevOpsUserService : IInitialize, IDevOpsUserService
                 $"https://dev.azure.com/{_pullRequestScannerOptions.AzureDevOps.OrganizationSlug}/_apis/projects/{_pullRequestScannerOptions.AzureDevOps.ProjectSlug}/teams/{x.Id}/members?api-version=7.1-preview.2"))
             .ProcessInParallel(50, TimeSpan.FromSeconds(5));
 
-        _teamMembers = membersResponses
+        return membersResponses
             .SelectMany(x => x.Value)
             .Where(x => x.Identity.DisplayName != Constants.VSTSDisplayName)
             .Where(x => !x.Identity.UniqueName.StartsWith(Constants.VSTFSUniqueNamePrefix))
             .ToList();
-
-        _initialized = true;
-    }
-
-    public IReadOnlyList<DevOpsTeamMember> GetTeamMembers()
-    {
-        return _teamMembers ?? new List<DevOpsTeamMember>();
     }
 }

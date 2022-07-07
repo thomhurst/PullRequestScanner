@@ -4,5 +4,5 @@ namespace TomLonghurst.PullRequestScanner.Services.DevOps;
 
 internal interface IDevOpsUserService
 {
-    IReadOnlyList<DevOpsTeamMember> GetTeamMembers();    
+    Task<IReadOnlyList<DevOpsTeamMember>> GetTeamMembers();    
 }
