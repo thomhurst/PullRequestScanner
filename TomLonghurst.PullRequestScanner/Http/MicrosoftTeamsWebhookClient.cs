@@ -18,7 +18,7 @@ internal class MicrosoftTeamsWebhookClient
         _pullRequestScannerOptions = pullRequestScannerOptions;
     }
 
-    public async Task CreateTeamsNotification(AdaptiveCard adaptiveCard)
+    public async Task CreateTeamsNotification(MicrosoftTeamsAdaptiveCard adaptiveCard)
     {
         var adaptiveTeamsCard = JsonConvert.SerializeObject(TeamsNotificationCardWrapper.Wrap(adaptiveCard));
 
