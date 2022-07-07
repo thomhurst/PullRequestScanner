@@ -36,11 +36,6 @@ internal class PullRequestScannerNotifier : IPullRequestScannerNotifier
 
     public async Task NotifyTeamsChannel(IReadOnlyList<PullRequest> pullRequests, MicrosoftTeamsPublishOptions microsoftTeamsPublishOptions)
     {
-        if (microsoftTeamsPublishOptions.PublishPullRequestReviewerLeaderboardCard)
-        {
-            await PublishReviewerLeaderboard(pullRequests);
-        }
-        
         if (microsoftTeamsPublishOptions.PublishPullRequestStatusesCard)
         {
             await PublishPullRequestStatuses(pullRequests);
@@ -59,6 +54,11 @@ internal class PullRequestScannerNotifier : IPullRequestScannerNotifier
         if (microsoftTeamsPublishOptions.PublishPullRequestFailingChecksCard)
         {
             await PublishStatusCard(pullRequests, PullRequestStatus.FailingChecks);
+        }
+        
+        if (microsoftTeamsPublishOptions.PublishPullRequestReviewerLeaderboardCard)
+        {
+            await PublishReviewerLeaderboard(pullRequests);
         }
     }
 
@@ -92,10 +92,13 @@ internal class PullRequestScannerNotifier : IPullRequestScannerNotifier
             }
         };
         
+        var mentionedUsers = new List<TeamMember>();
+
         foreach (var repo in repos.Skip(reposIterated))
         {
-            if (JsonConvert.SerializeObject(teamsNotificationCard).Length > 20000)
+            if (JsonConvert.SerializeObject(teamsNotificationCard).Length > 24000)
             {
+                teamsNotificationCard.MsTeams.Entitities = mentionedUsers.ToAdaptiveCardMentionEntities();
                 await _microsoftTeamsWebhookClient.CreateTeamsNotification(teamsNotificationCard);
                 goto StartOfWriteTeamsCard;
             }
@@ -170,6 +173,7 @@ internal class PullRequestScannerNotifier : IPullRequestScannerNotifier
             
             foreach (var pullRequest in repo.OrderByDescending(x => x.Created))
             {
+                mentionedUsers.Add(pullRequest.Author);
                 adaptiveContainer.Items.Add(new AdaptiveColumnSet
                 {
                     Columns = new List<AdaptiveColumn>
@@ -191,7 +195,7 @@ internal class PullRequestScannerNotifier : IPullRequestScannerNotifier
                             {
                                 new AdaptiveTextBlock
                                 {
-                                    Text = pullRequest.Author.DisplayOrUniqueName,
+                                    Text = pullRequest.Author.ToAtMarkupTag(),
                                     Color = pullRequest.IsDraft ? AdaptiveTextColor.Accent : AdaptiveTextColor.Default
                                 }
                             },
@@ -228,6 +232,8 @@ internal class PullRequestScannerNotifier : IPullRequestScannerNotifier
             teamsNotificationCard.Body.Add(adaptiveContainer);
         }
 
+        teamsNotificationCard.MsTeams.Entitities = mentionedUsers.ToAdaptiveCardMentionEntities();
+
         await _microsoftTeamsWebhookClient.CreateTeamsNotification(teamsNotificationCard);
     }
 
@@ -238,7 +244,6 @@ internal class PullRequestScannerNotifier : IPullRequestScannerNotifier
         {
             return;
         }
-
         
         var teamsNotificationCard = new MicrosoftTeamsAdaptiveCard
         {
@@ -295,17 +300,17 @@ internal class PullRequestScannerNotifier : IPullRequestScannerNotifier
                 }
             }
         };
-
-        var personsCommentsAndReviews = new ConcurrentDictionary<string, PullRequestReviewLeaderboardModel>();
+        
+        var personsCommentsAndReviews = new ConcurrentDictionary<TeamMember, PullRequestReviewLeaderboardModel>();
         foreach (var pullRequest in pullRequests)
         {
             var uniqueReviewers = pullRequest.UniqueReviewers;
             uniqueReviewers.ForEach(uniqueReviewer =>
             {
-                var yesterdaysCommentCount = pullRequest.GetCommentCount(uniqueReviewer, c => c.LastUpdated.IsYesterday());
-                var hasVoted = pullRequest.HasVoted(uniqueReviewer, a => a.Time.IsYesterday() && a.Vote != Vote.NoVote);
+                var yesterdaysCommentCount = pullRequest.GetCommentCountWhere(uniqueReviewer, c => c.LastUpdated.IsYesterday());
+                var hasVoted = pullRequest.HasVotedWhere(uniqueReviewer, a => a.Time.IsYesterday() && a.Vote != Vote.NoVote);
                 
-                var record = personsCommentsAndReviews.GetOrAdd(uniqueReviewer.DisplayOrUniqueName, new PullRequestReviewLeaderboardModel());
+                var record = personsCommentsAndReviews.GetOrAdd(uniqueReviewer, new PullRequestReviewLeaderboardModel());
                 
                 record.CommentsCount += yesterdaysCommentCount;
                 
@@ -320,6 +325,7 @@ internal class PullRequestScannerNotifier : IPullRequestScannerNotifier
                      .OrderByDescending(x => x.Value.CommentsCount)
                      .ThenByDescending(x => x.Value.ReviewedCount))
         {
+            
             teamsNotificationCard.Body.Add(
                 new AdaptiveColumnSet
                 {
@@ -331,7 +337,7 @@ internal class PullRequestScannerNotifier : IPullRequestScannerNotifier
                             {
                                 new AdaptiveTextBlock
                                 {
-                                    Text = personsCommentsAndReview.Key
+                                    Text = personsCommentsAndReview.Key.ToAtMarkupTag()
                                 }
                             }
                         },
@@ -357,6 +363,11 @@ internal class PullRequestScannerNotifier : IPullRequestScannerNotifier
                     }
                 });
         }
+        
+        teamsNotificationCard.MsTeams.Entitities = personsCommentsAndReviews
+            .Where(x => x.Value.CommentsCount != 0 && x.Value.ReviewedCount != 0)
+            .Select(x => x.Key)
+            .ToAdaptiveCardMentionEntities();
         
         await _microsoftTeamsWebhookClient.CreateTeamsNotification(teamsNotificationCard);
     }
@@ -388,6 +399,8 @@ internal class PullRequestScannerNotifier : IPullRequestScannerNotifier
                 }
             }
         };
+
+        var mentionedUsers = new List<TeamMember>();
 
         foreach (var pullRequestsInRepo in pullRequestsWithStatus.GroupBy(x => x.Repository.Id))
         {
@@ -436,6 +449,8 @@ internal class PullRequestScannerNotifier : IPullRequestScannerNotifier
 
             foreach (var pullRequest in pullRequestsInRepo)
             {
+                mentionedUsers.Add(pullRequest.Author);
+                
                 adaptiveContainer.Items.Add(new AdaptiveColumnSet
                 {
                     Columns = new List<AdaptiveColumn>
@@ -456,7 +471,7 @@ internal class PullRequestScannerNotifier : IPullRequestScannerNotifier
                             {
                                 new AdaptiveTextBlock
                                 {
-                                    Text = pullRequest.Author.DisplayOrUniqueName
+                                    Text = pullRequest.Author.ToAtMarkupTag()
                                 }
                             },
                             Width = "auto"
@@ -468,6 +483,8 @@ internal class PullRequestScannerNotifier : IPullRequestScannerNotifier
             teamsNotificationCard.Body.Add(adaptiveContainer);
         }
 
+        teamsNotificationCard.MsTeams.Entitities = mentionedUsers.ToAdaptiveCardMentionEntities();
+        
         await _microsoftTeamsWebhookClient.CreateTeamsNotification(teamsNotificationCard);
     }
 
@@ -532,8 +549,8 @@ internal class PullRequestScannerNotifier : IPullRequestScannerNotifier
                 return AdaptiveTextColor.Attention;
             case PullRequestStatus.Draft:
                 return AdaptiveTextColor.Accent;
+            default:
+                return AdaptiveTextColor.Default;
         }
-
-        return AdaptiveTextColor.Default;
     }
 }

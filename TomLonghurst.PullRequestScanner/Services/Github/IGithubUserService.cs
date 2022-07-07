@@ -4,5 +4,5 @@ namespace TomLonghurst.PullRequestScanner.Services.Github;
 
 internal interface IGithubUserService
 {
-    GithubTeam GetTeam();
+    Task<IReadOnlyList<GithubMember>> GetTeamMembers();
 }

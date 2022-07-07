@@ -111,7 +111,7 @@ internal class PullRequestService : IPullRequestService
         if (devOpsOptions?.IsEnabled == true)
         {
             ValidatePopulated(devOpsOptions.OrganizationSlug, nameof(devOpsOptions.OrganizationSlug));
-            ValidatePopulated(devOpsOptions.TeamSlug, nameof(devOpsOptions.TeamSlug));
+            ValidatePopulated(devOpsOptions.ProjectSlug, nameof(devOpsOptions.ProjectSlug));
             ValidatePopulated(devOpsOptions.PersonalAccessToken, nameof(devOpsOptions.PersonalAccessToken));
         }
     }

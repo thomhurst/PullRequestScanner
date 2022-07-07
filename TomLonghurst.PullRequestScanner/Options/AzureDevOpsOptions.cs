@@ -10,7 +10,7 @@ public class AzureDevOpsOptions
     /**
      * <summary>The URL slug for the team</summary>
      */
-    public string TeamSlug { get; set; }
+    public string ProjectSlug { get; set; }
     /**
      * <summary>Personal Access Token, usually in the format of "{username}:{PAT}"</summary>
      */

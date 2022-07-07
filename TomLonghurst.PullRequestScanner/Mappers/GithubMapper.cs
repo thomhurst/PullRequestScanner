@@ -2,7 +2,7 @@
 using TomLonghurst.PullRequestScanner.Enums;
 using TomLonghurst.PullRequestScanner.Models.Github;
 using TomLonghurst.PullRequestScanner.Models.Self;
-using TomLonghurst.PullRequestScanner.Services.Github;
+using TomLonghurst.PullRequestScanner.Services;
 using PullRequest = TomLonghurst.PullRequestScanner.Models.Self.PullRequest;
 using Repository = TomLonghurst.PullRequestScanner.Models.Self.Repository;
 
@@ -10,12 +10,13 @@ namespace TomLonghurst.PullRequestScanner.Mappers;
 
 internal class GithubMapper : IGithubMapper
 {
-    private readonly IGithubUserService _githubUserService;
+    private readonly ITeamMembersService _teamMembersService;
 
-    public GithubMapper(IGithubUserService githubUserService)
+    public GithubMapper(ITeamMembersService teamMembersService)
     {
-        _githubUserService = githubUserService;
+        _teamMembersService = teamMembersService;
     }
+    
     public PullRequest ToPullRequestModel(GithubPullRequest githubPullRequest)
     {
         var pullRequestModel = new PullRequest
@@ -63,26 +64,19 @@ internal class GithubMapper : IGithubMapper
         return githubPullRequest.State == PullRequestState.Open;
     }
 
-    private Person GetPerson(string author)
+    private TeamMember GetPerson(string author)
     {
-        var team = _githubUserService.GetTeam();
-
-        var foundTeamMember = team.Members.FirstOrDefault(x => x.UniqueName == author || x.DisplayName == author);
+        var foundTeamMember = _teamMembersService.FindGithubTeamMember(author);
 
         if (foundTeamMember == null)
         {
-            return new Person
+            return new TeamMember
             {
-                DisplayName = author,
-                UniqueName = author
+                GithubUsername = author
             };
         }
-        
-        return new Person
-        {
-            DisplayName = foundTeamMember.DisplayName,
-            UniqueName = foundTeamMember.UniqueName
-        }; 
+
+        return foundTeamMember;
     }
 
     private CommentThread GetCommentThreads(GithubThread githubThread)
@@ -120,7 +114,7 @@ internal class GithubMapper : IGithubMapper
         {
             Vote = GetVote(reviewer.State),
             IsRequired = false,
-            Person = GetPerson(reviewer.Author),
+            TeamMember = GetPerson(reviewer.Author),
             Time = reviewer.LastUpdated
         };
     }
