@@ -22,7 +22,7 @@ services
         AzureDevOps = new AzureDevOpsOptions
         {
             OrganizationSlug = "org-slug",
-            TeamSlug = "team-slug",
+            ProjectSlug = "project-slug",
             PersonalAccessToken = "{username}:{pat}"
         },
         MicrosoftTeams = new MicrosoftTeamsOptions
