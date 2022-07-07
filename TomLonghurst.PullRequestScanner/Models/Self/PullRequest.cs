@@ -60,7 +60,7 @@ public record PullRequest
         }
     }
 
-    public int GetCommentCount(TeamMember teamMember, Func<Comment, bool>? condition = null)
+    public int GetCommentCountWhere(TeamMember teamMember, Func<Comment, bool> condition)
     {
         if (teamMember == Author)
         {
@@ -74,7 +74,7 @@ public record PullRequest
             .Count(c => c.Author == teamMember);
     }
     
-    public bool HasVoted(TeamMember teamMember, Func<Approver, bool>? condition = null)
+    public bool HasVotedWhere(TeamMember teamMember, Func<Approver, bool> condition)
     {
         if (teamMember == Author)
         {

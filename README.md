@@ -1,10 +1,13 @@
 # PullRequestScanner
+
 A Github + Azure DevOps Pull Request Scanner that can notify Microsoft Teams of their current statuses (conflicts, outstanding comments, failing checks, etc.)
 
-# Usage
+## Usage
+
 Requires .NET 6
 
 Install via Nuget 
+
 > Install-Package TomLonghurst.PullRequestScanner
 
 In your startup, call: 

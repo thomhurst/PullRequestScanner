@@ -2,8 +2,6 @@
 
 namespace TomLonghurst.PullRequestScanner.Models.Github;
 
-// Root myDeserializedClass = JsonSerializer.Deserialize<List<Root>>(myJsonResponse);
-
 public record GithubRepository(
         [property: JsonPropertyName("id")] int Id,
         [property: JsonPropertyName("node_id")] string NodeId,

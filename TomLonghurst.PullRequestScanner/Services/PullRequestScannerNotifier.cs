@@ -307,8 +307,8 @@ internal class PullRequestScannerNotifier : IPullRequestScannerNotifier
             var uniqueReviewers = pullRequest.UniqueReviewers;
             uniqueReviewers.ForEach(uniqueReviewer =>
             {
-                var yesterdaysCommentCount = pullRequest.GetCommentCount(uniqueReviewer, c => c.LastUpdated.IsYesterday());
-                var hasVoted = pullRequest.HasVoted(uniqueReviewer, a => a.Time.IsYesterday() && a.Vote != Vote.NoVote);
+                var yesterdaysCommentCount = pullRequest.GetCommentCountWhere(uniqueReviewer, c => c.LastUpdated.IsYesterday());
+                var hasVoted = pullRequest.HasVotedWhere(uniqueReviewer, a => a.Time.IsYesterday() && a.Vote != Vote.NoVote);
                 
                 var record = personsCommentsAndReviews.GetOrAdd(uniqueReviewer, new PullRequestReviewLeaderboardModel());
                 
@@ -549,8 +549,8 @@ internal class PullRequestScannerNotifier : IPullRequestScannerNotifier
                 return AdaptiveTextColor.Attention;
             case PullRequestStatus.Draft:
                 return AdaptiveTextColor.Accent;
+            default:
+                return AdaptiveTextColor.Default;
         }
-
-        return AdaptiveTextColor.Default;
     }
 }

@@ -77,8 +77,6 @@ internal class TeamMembersService : ITeamMembersService, IInitialize
         }
 
         _isInitialized = true;
-        
-        return;
     }
     
     private TeamMember? FindGithubTeamMember(GithubMember githubUser)
