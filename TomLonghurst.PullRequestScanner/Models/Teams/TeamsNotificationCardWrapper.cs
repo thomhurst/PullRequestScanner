@@ -11,7 +11,7 @@ internal class TeamsNotificationCardWrapper
     [JsonProperty("attachments")]
     public Attachment[] Attachments { get; set; }
 
-    public static TeamsNotificationCardWrapper Wrap(AdaptiveCard adaptiveCard)
+    public static TeamsNotificationCardWrapper Wrap(MicrosoftTeamsAdaptiveCard adaptiveCard)
     {
         return new TeamsNotificationCardWrapper
         {
