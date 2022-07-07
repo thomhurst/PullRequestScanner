@@ -137,11 +137,6 @@ internal class GithubMapper : IGithubMapper
     
     private PullRequestStatus GetStatus(GithubPullRequest pullRequest)
     {
-        if (pullRequest.Mergeable == MergeableState.Conflicting)
-        {
-            return PullRequestStatus.MergeConflicts;
-        }
-        
         if (pullRequest.State == PullRequestState.Merged)
         {
             return PullRequestStatus.Completed;
@@ -150,6 +145,11 @@ internal class GithubMapper : IGithubMapper
         if (pullRequest.State == PullRequestState.Closed)
         {
             return PullRequestStatus.Abandoned;
+        }
+        
+        if (pullRequest.Mergeable == MergeableState.Conflicting)
+        {
+            return PullRequestStatus.MergeConflicts;
         }
     
         if (pullRequest.IsDraft)
