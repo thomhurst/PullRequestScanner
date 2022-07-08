@@ -239,7 +239,7 @@ internal class PullRequestScannerNotifier : IPullRequestScannerNotifier
 
     private async Task PublishReviewerLeaderboard(IReadOnlyList<PullRequest> pullRequests)
     {
-        if(!pullRequests.Any(x => x.Approvers.Any(a => a.Time?.IsYesterday() ?? false))
+        if(!pullRequests.Any(x => x.Approvers.Any(a => a.Time.IsYesterday()))
            && !pullRequests.Any(x => x.AllComments.Any(c => c.LastUpdated.IsYesterday())))
         {
             return;
@@ -308,7 +308,7 @@ internal class PullRequestScannerNotifier : IPullRequestScannerNotifier
             uniqueReviewers.ForEach(uniqueReviewer =>
             {
                 var yesterdaysCommentCount = pullRequest.GetCommentCountWhere(uniqueReviewer, c => c.LastUpdated.IsYesterday());
-                var hasVoted = pullRequest.HasVotedWhere(uniqueReviewer, a => a.Vote != Vote.NoVote && (a.Time?.IsYesterday() ?? false));
+                var hasVoted = pullRequest.HasVotedWhere(uniqueReviewer, a => a.Vote != Vote.NoVote && a.Time.IsYesterday());
                 
                 var record = personsCommentsAndReviews.GetOrAdd(uniqueReviewer, new PullRequestReviewLeaderboardModel());
                 

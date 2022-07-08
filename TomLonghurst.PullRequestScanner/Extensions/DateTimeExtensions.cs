@@ -2,6 +2,16 @@
 
 public static class DateTimeExtensions
 {
+    public static bool IsYesterday(this DateTimeOffset? dateTimeOffset)
+    {
+        if (dateTimeOffset is null)
+        {
+            return false;
+        }
+
+        return IsYesterday(dateTimeOffset.Value);
+    }
+    
     public static bool IsYesterday(this DateTimeOffset dateTimeOffset)
     {
         var today = DateTimeOffset.UtcNow.Date;
