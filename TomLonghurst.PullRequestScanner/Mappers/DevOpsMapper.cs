@@ -32,7 +32,7 @@ internal class DevOpsMapper : IDevOpsMapper
             IsActive = pullRequest.Status == "active",
             PullRequestStatus = GetStatus(pullRequestContext),
             Author = GetPerson(pullRequest.CreatedBy.UniqueName, pullRequest.CreatedBy.DisplayName),
-            Approvers = pullRequest.Reviewers.Where(x => x.Vote != 0).Select(GetApprover).ToList(),
+            Approvers = pullRequest.Reviewers.Where(x => x.Vote != 0).Select(r => GetApprover(r, pullRequestContext.PullRequestThreads)).ToList(),
             CommentThreads = pullRequestContext.PullRequestThreads.Select(GetCommentThread).ToList(),
             Platform = Platform.AzureDevOps
         };
@@ -103,13 +103,17 @@ internal class DevOpsMapper : IDevOpsMapper
         return ThreadStatus.Closed;
     }
 
-    private Approver GetApprover(Reviewer reviewer)
+    private Approver GetApprover(Reviewer reviewer, IReadOnlyList<DevOpsPullRequestThread> devOpsPullRequestThreads)
     {
         return new Approver
         {
             Vote = GetVote(reviewer.Vote),
             IsRequired = reviewer.IsRequired == true,
-            TeamMember = GetPerson(reviewer.UniqueName, reviewer.DisplayName)
+            TeamMember = GetPerson(reviewer.UniqueName, reviewer.DisplayName),
+            Time = devOpsPullRequestThreads
+                .Where(x => x.Properties.CodeReviewThreadType.Value == "VoteUpdate")
+                .LastOrDefault(x => x.Comments.SingleOrDefault(c => c.DevOpsAuthor.UniqueName == reviewer.UniqueName) != null)
+                ?.LastUpdatedDate
         };
     }
     
