@@ -39,20 +39,20 @@ internal class PullRequestService : IPullRequestService
         _initializes = initializes;
     }
 
-    private void ValidatePopulated(string value, string propertyName)
-    {
-        if (string.IsNullOrEmpty(value))
-        {
-            throw new ArgumentNullException(propertyName);
-        }
-    }
-
     public async Task<IReadOnlyList<PullRequest>> GetPullRequests()
     {
         ValidateOptions();
         await Task.WhenAll(_initializes.Select(x => x.Initialize()));
         var pullRequests = await Task.WhenAll(GetGithubPullRequests(), GetDevOpsPullRequests());
         return pullRequests.SelectMany(x => x).ToImmutableList();
+    }
+
+    private void ValidatePopulated(string value, string propertyName)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            throw new ArgumentNullException(propertyName);
+        }
     }
 
     private async Task<IReadOnlyList<PullRequest>> GetDevOpsPullRequests()
