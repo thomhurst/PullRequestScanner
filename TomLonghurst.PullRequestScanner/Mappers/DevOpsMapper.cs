@@ -32,8 +32,15 @@ internal class DevOpsMapper : IDevOpsMapper
             IsActive = pullRequest.Status == "active",
             PullRequestStatus = GetStatus(pullRequestContext),
             Author = GetPerson(pullRequest.CreatedBy.UniqueName, pullRequest.CreatedBy.DisplayName),
-            Approvers = pullRequest.Reviewers.Where(x => x.Vote != 0).Select(r => GetApprover(r, pullRequestContext.PullRequestThreads)).ToList(),
-            CommentThreads = pullRequestContext.PullRequestThreads.Select(GetCommentThread).ToList(),
+            Approvers = pullRequest.Reviewers
+                .Where(x => x.Vote != 0)
+                .Where(x => !x.UniqueName.StartsWith(Constants.VSTFSUniqueNamePrefix))
+                .Where(x => x.DisplayName != Constants.VSTSDisplayName)
+                .Select(r => GetApprover(r, pullRequestContext.PullRequestThreads))
+                .ToList(),
+            CommentThreads = pullRequestContext.PullRequestThreads
+                .Select(GetCommentThread)
+                .ToList(),
             Platform = Platform.AzureDevOps
         };
         
@@ -111,8 +118,8 @@ internal class DevOpsMapper : IDevOpsMapper
             IsRequired = reviewer.IsRequired == true,
             TeamMember = GetPerson(reviewer.UniqueName, reviewer.DisplayName),
             Time = devOpsPullRequestThreads
-                .Where(x => x.Properties.CodeReviewThreadType.Value == "VoteUpdate")
-                .LastOrDefault(x => x.Comments.SingleOrDefault(c => c.DevOpsAuthor.UniqueName == reviewer.UniqueName) != null)
+                .Where(x => x.Properties?.CodeReviewThreadType?.Value == "VoteUpdate")
+                .LastOrDefault(x => x.Comments?.SingleOrDefault(c => c.DevOpsAuthor.UniqueName == reviewer.UniqueName) != null)
                 ?.LastUpdatedDate
         };
     }

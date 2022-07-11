@@ -13,9 +13,9 @@ public record DevOpsPullRequestThread(
 );
 
 public record DevOpsPullRequestThreadProperties(
-    [property: JsonPropertyName("CodeReviewThreadType")] DevOpsPullRequestThreadPropertyValue CodeReviewThreadType
+    [property: JsonPropertyName("CodeReviewThreadType")] DevOpsPullRequestThreadPropertyValue? CodeReviewThreadType
 );
 
 public record DevOpsPullRequestThreadPropertyValue(
-    [property: JsonPropertyName("$value")] string Value
+    [property: JsonPropertyName("$value")] string? Value
     );
