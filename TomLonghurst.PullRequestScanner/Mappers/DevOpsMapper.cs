@@ -34,6 +34,7 @@ internal class DevOpsMapper : IDevOpsMapper
             Author = GetPerson(pullRequest.CreatedBy.UniqueName, pullRequest.CreatedBy.DisplayName),
             Approvers = pullRequest.Reviewers
                 .Where(x => x.Vote != 0)
+                .Where(x => x.UniqueName != pullRequest.CreatedBy.UniqueName)
                 .Where(x => !x.UniqueName.StartsWith(Constants.VSTFSUniqueNamePrefix))
                 .Where(x => x.DisplayName != Constants.VSTSDisplayName)
                 .Select(r => GetApprover(r, pullRequestContext.PullRequestThreads))

@@ -32,8 +32,13 @@ internal class GithubMapper : IGithubMapper
             IsActive = GetIsActive(githubPullRequest),
             PullRequestStatus = GetStatus(githubPullRequest),
             Author = GetPerson(githubPullRequest.Author),
-            Approvers = githubPullRequest.Reviewers.Select(GetApprover).ToList(),
-            CommentThreads = githubPullRequest.Threads.Select(GetCommentThreads).ToList(),
+            Approvers = githubPullRequest.Reviewers
+                .Where(x => x.Author != githubPullRequest.Author)
+                .Select(GetApprover)
+                .ToList(),
+            CommentThreads = githubPullRequest.Threads
+                .Select(GetCommentThreads)
+                .ToList(),
             Platform = Platform.Github
         };
         
