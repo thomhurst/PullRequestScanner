@@ -10,7 +10,9 @@ public record TeamMember
     public string? Email { get; set; }
     public string GithubId { get; set; }
     public string DevOpsId { get; set; }
-    
+    public string? GithubImageUrl { get; set; }
+    public string? DevOpsImageUrl { get; set; }
+
     public string DisplayOrUniqueName
     {
         get

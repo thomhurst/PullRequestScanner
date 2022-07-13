@@ -30,7 +30,8 @@ internal class GithubUserService : IGithubUserService
                         Id = x.Id.Value,
                         DisplayName = x.Name ?? x.Login,
                         UniqueName = x.Login,
-                        Email = x.Email
+                        Email = x.Email,
+                        ImageUrl = x.AvatarUrl(null)
                     }
                 },
                 Slug = x.Login
@@ -57,7 +58,9 @@ internal class GithubUserService : IGithubUserService
                     {
                         DisplayName = m.Name,
                         UniqueName = m.Login,
-                        Id = m.Id.Value
+                        Id = m.Id.Value,
+                        Email = m.Email,
+                        ImageUrl = m.AvatarUrl(null)
                     }).ToList()
             }).Compile();
 

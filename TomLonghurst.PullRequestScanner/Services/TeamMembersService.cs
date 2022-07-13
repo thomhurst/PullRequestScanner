@@ -48,7 +48,8 @@ internal class TeamMembersService : ITeamMembersService, IInitialize
                     Email = githubUser.Email,
                     GithubId = githubUser.Id,
                     GithubUsername = githubUser.UniqueName,
-                    DisplayName = githubUser.DisplayName
+                    DisplayName = githubUser.DisplayName,
+                    GithubImageUrl = githubUser.ImageUrl
                 });
             }
             else
@@ -67,7 +68,8 @@ internal class TeamMembersService : ITeamMembersService, IInitialize
                     Email = devOpsUser.Identity.UniqueName,
                     DevOpsId = devOpsUser.Identity.Id,
                     DevOpsUsername = devOpsUser.Identity.UniqueName,
-                    DisplayName = devOpsUser.Identity.DisplayName
+                    DisplayName = devOpsUser.Identity.DisplayName,
+                    DevOpsImageUrl = devOpsUser.Identity.ImageUrl
                 });
             }
             else
@@ -140,6 +142,11 @@ internal class TeamMembersService : ITeamMembersService, IInitialize
         {
             foundUser.DisplayName = githubUser.DisplayName;
         }
+        
+        if (string.IsNullOrEmpty(foundUser.GithubImageUrl) && !string.IsNullOrEmpty(githubUser.ImageUrl))
+        {
+            foundUser.GithubImageUrl = githubUser.ImageUrl;
+        }
     }
 
     private TeamMember? FindDevOpsTeamMember(DevOpsTeamMember devOpsTeamMember)
@@ -192,6 +199,11 @@ internal class TeamMembersService : ITeamMembersService, IInitialize
         if (string.IsNullOrEmpty(foundUser.DisplayName) && !string.IsNullOrEmpty(devOpsTeamMember.Identity.DisplayName))
         {
             foundUser.DisplayName = devOpsTeamMember.Identity.DisplayName;
+        }
+        
+        if (string.IsNullOrEmpty(foundUser.DevOpsImageUrl) && !string.IsNullOrEmpty(devOpsTeamMember.Identity.ImageUrl))
+        {
+            foundUser.DevOpsImageUrl = devOpsTeamMember.Identity.ImageUrl;
         }
     }
 }

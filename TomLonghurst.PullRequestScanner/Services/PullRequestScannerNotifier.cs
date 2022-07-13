@@ -270,6 +270,18 @@ internal class PullRequestScannerNotifier : IPullRequestScannerNotifier
                                 new AdaptiveTextBlock
                                 {
                                     Weight = AdaptiveTextWeight.Bolder,
+                                    Text = "Image"
+                                }
+                            },
+                            Width = "50px"
+                        },
+                        new()
+                        {
+                            Items = new List<AdaptiveElement>
+                            {
+                                new AdaptiveTextBlock
+                                {
+                                    Weight = AdaptiveTextWeight.Bolder,
                                     Text = "Name"
                                 }
                             }
@@ -331,6 +343,21 @@ internal class PullRequestScannerNotifier : IPullRequestScannerNotifier
                 {
                     Columns = new List<AdaptiveColumn>
                     {
+                        new()
+                        {
+                            Items = new List<AdaptiveElement>
+                            {
+                                new AdaptiveImage
+                                {
+                                    Size = AdaptiveImageSize.Stretch,
+                                    Url = 
+                                        new Uri(personsCommentsAndReview.Key.GithubImageUrl
+                                        ?? personsCommentsAndReview.Key.DevOpsImageUrl
+                                        ?? "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png")
+                                }
+                            },
+                            Width = "50px"
+                        },
                         new()
                         {
                             Items = new List<AdaptiveElement>

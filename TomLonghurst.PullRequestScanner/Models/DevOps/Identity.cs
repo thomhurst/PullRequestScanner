@@ -5,5 +5,6 @@ namespace TomLonghurst.PullRequestScanner.Models.DevOps;
 public record Identity(
     [property: JsonPropertyName("displayName")] string DisplayName,
     [property: JsonPropertyName("id")] string Id,
-    [property: JsonPropertyName("uniqueName")] string UniqueName
+    [property: JsonPropertyName("uniqueName")] string UniqueName,
+    [property: JsonPropertyName("imageUrl")] string ImageUrl
 );
