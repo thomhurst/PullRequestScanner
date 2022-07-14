@@ -353,7 +353,7 @@ internal class PullRequestScannerNotifier : IPullRequestScannerNotifier
                                     PixelHeight = 50,
                                     Url = 
                                         new Uri(personsCommentsAndReview.Key.GithubImageUrl
-                                        ?? personsCommentsAndReview.Key.DevOpsImageUrl
+                                        // ?? personsCommentsAndReview.Key.DevOpsImageUrl - Need to be auth'd to even do a GET on this
                                         ?? "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png")
                                 }
                             },
