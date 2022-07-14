@@ -349,7 +349,8 @@ internal class PullRequestScannerNotifier : IPullRequestScannerNotifier
                             {
                                 new AdaptiveImage
                                 {
-                                    Size = AdaptiveImageSize.Stretch,
+                                    PixelWidth = 50,
+                                    PixelHeight = 50,
                                     Url = 
                                         new Uri(personsCommentsAndReview.Key.GithubImageUrl
                                         ?? personsCommentsAndReview.Key.DevOpsImageUrl
