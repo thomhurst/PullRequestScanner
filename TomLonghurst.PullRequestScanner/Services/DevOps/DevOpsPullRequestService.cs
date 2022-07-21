@@ -5,16 +5,16 @@ namespace TomLonghurst.PullRequestScanner.Services.DevOps;
 
 internal class DevOpsPullRequestService : IDevOpsPullRequestService
 {
-    private readonly DevOpsHttpClient _githubHttpClient;
+    private readonly DevOpsHttpClient _devOpsHttpClient;
 
-    public DevOpsPullRequestService(DevOpsHttpClient githubHttpClient)
+    public DevOpsPullRequestService(DevOpsHttpClient devOpsHttpClient)
     {
-        _githubHttpClient = githubHttpClient;
+        _devOpsHttpClient = devOpsHttpClient;
     }
     
     public async Task<IReadOnlyList<DevOpsPullRequestContext>> GetPullRequestsForRepository(DevOpsGitRepository githubGitRepository)
     {
-        var response = await _githubHttpClient.Get<DevOpsPullRequestsResponse>($"pullrequests?searchCriteria.status=all&searchCriteria.includeLinks=false&searchCriteria.repositoryId={githubGitRepository.Id}&$top={100}&includeCommits=true&api-version=7.1-preview.1");
+        var response = await _devOpsHttpClient.Get<DevOpsPullRequestsResponse>($"pullrequests?searchCriteria.status=all&searchCriteria.includeLinks=false&searchCriteria.repositoryId={githubGitRepository.Id}&$top={100}&includeCommits=true&api-version=7.1-preview.1");
         var nonDraftedPullRequests = response.PullRequests
             .Where(IsActiveOrRecentlyClosed);
 
@@ -54,7 +54,7 @@ internal class DevOpsPullRequestService : IDevOpsPullRequestService
 
     private async Task<IReadOnlyList<DevOpsPullRequestThread>> GetThreads(DevOpsPullRequest githubPullRequest)
     {
-        var response = await _githubHttpClient.Get<DevOpsPullRequestThreadResponse>(
+        var response = await _devOpsHttpClient.Get<DevOpsPullRequestThreadResponse>(
             $"repositories/{githubPullRequest.Repository.Id}/pullRequests/{githubPullRequest.PullRequestId}/threads?api-version=7.1-preview.1");
 
         return response.Threads;
@@ -62,7 +62,7 @@ internal class DevOpsPullRequestService : IDevOpsPullRequestService
 
     private async Task<IReadOnlyList<DevOpsPullRequestIteration>> GetIterations(DevOpsPullRequest githubPullRequest)
     {
-        var response = await _githubHttpClient.Get<DevOpsPullRequestIterationResponse>(
+        var response = await _devOpsHttpClient.Get<DevOpsPullRequestIterationResponse>(
             $"repositories/{githubPullRequest.Repository.Id}/pullRequests/{githubPullRequest.PullRequestId}/statuses?api-version=7.1-preview.1");
 
         return response.Value;
