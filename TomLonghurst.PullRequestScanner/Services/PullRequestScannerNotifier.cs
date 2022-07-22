@@ -96,7 +96,7 @@ internal class PullRequestScannerNotifier : IPullRequestScannerNotifier
 
         foreach (var repo in repos.Skip(reposIterated))
         {
-            if (JsonConvert.SerializeObject(teamsNotificationCard).Length > 24000)
+            if (JsonConvert.SerializeObject(teamsNotificationCard).Length > 20000)
             {
                 teamsNotificationCard.MsTeams.Entitities = mentionedUsers.ToAdaptiveCardMentionEntities();
                 await _microsoftTeamsWebhookClient.CreateTeamsNotification(teamsNotificationCard);
