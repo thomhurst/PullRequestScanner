@@ -9,10 +9,8 @@ using TomLonghurst.PullRequestScanner.Services;
 
 namespace TomLonghurst.PullRequestScanner.Mappers.TeamsCards;
 
-internal class PullRequestStatusesMapper : IPullRequestStatusesMapper
+internal class PullRequestStatusesCardMapper : IPullRequestStatusesCardMapper
 {
-    private const int _TeamsCardSizeLimit = 22000;
-
     public IEnumerable<MicrosoftTeamsAdaptiveCard> Map(IReadOnlyList<PullRequest> pullRequests)
     {
         return Map(pullRequests, 1);
@@ -176,7 +174,7 @@ internal class PullRequestStatusesMapper : IPullRequestStatusesMapper
                 teamsNotificationCard.MsTeams.Entitities = mentionedUsers.ToAdaptiveCardMentionEntities();
 
                 var jsonString = JsonConvert.SerializeObject(teamsNotificationCard, Formatting.None);
-                if (Encoding.Unicode.GetByteCount(jsonString) > _TeamsCardSizeLimit)
+                if (Encoding.Unicode.GetByteCount(jsonString) > Constants.TeamsCardSizeLimit)
                 {
                     yield return teamsNotificationCard;
                 

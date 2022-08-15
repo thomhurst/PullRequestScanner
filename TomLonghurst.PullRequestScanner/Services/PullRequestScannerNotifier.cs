@@ -15,15 +15,15 @@ internal class PullRequestScannerNotifier : IPullRequestScannerNotifier
 {
     public PullRequestScannerNotifier(MicrosoftTeamsWebhookClient microsoftTeamsWebhookClient,
         IPullRequestService pullRequestService,
-        IPullRequestStatusesMapper pullRequestStatusesMapper)
+        IPullRequestStatusesCardMapper pullRequestStatusesCardMapper)
     {
         _microsoftTeamsWebhookClient = microsoftTeamsWebhookClient;
         _pullRequestService = pullRequestService;
-        _pullRequestStatusesMapper = pullRequestStatusesMapper;
+        _pullRequestStatusesCardMapper = pullRequestStatusesCardMapper;
     }
 
     private readonly IPullRequestService _pullRequestService;
-    private readonly IPullRequestStatusesMapper _pullRequestStatusesMapper;
+    private readonly IPullRequestStatusesCardMapper _pullRequestStatusesCardMapper;
     private readonly MicrosoftTeamsWebhookClient _microsoftTeamsWebhookClient;
 
     public async Task NotifyTeamsChannel(MicrosoftTeamsPublishOptions microsoftTeamsPublishOptions)
@@ -62,7 +62,7 @@ internal class PullRequestScannerNotifier : IPullRequestScannerNotifier
 
     private async Task PublishPullRequestStatuses(IReadOnlyList<PullRequest> pullRequests)
     {
-        var cards = _pullRequestStatusesMapper.Map(pullRequests);
+        var cards = _pullRequestStatusesCardMapper.Map(pullRequests);
         
         foreach (var microsoftTeamsAdaptiveCard in cards)
         {
