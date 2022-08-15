@@ -16,7 +16,7 @@ internal class PullRequestStatusesCardMapper : IPullRequestStatusesCardMapper
         return Map(pullRequests, 1);
     }
 
-    public IEnumerable<MicrosoftTeamsAdaptiveCard> Map(IReadOnlyList<PullRequest> pullRequests, int cardCound)
+    private IEnumerable<MicrosoftTeamsAdaptiveCard> Map(IReadOnlyList<PullRequest> pullRequests, int cardCound)
     {
         var repos = pullRequests
             .Where(x => x.IsActive)

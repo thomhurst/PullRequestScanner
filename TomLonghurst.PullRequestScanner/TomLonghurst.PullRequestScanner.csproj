@@ -15,8 +15,4 @@
       <PackageReference Include="TomLonghurst.EnumerableAsyncProcessor" Version="1.1.0" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Compile Include="Mappers\TeamsCards\IPullRequestStatusCardMapper.cs" />
-    </ItemGroup>
-
 </Project>

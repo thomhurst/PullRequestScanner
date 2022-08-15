@@ -87,7 +87,8 @@ public static class DependencyInjectionExtensions
             .AddTransient<IPullRequestScannerNotifier, PullRequestScannerNotifier>()
             .AddTransient<PullRequestScannerNotifier>()
             .AddTransient<IPullRequestStatusesCardMapper, PullRequestStatusesCardMapper>()
-            .AddTransient<IPullRequestStatusCardMapper, PullRequestStatusCardMapper>();
+            .AddTransient<IPullRequestStatusCardMapper, PullRequestStatusCardMapper>()
+            .AddTransient<IPullRequestLeaderboardCardMapper, PullRequestLeaderboardCardMapper>();
 
         return services;
     }
