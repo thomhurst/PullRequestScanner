@@ -38,8 +38,7 @@ internal class MicrosoftTeamsWebhookClient
 
         var responseString = await teamsNotificationResponse.Content.ReadAsStringAsync();
 
-        if ((responseString.StartsWith("Webhook message delivery failed") || !teamsNotificationResponse.IsSuccessStatusCode)
-            && adaptiveTeamsCard.Length > 28000)
+        if (responseString.StartsWith("Webhook message delivery failed with error: Microsoft Teams endpoint returned HTTP error 413"))
         {
             throw new HttpRequestException($"Teams card payload is too big - {adaptiveTeamsCard.Length} bytes");
         }
