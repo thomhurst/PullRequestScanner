@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text;
+using Newtonsoft.Json;
 using Polly;
 using Polly.Extensions.Http;
 using TomLonghurst.PullRequestScanner.Models.Teams;
@@ -19,35 +20,37 @@ internal class MicrosoftTeamsWebhookClient
 
     public async Task CreateTeamsNotification(MicrosoftTeamsAdaptiveCard adaptiveCard)
     {
-        var adaptiveTeamsCard = JsonConvert.SerializeObject(TeamsNotificationCardWrapper.Wrap(adaptiveCard));
+        ArgumentNullException.ThrowIfNull(_pullRequestScannerOptions.MicrosoftTeams.WebHookUri);
+            
+        var adaptiveTeamsCardJsonString = JsonConvert.SerializeObject(TeamsNotificationCardWrapper.Wrap(adaptiveCard), Formatting.None);
 
-        var teamsNotificationResponse = await HttpPolicyExtensions.HandleTransientHttpError()
-            .WaitAndRetryAsync(3, i => TimeSpan.FromSeconds(i))
-            .ExecuteAsync(() =>
-            {
-                var cardsRequest = new HttpRequestMessage
+        try
+        {
+            var teamsNotificationResponse = await HttpPolicyExtensions.HandleTransientHttpError()
+                .WaitAndRetryAsync(3, i => TimeSpan.FromSeconds(i))
+                .ExecuteAsync(() =>
                 {
-                    Method = HttpMethod.Post,
-                    Content = new StringContent(adaptiveTeamsCard),
-                    RequestUri = _pullRequestScannerOptions.MicrosoftTeams.WebHookUri ??
-                                 throw new ArgumentNullException(nameof(MicrosoftTeamsOptions.WebHookUri))
-                };
+                    var cardsRequest = new HttpRequestMessage
+                    {
+                        Method = HttpMethod.Post,
+                        Content = new StringContent(adaptiveTeamsCardJsonString),
+                        RequestUri = _pullRequestScannerOptions.MicrosoftTeams.WebHookUri
+                    };
 
-                return _httpClient.SendAsync(cardsRequest);
-            });
+                    return _httpClient.SendAsync(cardsRequest);
+                });
 
-        var responseString = await teamsNotificationResponse.Content.ReadAsStringAsync();
-
-        if (responseString.StartsWith("Webhook message delivery failed with error: Microsoft Teams endpoint returned HTTP error 413"))
-        {
-            throw new HttpRequestException($"Teams card payload is too big - {adaptiveTeamsCard.Length} bytes");
+            teamsNotificationResponse.EnsureSuccessStatusCode();
         }
-        
-        if (responseString.StartsWith("Webhook message delivery failed"))
+        catch (HttpRequestException e)
         {
-            throw new HttpRequestException(responseString, null, teamsNotificationResponse.StatusCode);
+            if (e.Message.StartsWith("Webhook message delivery failed with error: Microsoft Teams endpoint returned HTTP error 413"))
+            {
+                var byteCount = Encoding.Unicode.GetByteCount(adaptiveTeamsCardJsonString);
+                throw new HttpRequestException($"Teams card payload is too big - {byteCount} bytes", e);
+            }
+            
+            throw;
         }
-        
-        teamsNotificationResponse.EnsureSuccessStatusCode();
     }
 }
