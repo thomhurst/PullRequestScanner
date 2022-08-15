@@ -11,11 +11,3 @@ public record DevOpsPullRequestThread(
     [property: JsonPropertyName("lastUpdatedDate")] DateTime LastUpdatedDate,
     [property: JsonPropertyName("properties")] DevOpsPullRequestThreadProperties Properties
 );
-
-public record DevOpsPullRequestThreadProperties(
-    [property: JsonPropertyName("CodeReviewThreadType")] DevOpsPullRequestThreadPropertyValue? CodeReviewThreadType
-);
-
-public record DevOpsPullRequestThreadPropertyValue(
-    [property: JsonPropertyName("$value")] string? Value
-    );

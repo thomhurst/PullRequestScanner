@@ -1,6 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-
-namespace TomLonghurst.PullRequestScanner.Services;
+﻿namespace TomLonghurst.PullRequestScanner.Services;
 
 public record TeamMember
 {

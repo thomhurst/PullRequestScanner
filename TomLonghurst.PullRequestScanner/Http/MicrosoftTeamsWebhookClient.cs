@@ -1,5 +1,4 @@
-﻿using AdaptiveCards;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Polly;
 using Polly.Extensions.Http;
 using TomLonghurst.PullRequestScanner.Models.Teams;

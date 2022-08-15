@@ -4,6 +4,7 @@ using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using TomLonghurst.PullRequestScanner.Http;
 using TomLonghurst.PullRequestScanner.Mappers;
+using TomLonghurst.PullRequestScanner.Mappers.TeamsCards;
 using TomLonghurst.PullRequestScanner.Options;
 using TomLonghurst.PullRequestScanner.Services;
 using TomLonghurst.PullRequestScanner.Services.DevOps;
@@ -84,7 +85,8 @@ public static class DependencyInjectionExtensions
         services
             .AddTransient<IPullRequestService, PullRequestService>()
             .AddTransient<IPullRequestScannerNotifier, PullRequestScannerNotifier>()
-            .AddTransient<PullRequestScannerNotifier>();
+            .AddTransient<PullRequestScannerNotifier>()
+            .AddTransient<IPullRequestStatusesMapper, PullRequestStatusesMapper>();
 
         return services;
     }

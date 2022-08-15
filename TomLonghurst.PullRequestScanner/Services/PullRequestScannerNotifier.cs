@@ -1,32 +1,30 @@
 ﻿using System.Collections.Concurrent;
 using AdaptiveCards;
-using Newtonsoft.Json;
 using TomLonghurst.PullRequestScanner.Enums;
 using TomLonghurst.PullRequestScanner.Extensions;
 using TomLonghurst.PullRequestScanner.Http;
 using TomLonghurst.PullRequestScanner.Mappers;
+using TomLonghurst.PullRequestScanner.Mappers.TeamsCards;
 using TomLonghurst.PullRequestScanner.Models.Self;
 using TomLonghurst.PullRequestScanner.Models.Teams;
 using TomLonghurst.PullRequestScanner.Options;
-using TomLonghurst.PullRequestScanner.Services.Github;
 
 namespace TomLonghurst.PullRequestScanner.Services;
 
 internal class PullRequestScannerNotifier : IPullRequestScannerNotifier
 {
     public PullRequestScannerNotifier(MicrosoftTeamsWebhookClient microsoftTeamsWebhookClient,
-        IGithubUserService githubUserService,
-        IPullRequestService pullRequestService)
+        IPullRequestService pullRequestService,
+        IPullRequestStatusesMapper pullRequestStatusesMapper)
     {
         _microsoftTeamsWebhookClient = microsoftTeamsWebhookClient;
-        _githubUserService = githubUserService;
         _pullRequestService = pullRequestService;
+        _pullRequestStatusesMapper = pullRequestStatusesMapper;
     }
 
-    private readonly MicrosoftTeamsWebhookClient _microsoftTeamsWebhookClient;
-
-    private readonly IGithubUserService _githubUserService;
     private readonly IPullRequestService _pullRequestService;
+    private readonly IPullRequestStatusesMapper _pullRequestStatusesMapper;
+    private readonly MicrosoftTeamsWebhookClient _microsoftTeamsWebhookClient;
 
     public async Task NotifyTeamsChannel(MicrosoftTeamsPublishOptions microsoftTeamsPublishOptions)
     {
@@ -64,177 +62,12 @@ internal class PullRequestScannerNotifier : IPullRequestScannerNotifier
 
     private async Task PublishPullRequestStatuses(IReadOnlyList<PullRequest> pullRequests)
     {
-        var repos = pullRequests
-            .Where(x => x.IsActive)
-            .OrderBy(x => x.Created)
-            .GroupBy(x => x.Repository.Id)
-            .ToList();
-
-        var reposIterated = 0;
-        var cardsWritten = 0;
-
-        StartOfWriteTeamsCard:
-        cardsWritten++;
-        var teamsNotificationCard = new MicrosoftTeamsAdaptiveCard
-        {
-            MsTeams = new MicrosoftTeamsProperties
-            {
-                Width = "full"
-            },
-            Body = new List<AdaptiveElement>
-            {
-                new AdaptiveTextBlock
-                {
-                    Weight = AdaptiveTextWeight.Bolder,
-                    Size = AdaptiveTextSize.Large,
-                    Text = $"Pull Request Statuses {GetCardNumberString(cardsWritten)}"
-                },
-            }
-        };
+        var cards = _pullRequestStatusesMapper.Map(pullRequests);
         
-        var mentionedUsers = new List<TeamMember>();
-
-        foreach (var repo in repos.Skip(reposIterated))
+        foreach (var microsoftTeamsAdaptiveCard in cards)
         {
-            if (JsonConvert.SerializeObject(teamsNotificationCard).Length > 20000)
-            {
-                teamsNotificationCard.MsTeams.Entitities = mentionedUsers.ToAdaptiveCardMentionEntities();
-                await _microsoftTeamsWebhookClient.CreateTeamsNotification(teamsNotificationCard);
-                goto StartOfWriteTeamsCard;
-            }
-
-            reposIterated++;
-
-            var adaptiveContainer = new AdaptiveContainer
-            {
-                Spacing = AdaptiveSpacing.ExtraLarge,
-                Style = AdaptiveContainerStyle.Emphasis,
-                Items = new List<AdaptiveElement>
-                {
-                    new AdaptiveTextBlock
-                    {
-                        Text = $"**Repository:** [{repo.First().Repository.Name}]({repo.First().Repository.Url})"
-                    },
-                    new AdaptiveColumnSet
-                    {
-                        Columns = new List<AdaptiveColumn>
-                        {
-                            new()
-                            {
-                                Items = new List<AdaptiveElement>
-                                {
-                                    new AdaptiveTextBlock
-                                    {
-                                        Weight = AdaptiveTextWeight.Bolder,
-                                        Text = "Pull Request"
-                                    }
-                                }
-                            },
-                            new()
-                            {
-                                Items = new List<AdaptiveElement>
-                                {
-                                    new AdaptiveTextBlock
-                                    {
-                                        Weight = AdaptiveTextWeight.Bolder,
-                                        Text = "Author"
-                                    }
-                                },
-                                Width = "150px"
-                            },
-                            new()
-                            {
-                                Items = new List<AdaptiveElement>
-                                {
-                                    new AdaptiveTextBlock
-                                    {
-                                        Weight = AdaptiveTextWeight.Bolder,
-                                        Text = "Status"
-                                    }
-                                },
-                                Width = "120px"
-                            },
-                            new()
-                            {
-                                Items = new List<AdaptiveElement>
-                                {
-                                    new AdaptiveTextBlock
-                                    {
-                                        Weight = AdaptiveTextWeight.Bolder,
-                                        Text = "Age"
-                                    }
-                                },
-                                Width = "50px"
-                            }
-                        }
-                    }
-                }
-            };
-            
-            foreach (var pullRequest in repo.OrderByDescending(x => x.Created))
-            {
-                mentionedUsers.Add(pullRequest.Author);
-                adaptiveContainer.Items.Add(new AdaptiveColumnSet
-                {
-                    Columns = new List<AdaptiveColumn>
-                    {
-                        new()
-                        {
-                            Items = new List<AdaptiveElement>
-                            {
-                                new AdaptiveTextBlock
-                                {
-                                    Text = $"[#{pullRequest.Number}]({pullRequest.Url}) {pullRequest.Title}",
-                                    Color = pullRequest.IsDraft ? AdaptiveTextColor.Accent : AdaptiveTextColor.Default
-                                }
-                            }
-                        },
-                        new()
-                        {
-                            Items = new List<AdaptiveElement>
-                            {
-                                new AdaptiveTextBlock
-                                {
-                                    Text = pullRequest.Author.ToAtMarkupTag(),
-                                    Color = pullRequest.IsDraft ? AdaptiveTextColor.Accent : AdaptiveTextColor.Default
-                                }
-                            },
-                            Width = "150px"
-                        },
-                        new()
-                        {
-                            Items = new List<AdaptiveElement>
-                            {
-                                new AdaptiveTextBlock
-                                {
-                                    Text = pullRequest.PullRequestStatus.GetMessage(),
-                                    Color = GetColorForStatus(pullRequest.PullRequestStatus)
-                                }
-                            },
-                            Width = "120px"
-                        },
-                        new()
-                        {
-                            Items = new List<AdaptiveElement>
-                            {
-                                new AdaptiveTextBlock
-                                {
-                                    Text = GetAge(pullRequest.Created),
-                                    Color = GetColorForAge(pullRequest.Created)
-                                }
-                            },
-                            Width = "50px"
-                        }
-                    }
-                });
-            }
-            
-            teamsNotificationCard.Body.Add(adaptiveContainer);
+            await _microsoftTeamsWebhookClient.CreateTeamsNotification(microsoftTeamsAdaptiveCard);
         }
-
-        teamsNotificationCard.MsTeams.Entitities = mentionedUsers.ToAdaptiveCardMentionEntities();
-
-        await _microsoftTeamsWebhookClient.CreateTeamsNotification(teamsNotificationCard);
     }
 
     private async Task PublishReviewerLeaderboard(IReadOnlyList<PullRequest> pullRequests)
@@ -514,71 +347,5 @@ internal class PullRequestScannerNotifier : IPullRequestScannerNotifier
         teamsNotificationCard.MsTeams.Entitities = mentionedUsers.ToAdaptiveCardMentionEntities();
         
         await _microsoftTeamsWebhookClient.CreateTeamsNotification(teamsNotificationCard);
-    }
-
-    private static string GetAge(DateTimeOffset dateTime)
-    {
-        var timeSpanSinceCreation = DateTime.UtcNow - dateTime;
-
-        if (timeSpanSinceCreation.TotalDays >= 1)
-        {
-            return $"{(int)timeSpanSinceCreation.TotalDays}d";
-        }
-        
-        if (timeSpanSinceCreation.TotalHours >= 1)
-        {
-            return $"{(int)timeSpanSinceCreation.TotalHours}h";
-        }
-        
-        return $"{(int)timeSpanSinceCreation.TotalMinutes}m";
-    }
-
-    private AdaptiveTextColor GetColorForAge(DateTimeOffset dateTime)
-    {
-        var timeSpanSinceCreation = DateTime.UtcNow - dateTime;
-
-        if (timeSpanSinceCreation.TotalDays is >= 3 and < 7)
-        {
-            return AdaptiveTextColor.Warning;
-        }
-        
-        if (timeSpanSinceCreation.TotalDays >= 7)
-        {
-            return AdaptiveTextColor.Attention;
-        }
-
-        return AdaptiveTextColor.Default;
-    }
-
-    private string GetCardNumberString(int cardNumber)
-    {
-        return cardNumber == 1 ? string.Empty : $"Part {cardNumber}";
-    }
-
-    private AdaptiveTextColor GetColorForStatus(PullRequestStatus status)
-    {
-        switch (status)
-        {
-            case PullRequestStatus.FailingChecks:
-                return AdaptiveTextColor.Attention;
-            case PullRequestStatus.OutStandingComments:
-                return AdaptiveTextColor.Warning;
-            case PullRequestStatus.NeedsReviewing:
-                return AdaptiveTextColor.Warning;
-            case PullRequestStatus.MergeConflicts:
-                return AdaptiveTextColor.Attention;
-            case PullRequestStatus.Rejected:
-                return AdaptiveTextColor.Attention;
-            case PullRequestStatus.ReadyToMerge:
-                return AdaptiveTextColor.Good;
-            case PullRequestStatus.Completed:
-                return AdaptiveTextColor.Good;
-            case PullRequestStatus.FailedToMerge:
-                return AdaptiveTextColor.Attention;
-            case PullRequestStatus.Draft:
-                return AdaptiveTextColor.Accent;
-            default:
-                return AdaptiveTextColor.Default;
-        }
     }
 }

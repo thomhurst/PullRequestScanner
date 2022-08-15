@@ -1,5 +1,4 @@
-﻿using AdaptiveCards;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace TomLonghurst.PullRequestScanner.Models.Teams;
 
