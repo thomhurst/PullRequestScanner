@@ -9,7 +9,7 @@ using TomLonghurst.PullRequestScanner.Services;
 
 namespace TomLonghurst.PullRequestScanner.Mappers.TeamsCards;
 
-internal class PullRequestStatusesCardMapper : IPullRequestStatusesCardMapper
+internal class PullRequestsOverviewCardMapper : IPullRequestsOverviewCardMapper
 {
     public IEnumerable<MicrosoftTeamsAdaptiveCard> Map(IReadOnlyList<PullRequest> pullRequests)
     {

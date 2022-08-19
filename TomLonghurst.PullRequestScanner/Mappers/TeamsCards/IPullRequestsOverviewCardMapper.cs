@@ -3,7 +3,7 @@ using TomLonghurst.PullRequestScanner.Models.Teams;
 
 namespace TomLonghurst.PullRequestScanner.Mappers.TeamsCards;
 
-internal interface IPullRequestStatusesCardMapper
+internal interface IPullRequestsOverviewCardMapper
 {
     IEnumerable<MicrosoftTeamsAdaptiveCard> Map(IReadOnlyList<PullRequest> pullRequests);
 }

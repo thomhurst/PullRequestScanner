@@ -1,9 +1,5 @@
-﻿using System.Collections.Concurrent;
-using AdaptiveCards;
-using TomLonghurst.PullRequestScanner.Enums;
-using TomLonghurst.PullRequestScanner.Extensions;
+﻿using TomLonghurst.PullRequestScanner.Enums;
 using TomLonghurst.PullRequestScanner.Http;
-using TomLonghurst.PullRequestScanner.Mappers;
 using TomLonghurst.PullRequestScanner.Mappers.TeamsCards;
 using TomLonghurst.PullRequestScanner.Models.Self;
 using TomLonghurst.PullRequestScanner.Models.Teams;
@@ -15,19 +11,19 @@ internal class PullRequestScannerNotifier : IPullRequestScannerNotifier
 {
     public PullRequestScannerNotifier(MicrosoftTeamsWebhookClient microsoftTeamsWebhookClient,
         IPullRequestService pullRequestService,
-        IPullRequestStatusesCardMapper pullRequestStatusesCardMapper,
+        IPullRequestsOverviewCardMapper pullRequestsOverviewCardMapper,
         IPullRequestStatusCardMapper pullRequestStatusCardMapper,
         IPullRequestLeaderboardCardMapper pullRequestLeaderboardCardMapper)
     {
         _microsoftTeamsWebhookClient = microsoftTeamsWebhookClient;
         _pullRequestService = pullRequestService;
-        _pullRequestStatusesCardMapper = pullRequestStatusesCardMapper;
+        _pullRequestsOverviewCardMapper = pullRequestsOverviewCardMapper;
         _pullRequestStatusCardMapper = pullRequestStatusCardMapper;
         _pullRequestLeaderboardCardMapper = pullRequestLeaderboardCardMapper;
     }
 
     private readonly IPullRequestService _pullRequestService;
-    private readonly IPullRequestStatusesCardMapper _pullRequestStatusesCardMapper;
+    private readonly IPullRequestsOverviewCardMapper _pullRequestsOverviewCardMapper;
     private readonly IPullRequestStatusCardMapper _pullRequestStatusCardMapper;
     private readonly IPullRequestLeaderboardCardMapper _pullRequestLeaderboardCardMapper;
     private readonly MicrosoftTeamsWebhookClient _microsoftTeamsWebhookClient;
@@ -40,35 +36,25 @@ internal class PullRequestScannerNotifier : IPullRequestScannerNotifier
 
     public async Task NotifyTeamsChannel(IReadOnlyList<PullRequest> pullRequests, MicrosoftTeamsPublishOptions microsoftTeamsPublishOptions)
     {
-        if (microsoftTeamsPublishOptions.PublishPullRequestStatusesCard)
+        if (microsoftTeamsPublishOptions.PublishPullRequestOverviewCard)
         {
-            await PublishPullRequestStatuses(pullRequests);
+            await PublishPullRequestsOverview(pullRequests);
         }
         
-        if (microsoftTeamsPublishOptions.PublishPullRequestMergeConflictsCard)
+        foreach (var pullRequestStatus in microsoftTeamsPublishOptions.CardStatusesToPublish?.ToArray() ?? Array.Empty<PullRequestStatus>())
         {
-            await PublishStatusCard(pullRequests, PullRequestStatus.MergeConflicts);
+            await PublishStatusCard(pullRequests, pullRequestStatus);
         }
-        
-        if (microsoftTeamsPublishOptions.PublishPullRequestReadyToMergeCard)
-        {
-            await PublishStatusCard(pullRequests, PullRequestStatus.ReadyToMerge);
-        }
-        
-        if (microsoftTeamsPublishOptions.PublishPullRequestFailingChecksCard)
-        {
-            await PublishStatusCard(pullRequests, PullRequestStatus.FailingChecks);
-        }
-        
+
         if (microsoftTeamsPublishOptions.PublishPullRequestReviewerLeaderboardCard)
         {
             await PublishReviewerLeaderboard(pullRequests);
         }
     }
 
-    private async Task PublishPullRequestStatuses(IReadOnlyList<PullRequest> pullRequests)
+    private async Task PublishPullRequestsOverview(IReadOnlyList<PullRequest> pullRequests)
     {
-        await Publish(() => _pullRequestStatusesCardMapper.Map(pullRequests));
+        await Publish(() => _pullRequestsOverviewCardMapper.Map(pullRequests));
     }
 
     private async Task PublishReviewerLeaderboard(IReadOnlyList<PullRequest> pullRequests)
