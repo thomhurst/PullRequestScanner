@@ -2,7 +2,7 @@
 
 namespace TomLonghurst.PullRequestScanner.Services;
 
-internal interface IPullRequestService
+public interface IPullRequestService
 {
     Task<IReadOnlyList<PullRequest>> GetPullRequests();
 }

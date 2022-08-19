@@ -170,9 +170,13 @@ internal class DevOpsMapper : IDevOpsMapper
         if (devOpsPullRequestContext.Iterations.Any())
         {
             var lastCommitIterationId = devOpsPullRequestContext.Iterations.Max(x => x.IterationId);
-            if (devOpsPullRequestContext.Iterations
-                .Where(x => x.IterationId == lastCommitIterationId)
-                .Any(x => x.State == "failed"))
+            
+            var checksInLastIteration = devOpsPullRequestContext.Iterations
+                .Where(x => x.IterationId == lastCommitIterationId);
+
+            if (checksInLastIteration
+                .GroupBy(x => x.Context)
+                .Any(group => group.MaxBy(s => s.Id).State == "failed"))
             {
                 return PullRequestStatus.FailingChecks;
             }
