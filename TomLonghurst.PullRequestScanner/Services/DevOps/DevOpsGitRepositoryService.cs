@@ -14,7 +14,7 @@ internal class DevOpsGitRepositoryService : IDevOpsGitRepositoryService
     
     public async Task<IEnumerable<DevOpsGitRepository>> GetGitRepositories()
     {
-        var gitRepositoryResponse = await _githubHttpClient.Get<DevOpsGitRepositoryResponse>("repositories?api-version=7.1-preview.1");
-        return gitRepositoryResponse.Repositories.Where(x => !x.IsDisabled);
+        var gitRepositoryResponse = await _githubHttpClient.GetAll<DevOpsGitRepositoryResponse>("repositories?api-version=7.1-preview.1");
+        return gitRepositoryResponse.SelectMany(x => x.Repositories).Where(x => !x.IsDisabled);
     }
 }

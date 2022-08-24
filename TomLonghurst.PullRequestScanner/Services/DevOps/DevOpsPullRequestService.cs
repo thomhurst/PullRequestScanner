@@ -1,4 +1,5 @@
-﻿using TomLonghurst.PullRequestScanner.Http;
+﻿using System.Collections.Immutable;
+using TomLonghurst.PullRequestScanner.Http;
 using TomLonghurst.PullRequestScanner.Models.DevOps;
 
 namespace TomLonghurst.PullRequestScanner.Services.DevOps;
@@ -14,8 +15,8 @@ internal class DevOpsPullRequestService : IDevOpsPullRequestService
     
     public async Task<IReadOnlyList<DevOpsPullRequestContext>> GetPullRequestsForRepository(DevOpsGitRepository githubGitRepository)
     {
-        var response = await _devOpsHttpClient.Get<DevOpsPullRequestsResponse>($"pullrequests?searchCriteria.status=all&searchCriteria.includeLinks=false&searchCriteria.repositoryId={githubGitRepository.Id}&$top={100}&includeCommits=true&api-version=7.1-preview.1");
-        var nonDraftedPullRequests = response.PullRequests
+        var response = await _devOpsHttpClient.GetAll<DevOpsPullRequestsResponse>($"pullrequests?searchCriteria.status=all&searchCriteria.includeLinks=false&searchCriteria.repositoryId={githubGitRepository.Id}&includeCommits=true&api-version=7.1-preview.1");
+        var nonDraftedPullRequests = response.SelectMany(x => x.PullRequests)
             .Where(IsActiveOrRecentlyClosed);
 
         var pullRequestsWithThreads = new List<DevOpsPullRequestContext>();
@@ -57,7 +58,7 @@ internal class DevOpsPullRequestService : IDevOpsPullRequestService
         var response = await _devOpsHttpClient.Get<DevOpsPullRequestThreadResponse>(
             $"repositories/{githubPullRequest.Repository.Id}/pullRequests/{githubPullRequest.PullRequestId}/threads?api-version=7.1-preview.1");
 
-        return response.Threads;
+        return response.Threads.ToImmutableList();
     }
 
     private async Task<IReadOnlyList<DevOpsPullRequestIteration>> GetIterations(DevOpsPullRequest githubPullRequest)
@@ -65,6 +66,6 @@ internal class DevOpsPullRequestService : IDevOpsPullRequestService
         var response = await _devOpsHttpClient.Get<DevOpsPullRequestIterationResponse>(
             $"repositories/{githubPullRequest.Repository.Id}/pullRequests/{githubPullRequest.PullRequestId}/statuses?api-version=7.1-preview.1");
 
-        return response.Value;
+        return response.Value.ToImmutableList();
     }
 }

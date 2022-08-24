@@ -23,16 +23,18 @@ internal class DevOpsUserService : IDevOpsUserService
             return new List<DevOpsTeamMember>();
         }
 
-        var teamsInProject = await _devOpsHttpClient.Get<DevOpsTeamWrapper>(
+        var teamsInProject = await _devOpsHttpClient.GetAll<DevOpsTeamWrapper>(
             $"https://dev.azure.com/{_pullRequestScannerOptions.AzureDevOps.OrganizationSlug}/_apis/projects/{_pullRequestScannerOptions.AzureDevOps.ProjectSlug}/teams?api-version=7.1-preview.2");
 
-        var membersResponses = await teamsInProject.Value
+        var membersResponses = await teamsInProject
+            .SelectMany(x => x.Value)
             .ToAsyncProcessorBuilder()
-            .SelectAsync(x => _devOpsHttpClient.Get<DevOpsTeamMembersResponseWrapper>(
+            .SelectAsync(x => _devOpsHttpClient.GetAll<DevOpsTeamMembersResponseWrapper>(
                 $"https://dev.azure.com/{_pullRequestScannerOptions.AzureDevOps.OrganizationSlug}/_apis/projects/{_pullRequestScannerOptions.AzureDevOps.ProjectSlug}/teams/{x.Id}/members?api-version=7.1-preview.2"))
             .ProcessInParallel(50, TimeSpan.FromSeconds(5));
 
         return membersResponses
+            .SelectMany(x => x)
             .SelectMany(x => x.Value)
             .Where(x => x.Identity.DisplayName != Constants.VSTSDisplayName)
             .Where(x => !x.Identity.UniqueName.StartsWith(Constants.VSTFSUniqueNamePrefix))
