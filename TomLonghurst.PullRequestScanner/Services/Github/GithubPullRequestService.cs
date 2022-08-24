@@ -8,11 +8,11 @@ namespace TomLonghurst.PullRequestScanner.Services.Github;
 
 internal class GithubPullRequestService : BaseGitHubApiService, IGithubPullRequestService
 {
-    private readonly IGithubGraphQlClientProvider _githubGraphQlClientProvider;
+    private readonly IGithubQueryRunner _githubQueryRunner;
 
-    public GithubPullRequestService(GithubHttpClient githubHttpClient, IGithubGraphQlClientProvider githubGraphQlClientProvider) : base(githubHttpClient)
+    public GithubPullRequestService(GithubHttpClient githubHttpClient, IGithubQueryRunner githubQueryRunner) : base(githubHttpClient)
     {
-        _githubGraphQlClientProvider = githubGraphQlClientProvider;
+        _githubQueryRunner = githubQueryRunner;
     }
 
     public async Task<IEnumerable<GithubPullRequest>> GetPullRequests(GithubRepository repository)
@@ -60,7 +60,7 @@ internal class GithubPullRequestService : BaseGitHubApiService, IGithubPullReque
                     }).ToList(),
             }).Compile();
 
-        var pullRequests = (await _githubGraphQlClientProvider.GithubGraphQlClient.Run(query))
+        var pullRequests = (await _githubQueryRunner.RunQuery(query))
             .Where(IsActiveOrRecentlyClosed)
             .ToList();
 
@@ -88,7 +88,7 @@ internal class GithubPullRequestService : BaseGitHubApiService, IGithubPullReque
                                 }).ToList()
                     }).Compile();
 
-                var threads = await _githubGraphQlClientProvider.GithubGraphQlClient.Run(threadQuery);
+                var threads = await _githubQueryRunner.RunQuery(threadQuery);
 
                 pr.Threads = threads.ToList();
             })

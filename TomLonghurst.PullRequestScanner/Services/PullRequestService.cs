@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using Microsoft.Extensions.Caching.Memory;
 using TomLonghurst.EnumerableAsyncProcessor.Extensions;
 using TomLonghurst.PullRequestScanner.Mappers;
 using TomLonghurst.PullRequestScanner.Models.Self;
@@ -10,6 +11,8 @@ namespace TomLonghurst.PullRequestScanner.Services;
 
 internal class PullRequestService : IPullRequestService
 {
+    private const string PullRequestsCacheKey = "PullRequests";
+    
     private readonly IDevOpsGitRepositoryService _devOpsGitRepositoryService;
     private readonly IDevOpsPullRequestService _devOpsPullRequestService;
     private readonly IDevOpsMapper _devOpsMapper;
@@ -18,6 +21,8 @@ internal class PullRequestService : IPullRequestService
     private readonly IGithubMapper _githubMapper;
     private readonly PullRequestScannerOptions _pullRequestScannerOptions;
     private readonly IEnumerable<IInitialize> _initializes;
+    private readonly IMemoryCache _memoryCache;
+    private readonly SemaphoreSlim Lock = new SemaphoreSlim(1, 1);
 
     public PullRequestService(IDevOpsGitRepositoryService devOpsGitRepositoryService,
         IDevOpsPullRequestService devOpsPullRequestService,
@@ -26,7 +31,8 @@ internal class PullRequestService : IPullRequestService
         IGithubPullRequestService githubPullRequestService,
         IGithubMapper githubMapper,
         PullRequestScannerOptions pullRequestScannerOptions,
-        IEnumerable<IInitialize> initializes)
+        IEnumerable<IInitialize> initializes,
+        IMemoryCache memoryCache)
     {
         _devOpsGitRepositoryService = devOpsGitRepositoryService;
         _devOpsPullRequestService = devOpsPullRequestService;
@@ -37,14 +43,35 @@ internal class PullRequestService : IPullRequestService
         _githubMapper = githubMapper;
         _pullRequestScannerOptions = pullRequestScannerOptions;
         _initializes = initializes;
+        _memoryCache = memoryCache;
     }
 
     public async Task<IReadOnlyList<PullRequest>> GetPullRequests()
     {
         ValidateOptions();
-        await Task.WhenAll(_initializes.Select(x => x.Initialize()));
-        var pullRequests = await Task.WhenAll(GetGithubPullRequests(), GetDevOpsPullRequests());
-        return pullRequests.SelectMany(x => x).ToImmutableList();
+        
+        await Lock.WaitAsync();
+
+        try
+        {
+            await Task.WhenAll(_initializes.Select(x => x.Initialize()));
+            
+            if (_memoryCache.TryGetValue(PullRequestsCacheKey, out ImmutableList<PullRequest> prs))
+            {
+                return prs;
+            }
+            
+            var pullRequests = await Task.WhenAll(GetGithubPullRequests(), GetDevOpsPullRequests());
+            var pullRequestsImmutableList = pullRequests.SelectMany(x => x).ToImmutableList();
+
+            _memoryCache.Set(PullRequestsCacheKey, pullRequestsImmutableList, TimeSpan.FromMinutes(5));
+            
+            return pullRequestsImmutableList;
+        }
+        finally
+        {
+            Lock.Release();
+        }
     }
 
     private void ValidatePopulated(string value, string propertyName)

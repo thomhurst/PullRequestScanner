@@ -75,6 +75,7 @@ public static class DependencyInjectionExtensions
         
         services
             .AddSingleton<IGithubGraphQlClientProvider, GithubGraphQlClientProvider>()
+            .AddSingleton<IGithubQueryRunner, GithubQueryRunner>()
             .AddSingleton<IGithubUserService, GithubUserService>()
             .AddSingleton<IDevOpsUserService, DevOpsUserService>()
             .AddSingleton<ITeamMembersService, TeamMembersService>()
@@ -90,6 +91,8 @@ public static class DependencyInjectionExtensions
             .AddTransient<IPullRequestStatusCardMapper, PullRequestStatusCardMapper>()
             .AddTransient<IPullRequestLeaderboardCardMapper, PullRequestLeaderboardCardMapper>();
 
+        services.AddMemoryCache();
+        
         return services;
     }
 }

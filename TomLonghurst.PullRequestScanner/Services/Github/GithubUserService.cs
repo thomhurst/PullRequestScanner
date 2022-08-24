@@ -6,12 +6,12 @@ namespace TomLonghurst.PullRequestScanner.Services.Github;
 
 internal class GithubUserService : IGithubUserService
 {
-    private readonly IGithubGraphQlClientProvider _githubGraphQlClientProvider;
+    private readonly IGithubQueryRunner _githubQueryRunner;
     private readonly PullRequestScannerOptions _pullRequestScannerOptions;
 
-    public GithubUserService(IGithubGraphQlClientProvider githubGraphQlClientProvider, PullRequestScannerOptions pullRequestScannerOptions)
+    public GithubUserService(IGithubQueryRunner githubQueryRunner, PullRequestScannerOptions pullRequestScannerOptions)
     {
-        _githubGraphQlClientProvider = githubGraphQlClientProvider;
+        _githubQueryRunner = githubQueryRunner;
         _pullRequestScannerOptions = pullRequestScannerOptions;
     }
 
@@ -38,7 +38,7 @@ internal class GithubUserService : IGithubUserService
             })
             .Compile();
         
-        return await _githubGraphQlClientProvider.GithubGraphQlClient.Run(query);
+        return await _githubQueryRunner.RunQuery(query);
     }
 
     private async Task<GithubTeam> GetOrganisationTeam(GithubOrganizationTeamOptions githubOrganizationTeamOptions)
@@ -64,7 +64,7 @@ internal class GithubUserService : IGithubUserService
                     }).ToList()
             }).Compile();
 
-        return await _githubGraphQlClientProvider.GithubGraphQlClient.Run(query);
+        return await _githubQueryRunner.RunQuery(query);
     }
 
     public async Task<IReadOnlyList<GithubMember>> GetTeamMembers()
