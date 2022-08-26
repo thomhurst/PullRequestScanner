@@ -26,4 +26,15 @@ internal static class AdaptiveCardExtensions
 
         return teamMember.DisplayOrUniqueName;
     }
+
+    internal static void MarkCardAsWrittenTo(this MicrosoftTeamsAdaptiveCard microsoftTeamsAdaptiveCard)
+    {
+        microsoftTeamsAdaptiveCard.AdditionalProperties.Add("ShouldReturn", true);
+    }
+    
+    internal static bool IsCardWrittenTo(this MicrosoftTeamsAdaptiveCard microsoftTeamsAdaptiveCard)
+    {
+        return microsoftTeamsAdaptiveCard.AdditionalProperties.TryGetValue("ShouldReturn", out var objBool)
+               && objBool is true;
+    }
 }

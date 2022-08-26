@@ -95,7 +95,7 @@ internal class PullRequestStatusCardMapper : IPullRequestStatusCardMapper
 
             foreach (var pullRequest in pullRequestsInRepo)
             {
-                teamsNotificationCard.AdditionalProperties.Add("ShouldReturn", true);
+                teamsNotificationCard.MarkCardAsWrittenTo();
                 pullRequestsWithStatus.Remove(pullRequest);
                 mentionedUsers.Add(pullRequest.Author);
                 teamsNotificationCard.MsTeams.Entitities = mentionedUsers.ToAdaptiveCardMentionEntities();
@@ -143,7 +143,7 @@ internal class PullRequestStatusCardMapper : IPullRequestStatusCardMapper
             }
         }
         
-        if (!teamsNotificationCard.AdditionalProperties.TryGetValue("ShouldReturn", out _))
+        if (!teamsNotificationCard.IsCardWrittenTo())
         {
             yield break;
         }
