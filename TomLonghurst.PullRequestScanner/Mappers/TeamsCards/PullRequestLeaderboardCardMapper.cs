@@ -114,7 +114,7 @@ internal class PullRequestLeaderboardCardMapper : IPullRequestLeaderboardCardMap
                      .OrderByDescending(x => x.Value.CommentsCount)
                      .ThenByDescending(x => x.Value.ReviewedCount))
         {
-            
+            teamsNotificationCard.AdditionalProperties.Add("ShouldReturn", true);
             teamsNotificationCard.Body.Add(
                 new AdaptiveColumnSet
                 {
@@ -174,6 +174,11 @@ internal class PullRequestLeaderboardCardMapper : IPullRequestLeaderboardCardMap
             .Select(x => x.Key)
             .ToAdaptiveCardMentionEntities();
 
+        if (!teamsNotificationCard.AdditionalProperties.TryGetValue("ShouldReturn", out _))
+        {
+            yield break;
+        }
+        
         yield return teamsNotificationCard;
     }
 }

@@ -115,6 +115,7 @@ internal class PullRequestsOverviewCardMapper : IPullRequestsOverviewCardMapper
 
             foreach (var pullRequest in repo.Values.ToList())
             {
+                teamsNotificationCard.AdditionalProperties.Add("ShouldReturn", true);
                 repo.Values.Remove(pullRequest);
                 mentionedUsers.Add(pullRequest.Author);
                 adaptiveContainer.Items.Add(new AdaptiveColumnSet
@@ -188,6 +189,11 @@ internal class PullRequestsOverviewCardMapper : IPullRequestsOverviewCardMapper
             }
             
             repos.Remove(repo);
+        }
+
+        if (!teamsNotificationCard.AdditionalProperties.TryGetValue("ShouldReturn", out _))
+        {
+            yield break;
         }
         
         yield return teamsNotificationCard;
