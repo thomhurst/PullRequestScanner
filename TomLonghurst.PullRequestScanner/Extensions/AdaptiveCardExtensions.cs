@@ -29,7 +29,7 @@ internal static class AdaptiveCardExtensions
 
     internal static void MarkCardAsWrittenTo(this MicrosoftTeamsAdaptiveCard microsoftTeamsAdaptiveCard)
     {
-        microsoftTeamsAdaptiveCard.AdditionalProperties.Add("ShouldReturn", true);
+        microsoftTeamsAdaptiveCard.AdditionalProperties["ShouldReturn"] = true;
     }
     
     internal static bool IsCardWrittenTo(this MicrosoftTeamsAdaptiveCard microsoftTeamsAdaptiveCard)
