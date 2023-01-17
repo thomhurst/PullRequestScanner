@@ -1,8 +1,8 @@
-﻿using TomLonghurst.PullRequestScanner.Models.Self;
+﻿using TomLonghurst.PullRequestScanner.Models;
 
 namespace TomLonghurst.PullRequestScanner.Services;
 
-public interface IPullRequestService
+internal interface IPullRequestService
 {
     Task<IReadOnlyList<PullRequest>> GetPullRequests();
 }

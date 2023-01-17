@@ -2,7 +2,7 @@
 
 namespace TomLonghurst.PullRequestScanner.Extensions;
 
-internal static class EnumerableExtenions
+public static class EnumerableExtenions
 {
     public static List<MutableGroup<TKey, TValue>> ToMutableGrouping<TKey, TValue>(this IEnumerable<IGrouping<TKey, TValue>> grouping)
     {

@@ -16,4 +16,8 @@
       <PackageReference Include="TomLonghurst.EnumerableAsyncProcessor" Version="1.1.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Http" />
+    </ItemGroup>
+
 </Project>

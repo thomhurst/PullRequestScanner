@@ -1,23 +1,18 @@
-﻿using TomLonghurst.PullRequestScanner.Models.DevOps;
-using TomLonghurst.PullRequestScanner.Models.Github;
-using TomLonghurst.PullRequestScanner.Services.DevOps;
-using TomLonghurst.PullRequestScanner.Services.Github;
+﻿using TomLonghurst.PullRequestScanner.Contracts;
+using TomLonghurst.PullRequestScanner.Models;
 
 namespace TomLonghurst.PullRequestScanner.Services;
 
-internal class TeamMembersService : ITeamMembersService, IInitialize
+internal class TeamMembersService : ITeamMembersService, IPullRequestScannerInitializer
 {
-    private readonly IDevOpsUserService _devOpsUserService;
-    private readonly IGithubUserService _githubUserService;
+    private readonly IEnumerable<ITeamMembersProvider> _teamMembersServices;
 
     private readonly List<TeamMember> _teamMembers = new();
     private bool _isInitialized;
 
-    public TeamMembersService(IDevOpsUserService devOpsUserService, 
-        IGithubUserService githubUserService)
+    public TeamMembersService(IEnumerable<ITeamMembersProvider> teamMembersServices)
     {
-        _devOpsUserService = devOpsUserService;
-        _githubUserService = githubUserService;
+        _teamMembersServices = teamMembersServices;
     }
 
     public IReadOnlyList<TeamMember> GetTeamMembers()
@@ -31,80 +26,52 @@ internal class TeamMembersService : ITeamMembersService, IInitialize
         {
             return;
         }
-        
-        var githubUsersTask = _githubUserService.GetTeamMembers();
-        var devopsUsersTask = _devOpsUserService.GetTeamMembers();
-        
-        var githubUsers = await githubUsersTask;
-        var devopsUsers = await devopsUsersTask;
-        
-        foreach (var githubUser in githubUsers)
+
+        var teamMembersEnumerable = await Task.WhenAll(_teamMembersServices.Select(x => x.GetTeamMembers()));
+        var teamMembers = teamMembersEnumerable.SelectMany(x => x).ToList();
+
+        foreach (var teamMember in teamMembers)
         {
-            var foundUser = FindGithubTeamMember(githubUser);
+            var foundUser = FindTeamMember(teamMember);
             if (foundUser == null)
             {
                 _teamMembers.Add(new TeamMember
                 {
-                    Email = githubUser.Email,
-                    GithubId = githubUser.Id,
-                    GithubUsername = githubUser.UniqueName,
-                    DisplayName = githubUser.DisplayName,
-                    GithubImageUrl = githubUser.ImageUrl
+                    Email = teamMember.Email,
+                    Ids = { teamMember.Id }, 
+                    UniqueNames = { teamMember.UniqueName },
+                    DisplayName = teamMember.DisplayName,
+                    ImageUrls = { teamMember.ImageUrl }
                 });
             }
             else
             {
-                UpdateFoundUser(foundUser, githubUser);
-            }
-        }
-        
-        foreach (var devOpsUser in devopsUsers)
-        {
-            var foundUser = FindDevOpsTeamMember(devOpsUser);
-            if (foundUser == null)
-            {
-                _teamMembers.Add(new TeamMember
-                {
-                    Email = devOpsUser.Identity.UniqueName,
-                    DevOpsId = devOpsUser.Identity.Id,
-                    DevOpsUsername = devOpsUser.Identity.UniqueName,
-                    DisplayName = devOpsUser.Identity.DisplayName,
-                    DevOpsImageUrl = devOpsUser.Identity.ImageUrl
-                });
-            }
-            else
-            {
-                UpdateFoundUser(foundUser, devOpsUser);
+                UpdateFoundUser(foundUser, teamMember);
             }
         }
 
         _isInitialized = true;
     }
     
-    private TeamMember? FindGithubTeamMember(GithubMember githubUser)
+    private TeamMember? FindTeamMember(ITeamMember teamMember)
     {
         return
-            FindUserWithMatchingProperty(x => x.Email, x => x.Email, githubUser)
-            ?? FindUserWithMatchingProperty(x => x.Id, x => x.GithubId, githubUser)
-            ?? FindUserWithMatchingProperty(x => x.UniqueName, x => x.GithubUsername, githubUser)
-            ?? FindUserWithMatchingProperty(x => x.DisplayName, x => x.DisplayName, githubUser);
+            FindUserWithMatchingProperty(x => x.Email, x => x.Email, teamMember)
+            ?? FindUserWithPropertyContaining(x => x.Id, x => x.Ids, teamMember)
+            ?? FindUserWithPropertyContaining(x => x.UniqueName, x => x.UniqueNames, teamMember)
+            ?? FindUserWithMatchingProperty(x => x.DisplayName, x => x.DisplayName, teamMember);
     }
     
-    public TeamMember? FindGithubTeamMember(string githubUsername)
+    public TeamMember? FindTeamMember(string uniqueName)
     {
-        return _teamMembers.FirstOrDefault(x => x.GithubUsername == githubUsername);
+        return _teamMembers.FirstOrDefault(x => x.UniqueNames.Contains(uniqueName));
     }
 
-    public TeamMember? FindDevOpsTeamMember(string devOpsUsername)
+    private TeamMember? FindUserWithMatchingProperty(Func<ITeamMember, string> property1, Func<TeamMember, string> property2, ITeamMember memberDetails)
     {
-        return _teamMembers.FirstOrDefault(x => x.DevOpsUsername == devOpsUsername);
-    }
-
-    private TeamMember? FindUserWithMatchingProperty(Func<GithubMember, string> property1, Func<TeamMember, string> property2, GithubMember githubMember)
-    {
-        var githubProperty = property1.Invoke(githubMember);
+        var propertyValue = property1.Invoke(memberDetails);
         
-        if (string.IsNullOrEmpty(githubProperty))
+        if (string.IsNullOrEmpty(propertyValue))
         {
             return null;
         }
@@ -112,7 +79,28 @@ internal class TeamMembersService : ITeamMembersService, IInitialize
         foreach (var teamMember in _teamMembers)
         {
             var teamMemberProperty = property2.Invoke(teamMember);
-            if (string.Equals(githubProperty, teamMemberProperty, StringComparison.InvariantCultureIgnoreCase))
+            if (string.Equals(propertyValue, teamMemberProperty, StringComparison.InvariantCultureIgnoreCase))
+            {
+                return teamMember;
+            }
+        }
+
+        return null;
+    }
+    
+    private TeamMember? FindUserWithPropertyContaining(Func<ITeamMember, string> property1, Func<TeamMember, IEnumerable<string>> property2, ITeamMember memberDetails)
+    {
+        var propertyValue = property1.Invoke(memberDetails);
+        
+        if (string.IsNullOrEmpty(propertyValue))
+        {
+            return null;
+        }
+        
+        foreach (var teamMember in _teamMembers)
+        {
+            var teamMemberProperty = property2.Invoke(teamMember);
+            if(teamMemberProperty.Any(p => p.Contains(propertyValue, StringComparison.InvariantCultureIgnoreCase)))
             {
                 return teamMember;
             }
@@ -121,89 +109,31 @@ internal class TeamMembersService : ITeamMembersService, IInitialize
         return null;
     }
 
-    private void UpdateFoundUser(TeamMember foundUser, GithubMember githubUser)
+    private void UpdateFoundUser(TeamMember foundUser, ITeamMember newUserDetails)
     {
-        if (string.IsNullOrEmpty(foundUser.Email) && !string.IsNullOrEmpty(githubUser.Email))
+        if (string.IsNullOrEmpty(foundUser.Email) && !string.IsNullOrEmpty(newUserDetails.Email))
         {
-            foundUser.Email = githubUser.Email;
+            foundUser.Email = newUserDetails.Email;
         }
         
-        if (string.IsNullOrEmpty(foundUser.GithubId) && !string.IsNullOrEmpty(githubUser.Id))
+        if (!string.IsNullOrEmpty(newUserDetails.Id))
         {
-            foundUser.GithubId = githubUser.Id;
+            foundUser.Ids.Add(newUserDetails.Id);
         }
         
-        if (string.IsNullOrEmpty(foundUser.GithubUsername) && !string.IsNullOrEmpty(githubUser.UniqueName))
+        if (!string.IsNullOrEmpty(newUserDetails.UniqueName))
         {
-            foundUser.GithubUsername = githubUser.UniqueName;
+            foundUser.UniqueNames.Add(newUserDetails.UniqueName);
         }
         
-        if (string.IsNullOrEmpty(foundUser.DisplayName) && !string.IsNullOrEmpty(githubUser.DisplayName))
+        if (string.IsNullOrEmpty(foundUser.DisplayName) && !string.IsNullOrEmpty(newUserDetails.DisplayName))
         {
-            foundUser.DisplayName = githubUser.DisplayName;
+            foundUser.DisplayName = newUserDetails.DisplayName;
         }
         
-        if (string.IsNullOrEmpty(foundUser.GithubImageUrl) && !string.IsNullOrEmpty(githubUser.ImageUrl))
+        if (!string.IsNullOrEmpty(newUserDetails.ImageUrl))
         {
-            foundUser.GithubImageUrl = githubUser.ImageUrl;
-        }
-    }
-
-    private TeamMember? FindDevOpsTeamMember(DevOpsTeamMember devOpsTeamMember)
-    {
-        return
-            FindUserWithMatchingProperty(x => x.Identity.UniqueName, x => x.Email, devOpsTeamMember)
-            ?? FindUserWithMatchingProperty(x => x.Identity.Id, x => x.GithubId, devOpsTeamMember)
-            ?? FindUserWithMatchingProperty(x => x.Identity.UniqueName, x => x.GithubUsername, devOpsTeamMember)
-            ?? FindUserWithMatchingProperty(x => x.Identity.DisplayName, x => x.DisplayName, devOpsTeamMember);
-    }
-
-    private TeamMember? FindUserWithMatchingProperty(Func<DevOpsTeamMember, string> property1, Func<TeamMember, string> property2, DevOpsTeamMember devOpsTeamMember)
-    {
-        var devOpsProperty = property1.Invoke(devOpsTeamMember);
-        
-        if (string.IsNullOrEmpty(devOpsProperty))
-        {
-            return null;
-        }
-        
-        foreach (var teamMember in _teamMembers)
-        {
-            var teamMemberProperty = property2.Invoke(teamMember);
-            if (string.Equals(devOpsProperty, teamMemberProperty, StringComparison.InvariantCultureIgnoreCase))
-            {
-                return teamMember;
-            }
-        }
-
-        return null;
-    }
-
-    private void UpdateFoundUser(TeamMember foundUser, DevOpsTeamMember devOpsTeamMember)
-    {
-        if (!string.IsNullOrEmpty(devOpsTeamMember.Identity.UniqueName))
-        {
-            foundUser.Email = devOpsTeamMember.Identity.UniqueName;
-        }
-        
-        if (string.IsNullOrEmpty(foundUser.DevOpsId) && !string.IsNullOrEmpty(devOpsTeamMember.Identity.Id))
-        {
-            foundUser.DevOpsId = devOpsTeamMember.Identity.Id;
-        }
-        
-        if (string.IsNullOrEmpty(foundUser.DevOpsUsername) && !string.IsNullOrEmpty(devOpsTeamMember.Identity.UniqueName))
-        {
-            foundUser.DevOpsUsername = devOpsTeamMember.Identity.UniqueName;
-        }
-        
-        if (string.IsNullOrEmpty(foundUser.DisplayName) && !string.IsNullOrEmpty(devOpsTeamMember.Identity.DisplayName))
-        {
-            foundUser.DisplayName = devOpsTeamMember.Identity.DisplayName;
-        }
-        
-        if (string.IsNullOrEmpty(foundUser.DevOpsImageUrl) && !string.IsNullOrEmpty(devOpsTeamMember.Identity.ImageUrl))
-        {
-            foundUser.DevOpsImageUrl = devOpsTeamMember.Identity.ImageUrl;
+            foundUser.ImageUrls.Add(newUserDetails.ImageUrl);
         }
     }
 }
