@@ -14,18 +14,18 @@ internal class MicrosoftTeamsWebHookPublisher : IPullRequestPlugin
     private readonly IPullRequestsOverviewCardMapper _pullRequestsOverviewCardMapper;
     private readonly IPullRequestStatusCardMapper _pullRequestStatusCardMapper;
     private readonly IPullRequestLeaderboardCardMapper _pullRequestLeaderboardCardMapper;
-    private readonly MicrosoftTeamsPublishOptions _microsoftTeamsPublishOptions;
+    private readonly MicrosoftTeamsOptions _microsoftTeamsOptions;
     private readonly MicrosoftTeamsWebhookClient _microsoftTeamsWebhookClient;
 
     public MicrosoftTeamsWebHookPublisher(
-        MicrosoftTeamsPublishOptions microsoftTeamsPublishOptions,
+        MicrosoftTeamsOptions microsoftTeamsOptions,
         MicrosoftTeamsWebhookClient microsoftTeamsWebhookClient,
         IPullRequestsOverviewCardMapper pullRequestsOverviewCardMapper,
         IPullRequestStatusCardMapper pullRequestStatusCardMapper,
         IPullRequestLeaderboardCardMapper pullRequestLeaderboardCardMapper
     )
     {
-        _microsoftTeamsPublishOptions = microsoftTeamsPublishOptions;
+        _microsoftTeamsOptions = microsoftTeamsOptions;
         _microsoftTeamsWebhookClient = microsoftTeamsWebhookClient;
         _pullRequestsOverviewCardMapper = pullRequestsOverviewCardMapper;
         _pullRequestStatusCardMapper = pullRequestStatusCardMapper;
@@ -34,7 +34,7 @@ internal class MicrosoftTeamsWebHookPublisher : IPullRequestPlugin
 
     public Task ExecuteAsync(IReadOnlyList<PullRequest> pullRequests)
     {
-        return ExecuteAsync(pullRequests, _microsoftTeamsPublishOptions);
+        return ExecuteAsync(pullRequests, _microsoftTeamsOptions.PublishOptions);
     }
     
     public async Task ExecuteAsync(IReadOnlyList<PullRequest> pullRequests, MicrosoftTeamsPublishOptions microsoftTeamsPublishOptions)

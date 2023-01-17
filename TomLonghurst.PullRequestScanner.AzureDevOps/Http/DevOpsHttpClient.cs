@@ -32,8 +32,6 @@ internal class DevOpsHttpClient
         var iteration = 0;
         do
         {
-            Console.WriteLine("Memory Used:" + Process.GetCurrentProcess().PrivateMemorySize64);
-            
             var pathWithBatchingQueryParameters = path
                 .AddQueryParam("$top", "100")
                 .AddQueryParam("$skip", (100 * iteration).ToString());
