@@ -4,7 +4,6 @@ using TomLonghurst.PullRequestScanner.Extensions;
 using TomLonghurst.PullRequestScanner.Models;
 using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Extensions;
 using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Models;
-using TomLonghurst.PullRequestScanner.Services;
 
 namespace TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Mappers;
 

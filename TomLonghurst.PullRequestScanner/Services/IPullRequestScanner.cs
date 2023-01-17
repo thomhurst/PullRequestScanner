@@ -3,10 +3,10 @@ using TomLonghurst.PullRequestScanner.Models;
 
 namespace TomLonghurst.PullRequestScanner.Services;
 
-public interface IPullRequestScanner
+public interface IPullRequestScanner : IHasPlugins
 {
     Task<IReadOnlyList<PullRequest>> GetPullRequests();
-    
+
     Task ExecutePluginsAsync() => ExecutePluginsAsync(null as Func<IPullRequestPlugin, bool>);
     Task ExecutePluginsAsync(IReadOnlyList<PullRequest> pullRequests) => ExecutePluginsAsync(pullRequests, null);
     

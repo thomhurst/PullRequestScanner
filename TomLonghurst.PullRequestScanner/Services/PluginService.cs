@@ -7,23 +7,24 @@ namespace TomLonghurst.PullRequestScanner.Services;
 
 internal class PluginService : IPluginService
 {
-    private readonly IEnumerable<IPullRequestPlugin> _plugins;
-    
+    public IEnumerable<IPullRequestPlugin> Plugins { get; }
+
     private readonly Func<IPullRequestPlugin, bool> _defaultPredicate = _ => true;
+
 
     public PluginService(IEnumerable<IPullRequestPlugin> plugins)
     {
-        _plugins = plugins;
+        Plugins = plugins;
     }
 
     public async Task ExecuteAsync(IReadOnlyList<PullRequest> pullRequests, Func<IPullRequestPlugin, bool>? predicate = null)
     {
-        if (!_plugins.Any())
+        if (!Plugins.Any())
         {
             throw new NoPullRequestPluginsRegisteredException();
         }
 
-        await _plugins
+        await Plugins
             .Where(predicate ?? _defaultPredicate)
             .ToAsyncProcessorBuilder()
             .ForEachAsync(plugin => plugin.ExecuteAsync(pullRequests))

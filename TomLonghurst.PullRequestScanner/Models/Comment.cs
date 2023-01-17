@@ -1,6 +1,4 @@
-﻿using TomLonghurst.PullRequestScanner.Services;
-
-namespace TomLonghurst.PullRequestScanner.Models;
+﻿namespace TomLonghurst.PullRequestScanner.Models;
 
 public record Comment
 {

@@ -8,6 +8,8 @@ internal class PullRequestScanner : IPullRequestScanner
     private readonly IPullRequestService _pullRequestService;
     private readonly IPluginService _pluginService;
 
+    public IEnumerable<IPullRequestPlugin> Plugins => _pluginService.Plugins;
+
     public PullRequestScanner(IPullRequestService pullRequestService, IPluginService pluginService)
     {
         _pullRequestService = pullRequestService;
