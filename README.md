@@ -1,6 +1,6 @@
 # PullRequestScanner
 
-A Pull Request Scanner that is can extendable, allowing you to add pull request providers, or plugins, that do something with the pull request data.
+A Pull Request Scanner that is extendable, allowing you to add pull request providers, or plugins, that do something with the pull request data.
 If you write the implementation for a new provider, or a new plugin, feel free to open a pull request to add it into the repository.
 
 Currently the out-of-the-box providers are Azure DevOps and GitHub, with a plugin that can publish cards to a Microsoft Teams Webhook, notifying your team of any open pull requests and their current state.
