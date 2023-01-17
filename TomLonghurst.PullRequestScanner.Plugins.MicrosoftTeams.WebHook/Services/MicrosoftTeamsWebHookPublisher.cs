@@ -1,5 +1,4 @@
-﻿using TomLonghurst.PullRequestScanner.Contracts;
-using TomLonghurst.PullRequestScanner.Enums;
+﻿using TomLonghurst.PullRequestScanner.Enums;
 using TomLonghurst.PullRequestScanner.Models;
 using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Http;
 using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Mappers;
@@ -8,7 +7,7 @@ using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Options;
 
 namespace TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Services;
 
-internal class MicrosoftTeamsWebHookPublisher : IPullRequestPlugin
+internal class MicrosoftTeamsWebHookPublisher : IMicrosoftTeamsWebHookPublisher
 {
     private readonly IPullRequestsOverviewCardMapper _pullRequestsOverviewCardMapper;
     private readonly IPullRequestStatusCardMapper _pullRequestStatusCardMapper;
