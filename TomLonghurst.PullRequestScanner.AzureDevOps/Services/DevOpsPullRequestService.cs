@@ -8,9 +8,9 @@ internal class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestService
 {
     private readonly AzureDevOpsHttpClient _devOpsHttpClient;
 
-    public AzureDevOpsPullRequestService(AzureDevOpsHttpClient AzureDevOpsHttpClient)
+    public AzureDevOpsPullRequestService(AzureDevOpsHttpClient azureDevOpsHttpClient)
     {
-        _devOpsHttpClient = AzureDevOpsHttpClient;
+        _devOpsHttpClient = azureDevOpsHttpClient;
     }
     
     public async Task<IReadOnlyList<AzureDevOpsPullRequestContext>> GetPullRequestsForRepository(AzureDevOpsGitRepository githubGitRepository)
@@ -38,14 +38,14 @@ internal class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestService
         return pullRequestsWithThreads;
     }
 
-    private bool IsActiveOrRecentlyClosed(AzureDevOpsPullRequest AzureDevOpsPullRequest)
+    private bool IsActiveOrRecentlyClosed(AzureDevOpsPullRequest azureDevOpsPullRequest)
     {
-        if (AzureDevOpsPullRequest.Status == "active")
+        if (azureDevOpsPullRequest.Status == "active")
         {
             return true;
         }
 
-        if (AzureDevOpsPullRequest.ClosedDate >= DateTimeOffset.UtcNow.Date - TimeSpan.FromDays(1))
+        if (azureDevOpsPullRequest.ClosedDate >= DateTimeOffset.UtcNow.Date - TimeSpan.FromDays(1))
         {
             return true;
         }

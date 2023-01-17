@@ -51,8 +51,8 @@ public record PullRequest
                 .Where(x => x.Vote != Vote.NoVote)
                 .Select(a => a.TeamMember)
                 .Concat(AllComments.Select(c => c.Author))
-                .Where(reviewer => reviewer.DisplayName != Constants.VSTSDisplayName)
-                .Where(reviewer => reviewer.UniqueNames.All(un => un.StartsWith(Constants.VSTFSUniqueNamePrefix) != true))
+                .Where(reviewer => reviewer.DisplayName != Constants.VstsDisplayName)
+                .Where(reviewer => reviewer.UniqueNames.All(un => un.StartsWith(Constants.VstfsUniqueNamePrefix) != true))
                 .Where(reviewer => reviewer != Author)
                 .Distinct()
                 .ToList();

@@ -13,7 +13,7 @@ internal class PullRequestService : IPullRequestService
     private readonly IEnumerable<IPullRequestProvider> _pullRequestProviders;
     private readonly IEnumerable<IPullRequestScannerInitializer> _initializers;
     private readonly IMemoryCache _memoryCache;
-    private readonly SemaphoreSlim Lock = new(1, 1);
+    private readonly SemaphoreSlim _lock = new(1, 1);
 
     public PullRequestService(IEnumerable<IPullRequestProvider> pullRequestProviders,
         IEnumerable<IPullRequestScannerInitializer> initializers,
@@ -31,7 +31,7 @@ internal class PullRequestService : IPullRequestService
             throw new NoPullRequestProvidersRegisteredException();
         }
         
-        await Lock.WaitAsync();
+        await _lock.WaitAsync();
 
         try
         {
@@ -51,7 +51,7 @@ internal class PullRequestService : IPullRequestService
         }
         finally
         {
-            Lock.Release();
+            _lock.Release();
         }
     }
 }

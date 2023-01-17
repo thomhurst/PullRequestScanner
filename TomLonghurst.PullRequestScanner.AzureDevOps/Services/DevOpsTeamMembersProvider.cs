@@ -12,9 +12,9 @@ internal class AzureDevOpsTeamMembersProvider : ITeamMembersProvider
     private readonly AzureDevOpsHttpClient _devOpsHttpClient;
     private readonly AzureDevOpsOptions _azureDevOpsOptions;
 
-    public AzureDevOpsTeamMembersProvider(AzureDevOpsHttpClient AzureDevOpsHttpClient, AzureDevOpsOptions azureDevOpsOptions)
+    public AzureDevOpsTeamMembersProvider(AzureDevOpsHttpClient azureDevOpsHttpClient, AzureDevOpsOptions azureDevOpsOptions)
     {
-        _devOpsHttpClient = AzureDevOpsHttpClient;
+        _devOpsHttpClient = azureDevOpsHttpClient;
         _azureDevOpsOptions = azureDevOpsOptions;
     }
 
@@ -38,8 +38,8 @@ internal class AzureDevOpsTeamMembersProvider : ITeamMembersProvider
         return membersResponses
             .SelectMany(x => x)
             .SelectMany(x => x.Value)
-            .Where(x => x.Identity.DisplayName != Constants.VSTSDisplayName)
-            .Where(x => !x.Identity.UniqueName.StartsWith(Constants.VSTFSUniqueNamePrefix))
+            .Where(x => x.Identity.DisplayName != Constants.VstsDisplayName)
+            .Where(x => !x.Identity.UniqueName.StartsWith(Constants.VstfsUniqueNamePrefix))
             .ToList();
     }
 }
