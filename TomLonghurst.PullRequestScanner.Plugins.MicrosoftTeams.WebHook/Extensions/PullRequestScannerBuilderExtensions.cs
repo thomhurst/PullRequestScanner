@@ -30,7 +30,7 @@ public static class PullRequestScannerBuilderExtensions
             .AddTransient<IPullRequestStatusCardMapper, PullRequestStatusCardMapper>()
             .AddTransient<IPullRequestLeaderboardCardMapper, PullRequestLeaderboardCardMapper>()
             .AddTransient<MicrosoftTeamsWebHookPublisher>()
-            .AddHttpClient<MicrosoftTeamsWebhookClient>();;
+            .AddHttpClient<MicrosoftTeamsWebhookClient>();
 
         return pullRequestScannerBuilder.AddPlugin(ActivatorUtilities.GetServiceOrCreateInstance<MicrosoftTeamsWebHookPublisher>);
     }

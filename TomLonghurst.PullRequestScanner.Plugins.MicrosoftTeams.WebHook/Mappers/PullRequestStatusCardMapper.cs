@@ -16,7 +16,7 @@ internal class PullRequestStatusCardMapper : IPullRequestStatusCardMapper
         return Map(pullRequests, pullRequestStatus, 0);
     }
 
-    private IEnumerable<MicrosoftTeamsAdaptiveCard> Map(IReadOnlyList<PullRequest> pullRequests, PullRequestStatus pullRequestStatus, int cardCound)
+    private IEnumerable<MicrosoftTeamsAdaptiveCard> Map(IReadOnlyList<PullRequest> pullRequests, PullRequestStatus pullRequestStatus, int cardCount)
     {
         var pullRequestsWithStatus = pullRequests
             .Where(x => x.PullRequestStatus == pullRequestStatus)
@@ -133,7 +133,7 @@ internal class PullRequestStatusCardMapper : IPullRequestStatusCardMapper
                 {
                     yield return teamsNotificationCard;
                 
-                    foreach (var microsoftTeamsAdaptiveCard in Map(pullRequestsWithStatus.ToList(), pullRequestStatus, cardCound + 1))
+                    foreach (var microsoftTeamsAdaptiveCard in Map(pullRequestsWithStatus.ToList(), pullRequestStatus, cardCount + 1))
                     {
                         yield return microsoftTeamsAdaptiveCard;
                     }

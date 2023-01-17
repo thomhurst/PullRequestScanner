@@ -17,7 +17,7 @@ internal class PullRequestsOverviewCardMapper : IPullRequestsOverviewCardMapper
         return Map(pullRequests, 1);
     }
 
-    private IEnumerable<MicrosoftTeamsAdaptiveCard> Map(IReadOnlyList<PullRequest> pullRequests, int cardCound)
+    private IEnumerable<MicrosoftTeamsAdaptiveCard> Map(IReadOnlyList<PullRequest> pullRequests, int cardCount)
     {
         var repos = pullRequests
             .Where(x => x.IsActive)
@@ -37,7 +37,7 @@ internal class PullRequestsOverviewCardMapper : IPullRequestsOverviewCardMapper
                 {
                     Weight = AdaptiveTextWeight.Bolder,
                     Size = AdaptiveTextSize.Large,
-                    Text = $"Pull Request Statuses {GetCardNumberString(cardCound)}"
+                    Text = $"Pull Request Statuses {GetCardNumberString(cardCount)}"
                 },
             }
         };
@@ -180,7 +180,7 @@ internal class PullRequestsOverviewCardMapper : IPullRequestsOverviewCardMapper
                 {
                     yield return teamsNotificationCard;
                 
-                    foreach (var microsoftTeamsAdaptiveCard in Map(repos.SelectMany(x => x.Values).ToList(), cardCound + 1))
+                    foreach (var microsoftTeamsAdaptiveCard in Map(repos.SelectMany(x => x.Values).ToList(), cardCount + 1))
                     {
                         yield return microsoftTeamsAdaptiveCard;
                     }

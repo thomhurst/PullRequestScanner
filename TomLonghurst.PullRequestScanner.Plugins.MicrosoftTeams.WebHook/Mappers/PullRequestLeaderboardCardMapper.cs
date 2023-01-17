@@ -11,10 +11,10 @@ internal class PullRequestLeaderboardCardMapper : IPullRequestLeaderboardCardMap
 {
     public IEnumerable<MicrosoftTeamsAdaptiveCard> Map(IReadOnlyList<PullRequest> pullRequests)
     {
-        return Map(pullRequests.ToList(), 1);
+        return Map(pullRequests.ToList());
     }
 
-    private IEnumerable<MicrosoftTeamsAdaptiveCard> Map(List<PullRequest> pullRequests, int cardCound)
+    private IEnumerable<MicrosoftTeamsAdaptiveCard> Map(List<PullRequest> pullRequests)
     {
        if(!pullRequests.Any(x => x.Approvers.Any(a => a.Time.IsYesterday()))
            && !pullRequests.Any(x => x.AllComments.Any(c => c.LastUpdated.IsYesterday())))
