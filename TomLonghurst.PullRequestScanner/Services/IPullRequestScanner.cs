@@ -6,6 +6,7 @@ namespace TomLonghurst.PullRequestScanner.Services;
 public interface IPullRequestScanner
 {
     Task<IReadOnlyList<PullRequest>> GetPullRequests();
+    
     Task ExecutePluginsAsync() => ExecutePluginsAsync(null as Func<IPullRequestPlugin, bool>);
     Task ExecutePluginsAsync(IReadOnlyList<PullRequest> pullRequests) => ExecutePluginsAsync(pullRequests, null);
     
