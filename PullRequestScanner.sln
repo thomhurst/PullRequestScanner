@@ -2,6 +2,12 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TomLonghurst.PullRequestScanner", "TomLonghurst.PullRequestScanner\TomLonghurst.PullRequestScanner.csproj", "{3DB24D0C-E3D9-4955-8DA6-DFDEEB4D5539}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TomLonghurst.PullRequestScanner.AzureDevOps", "TomLonghurst.PullRequestScanner.AzureDevOps\TomLonghurst.PullRequestScanner.AzureDevOps.csproj", "{7CF342C7-91B7-438C-B3DE-7EF6AE1353CF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TomLonghurst.PullRequestScanner.GitHub", "TomLonghurst.PullRequestScanner.GitHub\TomLonghurst.PullRequestScanner.GitHub.csproj", "{D2967AD5-F36A-4208-82D8-58454ED83D75}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook", "TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook\TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.csproj", "{6727C281-B5E9-443D-A739-8218046B3B15}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +18,17 @@ Global
 		{3DB24D0C-E3D9-4955-8DA6-DFDEEB4D5539}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3DB24D0C-E3D9-4955-8DA6-DFDEEB4D5539}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3DB24D0C-E3D9-4955-8DA6-DFDEEB4D5539}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7CF342C7-91B7-438C-B3DE-7EF6AE1353CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7CF342C7-91B7-438C-B3DE-7EF6AE1353CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7CF342C7-91B7-438C-B3DE-7EF6AE1353CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7CF342C7-91B7-438C-B3DE-7EF6AE1353CF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2967AD5-F36A-4208-82D8-58454ED83D75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2967AD5-F36A-4208-82D8-58454ED83D75}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2967AD5-F36A-4208-82D8-58454ED83D75}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2967AD5-F36A-4208-82D8-58454ED83D75}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6727C281-B5E9-443D-A739-8218046B3B15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6727C281-B5E9-443D-A739-8218046B3B15}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6727C281-B5E9-443D-A739-8218046B3B15}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6727C281-B5E9-443D-A739-8218046B3B15}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

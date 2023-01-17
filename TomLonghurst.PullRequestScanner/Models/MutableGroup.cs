@@ -1,6 +1,6 @@
 ﻿namespace TomLonghurst.PullRequestScanner.Models;
 
-internal class MutableGroup<TKey, TValue>
+public class MutableGroup<TKey, TValue>
 {
     public MutableGroup(TKey key, IEnumerable<TValue> values)
     {

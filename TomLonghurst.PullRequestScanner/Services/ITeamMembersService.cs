@@ -1,8 +1,10 @@
-﻿namespace TomLonghurst.PullRequestScanner.Services;
+﻿using TomLonghurst.PullRequestScanner.Models;
 
-internal interface ITeamMembersService
+namespace TomLonghurst.PullRequestScanner.Services;
+
+public interface ITeamMembersService
 {
-    IReadOnlyList<TeamMember> GetTeamMembers();
-    TeamMember? FindGithubTeamMember(string githubUsername);
-    TeamMember? FindDevOpsTeamMember(string devOpsUsername);
+    IReadOnlyList<TeamMember> 
+        GetTeamMembers();
+    TeamMember? FindTeamMember(string uniqueName);
 }
