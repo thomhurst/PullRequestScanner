@@ -1,8 +1,8 @@
 ﻿namespace TomLonghurst.PullRequestScanner.AzureDevOps.Models;
 
-internal class DevOpsPullRequestContext
+internal class AzureDevOpsPullRequestContext
 {
-    public DevOpsPullRequest DevOpsPullRequest { get; set; }
-    public IReadOnlyList<DevOpsPullRequestThread> PullRequestThreads { get; set; }
-    public IReadOnlyList<DevOpsPullRequestIteration> Iterations { get; set; }
+    public AzureDevOpsPullRequest AzureDevOpsPullRequest { get; set; }
+    public IReadOnlyList<AzureDevOpsPullRequestThread> PullRequestThreads { get; set; }
+    public IReadOnlyList<AzureDevOpsPullRequestIteration> Iterations { get; set; }
 }

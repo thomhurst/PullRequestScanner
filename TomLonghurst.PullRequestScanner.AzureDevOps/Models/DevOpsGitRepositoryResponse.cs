@@ -2,7 +2,7 @@
 
 namespace TomLonghurst.PullRequestScanner.AzureDevOps.Models;
 
-public record DevOpsGitRepositoryResponse(
-        [property: JsonPropertyName("value")] IReadOnlyList<DevOpsGitRepository> Repositories,
+public record AzureDevOpsGitRepositoryResponse(
+        [property: JsonPropertyName("value")] IReadOnlyList<AzureDevOpsGitRepository> Repositories,
         [property: JsonPropertyName("count")] int Count
     ) : IHasCount;

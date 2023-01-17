@@ -2,6 +2,6 @@
 
 namespace TomLonghurst.PullRequestScanner.AzureDevOps.Models;
 
-public record DevOpsPullRequestThreadPropertyValue(
+public record AzureDevOpsPullRequestThreadPropertyValue(
     [property: JsonPropertyName("$value")] string? Value
 );

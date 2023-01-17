@@ -2,7 +2,7 @@
 
 namespace TomLonghurst.PullRequestScanner.AzureDevOps.Models;
 
-public record DevOpsPullRequest(
+public record AzureDevOpsPullRequest(
     [property: JsonPropertyName("repository")] Repository Repository,
     [property: JsonPropertyName("pullRequestId")] int PullRequestId,
     [property: JsonPropertyName("status")] string Status,
@@ -10,7 +10,7 @@ public record DevOpsPullRequest(
     [property: JsonPropertyName("creationDate")] DateTime CreationDate,
     [property: JsonPropertyName("closedDate")] DateTime ClosedDate,
     [property: JsonPropertyName("title")] string Title,
-    [property: JsonPropertyName("commits")] IReadOnlyList<DevOpsCommit> Commits,
+    [property: JsonPropertyName("commits")] IReadOnlyList<AzureDevOpsCommit> Commits,
     [property: JsonPropertyName("description")] string Description,
     [property: JsonPropertyName("mergeFailureMessage")] string MergeFailureMessage,
     [property: JsonPropertyName("mergeStatus")] string MergeStatus,

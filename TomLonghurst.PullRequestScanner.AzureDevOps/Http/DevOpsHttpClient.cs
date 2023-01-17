@@ -6,12 +6,12 @@ using TomLonghurst.PullRequestScanner.Extensions;
 
 namespace TomLonghurst.PullRequestScanner.AzureDevOps.Http;
 
-internal class DevOpsHttpClient
+internal class AzureDevOpsHttpClient
 {
     private readonly HttpClient _httpClient;
-    private readonly ILogger<DevOpsHttpClient> _logger;
+    private readonly ILogger<AzureDevOpsHttpClient> _logger;
 
-    public DevOpsHttpClient(HttpClient httpClient, ILogger<DevOpsHttpClient> logger)
+    public AzureDevOpsHttpClient(HttpClient httpClient, ILogger<AzureDevOpsHttpClient> logger)
     {
         _httpClient = httpClient;
         _logger = logger;

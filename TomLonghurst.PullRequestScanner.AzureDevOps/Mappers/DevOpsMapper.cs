@@ -2,23 +2,23 @@
 using TomLonghurst.PullRequestScanner.Enums;
 using TomLonghurst.PullRequestScanner.Models;
 using TomLonghurst.PullRequestScanner.Services;
-using DevOpsRepository = TomLonghurst.PullRequestScanner.AzureDevOps.Models.Repository;
+using AzureDevOpsRepository = TomLonghurst.PullRequestScanner.AzureDevOps.Models.Repository;
 using Repository = TomLonghurst.PullRequestScanner.Models.Repository;
 
 namespace TomLonghurst.PullRequestScanner.AzureDevOps.Mappers;
 
-internal class DevOpsMapper : IDevOpsMapper
+internal class AzureDevOpsMapper : IAzureDevOpsMapper
 {
     private readonly ITeamMembersService _teamMembersService;
 
-    public DevOpsMapper(ITeamMembersService teamMembersService)
+    public AzureDevOpsMapper(ITeamMembersService teamMembersService)
     {
         _teamMembersService = teamMembersService;
     }
     
-    public PullRequest ToPullRequestModel(DevOpsPullRequestContext pullRequestContext)
+    public PullRequest ToPullRequestModel(AzureDevOpsPullRequestContext pullRequestContext)
     {
-        var pullRequest = pullRequestContext.DevOpsPullRequest;
+        var pullRequest = pullRequestContext.AzureDevOpsPullRequest;
         var pullRequestModel = new PullRequest
         {
             Title = pullRequest.Title,
@@ -62,26 +62,26 @@ internal class DevOpsMapper : IDevOpsMapper
         return pullRequestModel;
     }
 
-    private CommentThread GetCommentThread(DevOpsPullRequestThread devOpsPullRequestThread)
+    private CommentThread GetCommentThread(AzureDevOpsPullRequestThread AzureDevOpsPullRequestThread)
     {
         return new CommentThread
         {
-            Status = GetThreadStatus(devOpsPullRequestThread.ThreadStatus),
-            Comments = devOpsPullRequestThread
+            Status = GetThreadStatus(AzureDevOpsPullRequestThread.ThreadStatus),
+            Comments = AzureDevOpsPullRequestThread
                 .Comments
-                .Where(x => !x.DevOpsAuthor.UniqueName.StartsWith(Constants.VSTFSUniqueNamePrefix))
-                .Where(x => x.DevOpsAuthor.DisplayName != Constants.VSTSDisplayName)
+                .Where(x => !x.AzureDevOpsAuthor.UniqueName.StartsWith(Constants.VSTFSUniqueNamePrefix))
+                .Where(x => x.AzureDevOpsAuthor.DisplayName != Constants.VSTSDisplayName)
                 .Select(GetComment)
                 .ToList()
         };
     }
 
-    private Comment GetComment(DevOpsComment devOpsComment)
+    private Comment GetComment(AzureDevOpsComment AzureDevOpsComment)
     {
         return new Comment
         {
-            LastUpdated = devOpsComment.LastUpdatedDate,
-            Author = GetPerson(devOpsComment.DevOpsAuthor.UniqueName, devOpsComment.DevOpsAuthor.DisplayName)
+            LastUpdated = AzureDevOpsComment.LastUpdatedDate,
+            Author = GetPerson(AzureDevOpsComment.AzureDevOpsAuthor.UniqueName, AzureDevOpsComment.AzureDevOpsAuthor.DisplayName)
         };
     }
 
@@ -111,16 +111,16 @@ internal class DevOpsMapper : IDevOpsMapper
         return ThreadStatus.Closed;
     }
 
-    private Approver GetApprover(Reviewer reviewer, IReadOnlyList<DevOpsPullRequestThread> devOpsPullRequestThreads)
+    private Approver GetApprover(Reviewer reviewer, IReadOnlyList<AzureDevOpsPullRequestThread> AzureDevOpsPullRequestThreads)
     {
         return new Approver
         {
             Vote = GetVote(reviewer.Vote),
             IsRequired = reviewer.IsRequired == true,
             TeamMember = GetPerson(reviewer.UniqueName, reviewer.DisplayName),
-            Time = devOpsPullRequestThreads
+            Time = AzureDevOpsPullRequestThreads
                 .Where(x => x.Properties?.CodeReviewThreadType?.Value == "VoteUpdate")
-                .LastOrDefault(x => x.Comments?.SingleOrDefault(c => c.DevOpsAuthor.UniqueName == reviewer.UniqueName) != null)
+                .LastOrDefault(x => x.Comments?.SingleOrDefault(c => c.AzureDevOpsAuthor.UniqueName == reviewer.UniqueName) != null)
                 ?.LastUpdatedDate
         };
     }
@@ -140,38 +140,38 @@ internal class DevOpsMapper : IDevOpsMapper
         return Vote.Rejected;
     }
 
-    private PullRequestStatus GetStatus(DevOpsPullRequestContext devOpsPullRequestContext)
+    private PullRequestStatus GetStatus(AzureDevOpsPullRequestContext AzureDevOpsPullRequestContext)
     {
-        if (devOpsPullRequestContext.DevOpsPullRequest.Status == "completed")
+        if (AzureDevOpsPullRequestContext.AzureDevOpsPullRequest.Status == "completed")
         {
             return PullRequestStatus.Completed;
         }
         
-        if (devOpsPullRequestContext.DevOpsPullRequest.Status == "abandoned")
+        if (AzureDevOpsPullRequestContext.AzureDevOpsPullRequest.Status == "abandoned")
         {
             return PullRequestStatus.Abandoned;
         }
         
-        if (devOpsPullRequestContext.DevOpsPullRequest.MergeStatus == "conflicts")
+        if (AzureDevOpsPullRequestContext.AzureDevOpsPullRequest.MergeStatus == "conflicts")
         {
             return PullRequestStatus.MergeConflicts;
         }
 
-        if (devOpsPullRequestContext.DevOpsPullRequest.IsDraft)
+        if (AzureDevOpsPullRequestContext.AzureDevOpsPullRequest.IsDraft)
         {
             return PullRequestStatus.Draft;
         }
         
-        if (devOpsPullRequestContext.DevOpsPullRequest.Reviewers.Any(r => r.Vote == -10))
+        if (AzureDevOpsPullRequestContext.AzureDevOpsPullRequest.Reviewers.Any(r => r.Vote == -10))
         {
             return PullRequestStatus.Rejected;
         }
 
-        if (devOpsPullRequestContext.Iterations.Any())
+        if (AzureDevOpsPullRequestContext.Iterations.Any())
         {
-            var lastCommitIterationId = devOpsPullRequestContext.Iterations.Max(x => x.IterationId);
+            var lastCommitIterationId = AzureDevOpsPullRequestContext.Iterations.Max(x => x.IterationId);
             
-            var checksInLastIteration = devOpsPullRequestContext.Iterations
+            var checksInLastIteration = AzureDevOpsPullRequestContext.Iterations
                 .Where(x => x.IterationId == lastCommitIterationId);
 
             if (checksInLastIteration
@@ -182,22 +182,22 @@ internal class DevOpsMapper : IDevOpsMapper
             }
         }
 
-        if (devOpsPullRequestContext.PullRequestThreads.Any(t => t.ThreadStatus is "active" or "pending"))
+        if (AzureDevOpsPullRequestContext.PullRequestThreads.Any(t => t.ThreadStatus is "active" or "pending"))
         {
             return PullRequestStatus.OutStandingComments;
         }
         
-        if (!string.IsNullOrEmpty(devOpsPullRequestContext.DevOpsPullRequest.MergeFailureMessage))
+        if (!string.IsNullOrEmpty(AzureDevOpsPullRequestContext.AzureDevOpsPullRequest.MergeFailureMessage))
         {
             return PullRequestStatus.FailedToMerge;
         }
 
-        if (devOpsPullRequestContext.DevOpsPullRequest.Reviewers.Any(x => x.Vote <= 0 && x.IsRequired == true))
+        if (AzureDevOpsPullRequestContext.AzureDevOpsPullRequest.Reviewers.Any(x => x.Vote <= 0 && x.IsRequired == true))
         {
             return PullRequestStatus.NeedsReviewing;
         }
 
-        if (devOpsPullRequestContext.DevOpsPullRequest.Reviewers.Any(r => r.Vote > 0))
+        if (AzureDevOpsPullRequestContext.AzureDevOpsPullRequest.Reviewers.Any(r => r.Vote > 0))
         {
             return PullRequestStatus.ReadyToMerge;
         }
@@ -205,13 +205,13 @@ internal class DevOpsMapper : IDevOpsMapper
         return PullRequestStatus.NeedsReviewing;
     }
 
-    private Repository GetRepository(DevOpsRepository devOpsRepository)
+    private Repository GetRepository(AzureDevOpsRepository AzureDevOpsRepository)
     {
         return new Repository
         {
-            Name = devOpsRepository.Name,
-            Id = devOpsRepository.Id,
-            Url = GetRepositoryUIUrl(devOpsRepository.Url)
+            Name = AzureDevOpsRepository.Name,
+            Id = AzureDevOpsRepository.Id,
+            Url = GetRepositoryUIUrl(AzureDevOpsRepository.Url)
         };
     }
     

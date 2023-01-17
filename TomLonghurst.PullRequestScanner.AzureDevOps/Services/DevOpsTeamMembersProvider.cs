@@ -7,14 +7,14 @@ using TomLonghurst.PullRequestScanner.Models;
 
 namespace TomLonghurst.PullRequestScanner.AzureDevOps.Services;
 
-internal class DevOpsTeamMembersProvider : ITeamMembersProvider
+internal class AzureDevOpsTeamMembersProvider : ITeamMembersProvider
 {
-    private readonly DevOpsHttpClient _devOpsHttpClient;
+    private readonly AzureDevOpsHttpClient _devOpsHttpClient;
     private readonly AzureDevOpsOptions _azureDevOpsOptions;
 
-    public DevOpsTeamMembersProvider(DevOpsHttpClient devOpsHttpClient, AzureDevOpsOptions azureDevOpsOptions)
+    public AzureDevOpsTeamMembersProvider(AzureDevOpsHttpClient AzureDevOpsHttpClient, AzureDevOpsOptions azureDevOpsOptions)
     {
-        _devOpsHttpClient = devOpsHttpClient;
+        _devOpsHttpClient = AzureDevOpsHttpClient;
         _azureDevOpsOptions = azureDevOpsOptions;
     }
 
@@ -25,13 +25,13 @@ internal class DevOpsTeamMembersProvider : ITeamMembersProvider
             return Array.Empty<ITeamMember>();
         }
 
-        var teamsInProject = await _devOpsHttpClient.GetAll<DevOpsTeamWrapper>(
+        var teamsInProject = await _devOpsHttpClient.GetAll<AzureDevOpsTeamWrapper>(
             $"https://dev.azure.com/{_azureDevOpsOptions.OrganizationSlug}/_apis/projects/{_azureDevOpsOptions.ProjectSlug}/teams?api-version=7.1-preview.2");
 
         var membersResponses = await teamsInProject
             .SelectMany(x => x.Value)
             .ToAsyncProcessorBuilder()
-            .SelectAsync(x => _devOpsHttpClient.GetAll<DevOpsTeamMembersResponseWrapper>(
+            .SelectAsync(x => _devOpsHttpClient.GetAll<AzureDevOpsTeamMembersResponseWrapper>(
                 $"https://dev.azure.com/{_azureDevOpsOptions.OrganizationSlug}/_apis/projects/{_azureDevOpsOptions.ProjectSlug}/teams/{x.Id}/members?api-version=7.1-preview.2"))
             .ProcessInParallel(50, TimeSpan.FromSeconds(5));
 

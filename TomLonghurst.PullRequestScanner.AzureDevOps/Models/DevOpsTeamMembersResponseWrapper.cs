@@ -2,7 +2,7 @@
 
 namespace TomLonghurst.PullRequestScanner.AzureDevOps.Models;
 
-public record DevOpsTeamMembersResponseWrapper(
-    [property: JsonPropertyName("value")] IReadOnlyList<DevOpsTeamMember> Value,
+public record AzureDevOpsTeamMembersResponseWrapper(
+    [property: JsonPropertyName("value")] IReadOnlyList<AzureDevOpsTeamMember> Value,
     [property: JsonPropertyName("count")] int Count
 ) : IHasCount;

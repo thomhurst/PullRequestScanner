@@ -3,18 +3,18 @@ using TomLonghurst.PullRequestScanner.AzureDevOps.Models;
 
 namespace TomLonghurst.PullRequestScanner.AzureDevOps.Services;
 
-internal class DevOpsGitRepositoryService : IDevOpsGitRepositoryService
+internal class AzureDevOpsGitRepositoryService : IAzureDevOpsGitRepositoryService
 {
-    private readonly DevOpsHttpClient _githubHttpClient;
+    private readonly AzureDevOpsHttpClient _githubHttpClient;
 
-    public DevOpsGitRepositoryService(DevOpsHttpClient githubHttpClient)
+    public AzureDevOpsGitRepositoryService(AzureDevOpsHttpClient githubHttpClient)
     {
         _githubHttpClient = githubHttpClient;
     }
     
-    public async Task<IEnumerable<DevOpsGitRepository>> GetGitRepositories()
+    public async Task<IEnumerable<AzureDevOpsGitRepository>> GetGitRepositories()
     {
-        var gitRepositoryResponse = await _githubHttpClient.GetAll<DevOpsGitRepositoryResponse>("repositories?api-version=7.1-preview.1");
+        var gitRepositoryResponse = await _githubHttpClient.GetAll<AzureDevOpsGitRepositoryResponse>("repositories?api-version=7.1-preview.1");
         return gitRepositoryResponse.SelectMany(x => x.Repositories).Where(x => !x.IsDisabled);
     }
 }

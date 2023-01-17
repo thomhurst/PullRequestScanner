@@ -4,22 +4,22 @@ using TomLonghurst.PullRequestScanner.AzureDevOps.Models;
 
 namespace TomLonghurst.PullRequestScanner.AzureDevOps.Services;
 
-internal class DevOpsPullRequestService : IDevOpsPullRequestService
+internal class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestService
 {
-    private readonly DevOpsHttpClient _devOpsHttpClient;
+    private readonly AzureDevOpsHttpClient _devOpsHttpClient;
 
-    public DevOpsPullRequestService(DevOpsHttpClient devOpsHttpClient)
+    public AzureDevOpsPullRequestService(AzureDevOpsHttpClient AzureDevOpsHttpClient)
     {
-        _devOpsHttpClient = devOpsHttpClient;
+        _devOpsHttpClient = AzureDevOpsHttpClient;
     }
     
-    public async Task<IReadOnlyList<DevOpsPullRequestContext>> GetPullRequestsForRepository(DevOpsGitRepository githubGitRepository)
+    public async Task<IReadOnlyList<AzureDevOpsPullRequestContext>> GetPullRequestsForRepository(AzureDevOpsGitRepository githubGitRepository)
     {
-        var response = await _devOpsHttpClient.GetAll<DevOpsPullRequestsResponse>($"pullrequests?searchCriteria.status=all&searchCriteria.includeLinks=false&searchCriteria.repositoryId={githubGitRepository.Id}&includeCommits=true&api-version=7.1-preview.1");
+        var response = await _devOpsHttpClient.GetAll<AzureDevOpsPullRequestsResponse>($"pullrequests?searchCriteria.status=all&searchCriteria.includeLinks=false&searchCriteria.repositoryId={githubGitRepository.Id}&includeCommits=true&api-version=7.1-preview.1");
         var nonDraftedPullRequests = response.SelectMany(x => x.PullRequests)
             .Where(IsActiveOrRecentlyClosed);
 
-        var pullRequestsWithThreads = new List<DevOpsPullRequestContext>();
+        var pullRequestsWithThreads = new List<AzureDevOpsPullRequestContext>();
 
         foreach (var pullRequest in nonDraftedPullRequests)
         {
@@ -27,9 +27,9 @@ internal class DevOpsPullRequestService : IDevOpsPullRequestService
             
             var iterations = await GetIterations(pullRequest);
             
-            pullRequestsWithThreads.Add(new DevOpsPullRequestContext
+            pullRequestsWithThreads.Add(new AzureDevOpsPullRequestContext
             {
-                DevOpsPullRequest = pullRequest,
+                AzureDevOpsPullRequest = pullRequest,
                 PullRequestThreads = threads,
                 Iterations = iterations
             });
@@ -38,14 +38,14 @@ internal class DevOpsPullRequestService : IDevOpsPullRequestService
         return pullRequestsWithThreads;
     }
 
-    private bool IsActiveOrRecentlyClosed(DevOpsPullRequest devOpsPullRequest)
+    private bool IsActiveOrRecentlyClosed(AzureDevOpsPullRequest AzureDevOpsPullRequest)
     {
-        if (devOpsPullRequest.Status == "active")
+        if (AzureDevOpsPullRequest.Status == "active")
         {
             return true;
         }
 
-        if (devOpsPullRequest.ClosedDate >= DateTimeOffset.UtcNow.Date - TimeSpan.FromDays(1))
+        if (AzureDevOpsPullRequest.ClosedDate >= DateTimeOffset.UtcNow.Date - TimeSpan.FromDays(1))
         {
             return true;
         }
@@ -53,17 +53,17 @@ internal class DevOpsPullRequestService : IDevOpsPullRequestService
         return false;
     }
 
-    private async Task<IReadOnlyList<DevOpsPullRequestThread>> GetThreads(DevOpsPullRequest githubPullRequest)
+    private async Task<IReadOnlyList<AzureDevOpsPullRequestThread>> GetThreads(AzureDevOpsPullRequest githubPullRequest)
     {
-        var response = await _devOpsHttpClient.Get<DevOpsPullRequestThreadResponse>(
+        var response = await _devOpsHttpClient.Get<AzureDevOpsPullRequestThreadResponse>(
             $"repositories/{githubPullRequest.Repository.Id}/pullRequests/{githubPullRequest.PullRequestId}/threads?api-version=7.1-preview.1");
 
         return response.Threads.ToImmutableList();
     }
 
-    private async Task<IReadOnlyList<DevOpsPullRequestIteration>> GetIterations(DevOpsPullRequest githubPullRequest)
+    private async Task<IReadOnlyList<AzureDevOpsPullRequestIteration>> GetIterations(AzureDevOpsPullRequest githubPullRequest)
     {
-        var response = await _devOpsHttpClient.Get<DevOpsPullRequestIterationResponse>(
+        var response = await _devOpsHttpClient.Get<AzureDevOpsPullRequestIterationResponse>(
             $"repositories/{githubPullRequest.Repository.Id}/pullRequests/{githubPullRequest.PullRequestId}/statuses?api-version=7.1-preview.1");
 
         return response.Value.ToImmutableList();

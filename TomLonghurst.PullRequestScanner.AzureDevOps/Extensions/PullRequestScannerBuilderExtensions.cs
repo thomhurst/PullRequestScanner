@@ -29,7 +29,7 @@ public static class PullRequestScannerBuilderExtensions
     private static PullRequestScannerBuilder AddAzureDevOps(this PullRequestScannerBuilder pullRequestScannerBuilder)
     {
         pullRequestScannerBuilder.Services
-            .AddHttpClient<DevOpsHttpClient>((provider, client) =>
+            .AddHttpClient<AzureDevOpsHttpClient>((provider, client) =>
             {
                 var azureDevOpsOptions = provider.GetRequiredService<AzureDevOpsOptions>();
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",
@@ -39,10 +39,10 @@ public static class PullRequestScannerBuilderExtensions
                         $"https://dev.azure.com/{azureDevOpsOptions.OrganizationSlug}/{azureDevOpsOptions.ProjectSlug}/_apis/git/");
             });
 
-        pullRequestScannerBuilder.Services.AddTransient<IDevOpsGitRepositoryService, DevOpsGitRepositoryService>()
-            .AddTransient<IDevOpsPullRequestService, DevOpsPullRequestService>()
-            .AddTransient<IDevOpsMapper, DevOpsMapper>()
-            .AddSingleton<ITeamMembersProvider, DevOpsTeamMembersProvider>();
+        pullRequestScannerBuilder.Services.AddTransient<IAzureDevOpsGitRepositoryService, AzureDevOpsGitRepositoryService>()
+            .AddTransient<IAzureDevOpsPullRequestService, AzureDevOpsPullRequestService>()
+            .AddTransient<IAzureDevOpsMapper, AzureDevOpsMapper>()
+            .AddSingleton<ITeamMembersProvider, AzureDevOpsTeamMembersProvider>();
         
         return pullRequestScannerBuilder.AddPullRequestProvider(ActivatorUtilities.GetServiceOrCreateInstance<AzureDevOpsPullRequestProvider>); 
     }

@@ -2,6 +2,6 @@
 
 namespace TomLonghurst.PullRequestScanner.AzureDevOps.Models;
 
-public record DevOpsPullRequestThreadProperties(
-    [property: JsonPropertyName("CodeReviewThreadType")] DevOpsPullRequestThreadPropertyValue? CodeReviewThreadType
+public record AzureDevOpsPullRequestThreadProperties(
+    [property: JsonPropertyName("CodeReviewThreadType")] AzureDevOpsPullRequestThreadPropertyValue? CodeReviewThreadType
 );

@@ -3,7 +3,7 @@ using TomLonghurst.PullRequestScanner.Models;
 
 namespace TomLonghurst.PullRequestScanner.AzureDevOps.Mappers;
 
-internal interface IDevOpsMapper
+internal interface IAzureDevOpsMapper
 {
-    PullRequest ToPullRequestModel(DevOpsPullRequestContext pullRequestContext);
+    PullRequest ToPullRequestModel(AzureDevOpsPullRequestContext pullRequestContext);
 }

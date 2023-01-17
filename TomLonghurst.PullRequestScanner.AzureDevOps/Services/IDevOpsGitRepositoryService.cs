@@ -2,7 +2,7 @@
 
 namespace TomLonghurst.PullRequestScanner.AzureDevOps.Services;
 
-internal interface IDevOpsGitRepositoryService
+internal interface IAzureDevOpsGitRepositoryService
 {
-    Task<IEnumerable<DevOpsGitRepository>> GetGitRepositories();
+    Task<IEnumerable<AzureDevOpsGitRepository>> GetGitRepositories();
 }

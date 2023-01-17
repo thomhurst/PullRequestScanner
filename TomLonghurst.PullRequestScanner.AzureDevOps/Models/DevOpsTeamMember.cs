@@ -3,7 +3,7 @@ using TomLonghurst.PullRequestScanner.Models;
 
 namespace TomLonghurst.PullRequestScanner.AzureDevOps.Models;
 
-public record DevOpsTeamMember(
+public record AzureDevOpsTeamMember(
     [property: JsonPropertyName("identity")] Identity Identity,
     [property: JsonPropertyName("isTeamAdmin")] bool? IsTeamAdmin
 ) : ITeamMember

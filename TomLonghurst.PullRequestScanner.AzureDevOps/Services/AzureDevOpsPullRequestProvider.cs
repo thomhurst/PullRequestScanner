@@ -10,19 +10,19 @@ namespace TomLonghurst.PullRequestScanner.AzureDevOps.Services;
 internal class AzureDevOpsPullRequestProvider : IPullRequestProvider
 {
     private readonly AzureDevOpsOptions _azureDevOpsOptions;
-    private readonly IDevOpsGitRepositoryService _devOpsGitRepositoryService;
-    private readonly IDevOpsPullRequestService _devOpsPullRequestService;
-    private readonly IDevOpsMapper _devOpsMapper;
+    private readonly IAzureDevOpsGitRepositoryService _devOpsGitRepositoryService;
+    private readonly IAzureDevOpsPullRequestService _devOpsPullRequestService;
+    private readonly IAzureDevOpsMapper _devOpsMapper;
 
     public AzureDevOpsPullRequestProvider(AzureDevOpsOptions azureDevOpsOptions,
-        IDevOpsGitRepositoryService devOpsGitRepositoryService,
-        IDevOpsPullRequestService devOpsPullRequestService,
-        IDevOpsMapper devOpsMapper)
+        IAzureDevOpsGitRepositoryService AzureDevOpsGitRepositoryService,
+        IAzureDevOpsPullRequestService AzureDevOpsPullRequestService,
+        IAzureDevOpsMapper AzureDevOpsMapper)
     {
         _azureDevOpsOptions = azureDevOpsOptions;
-        _devOpsGitRepositoryService = devOpsGitRepositoryService;
-        _devOpsPullRequestService = devOpsPullRequestService;
-        _devOpsMapper = devOpsMapper;
+        _devOpsGitRepositoryService = AzureDevOpsGitRepositoryService;
+        _devOpsPullRequestService = AzureDevOpsPullRequestService;
+        _devOpsMapper = AzureDevOpsMapper;
 
         ValidateOptions();
     }
@@ -39,9 +39,9 @@ internal class AzureDevOpsPullRequestProvider : IPullRequestProvider
             .SelectAsync(repo => _devOpsPullRequestService.GetPullRequestsForRepository(repo))
             .ProcessInParallel(50, TimeSpan.FromSeconds(1));
 
-        var devOpsPullRequestContexts = pullRequestsEnumerable.SelectMany(x => x).ToImmutableList();
+        var AzureDevOpsPullRequestContexts = pullRequestsEnumerable.SelectMany(x => x).ToImmutableList();
 
-        var mappedPullRequests = devOpsPullRequestContexts
+        var mappedPullRequests = AzureDevOpsPullRequestContexts
             .Select(pr => _devOpsMapper.ToPullRequestModel(pr))
             .ToImmutableList();
 
