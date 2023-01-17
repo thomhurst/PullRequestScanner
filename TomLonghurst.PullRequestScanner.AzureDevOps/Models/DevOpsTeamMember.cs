@@ -12,5 +12,5 @@ public record AzureDevOpsTeamMember(
     public string UniqueName { get; } = Identity?.UniqueName;
     public string Id { get; } = Identity?.Id;
     public string Email { get; } = Identity?.UniqueName;
-    public string ImageUrl { get; } = Identity?.ImageUrl;
+    public string ImageUrl { get; }
 }
