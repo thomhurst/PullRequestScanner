@@ -131,3 +131,17 @@ public class MorningTrigger
     }
 }
 ```
+
+## Example Output
+
+![image](https://user-images.githubusercontent.com/30480171/213030165-b16dc756-afdc-4a3b-993d-c3d9a78c4dc1.png)
+
+![image](https://user-images.githubusercontent.com/30480171/213030213-ba01394d-e5ae-4960-b519-b3039e2eacfe.png)
+
+![image](https://user-images.githubusercontent.com/30480171/213030243-a75b6ff3-5e26-408c-b553-6ede840976d0.png)
+
+![image](https://user-images.githubusercontent.com/30480171/213030268-0b4c5325-3539-44f4-a842-d625cef64ce6.png)
+
+
+
+
