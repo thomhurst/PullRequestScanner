@@ -5,7 +5,8 @@ If you write the implementation for a new provider, or a new plugin, feel free t
 
 Currently the out-of-the-box providers are Azure DevOps and GitHub, with a plugin that can publish cards to a Microsoft Teams Webhook, notifying your team of any open pull requests and their current state.
 
-# Install 
+# Install
+
 Install via Nuget 
 
 > Install-Package TomLonghurst.PullRequestScanner
@@ -13,14 +14,17 @@ Install via Nuget
 ## Available Providers
 
 ### Azure DevOps
+
 > Install-Package TomLonghurst.PullRequestScanner.AzureDevOps
 
 ### GitHub
+
 > Install-Package TomLonghurst.PullRequestScanner.GitHub
 
 ## Available Plugins
 
 ### Microsoft Teams Web Hook
+
 > Install-Package TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook
 
 ## Usage
@@ -36,6 +40,7 @@ services
 
 And either use any of the already built providers and plugins, or build your own and plug them in.
 That could either look like:
+
 ```csharp
         builder.Services
             .AddPullRequestScanner()
@@ -71,13 +76,14 @@ or
 ```
 
 Then wherever you want to use it, just inject `IPullRequestScanner` into your class. With this you can:
-- Get Pull Request Data
-- Execute All Plugins
-- Execute All Plugins that meet a condition
-- Get a particular plugin and invoke it with more granular control
 
+-   Get Pull Request Data
+-   Execute All Plugins
+-   Execute All Plugins that meet a condition
+-   Get a particular plugin and invoke it with more granular control
 
 ## Example
+
 A simple Timed Azure Function to notify your team every morning can look as simple as this:
 
 ```csharp
@@ -141,7 +147,3 @@ public class MorningTrigger
 ![image](https://user-images.githubusercontent.com/30480171/213030243-a75b6ff3-5e26-408c-b553-6ede840976d0.png)
 
 ![image](https://user-images.githubusercontent.com/30480171/213030268-0b4c5325-3539-44f4-a842-d625cef64ce6.png)
-
-
-
-
