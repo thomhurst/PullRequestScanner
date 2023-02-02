@@ -33,7 +33,7 @@ public static class PullRequestScannerBuilderExtensions
         pullRequestScannerBuilder.Services.AddSingleton(microsoftTeamsOptions);
 
         microsoftTeamsWebHookPublisherBuilder(
-            new MicrosoftTeamsWebHookPublisherBuilder(pullRequestScannerBuilder.Services)
+            new MicrosoftTeamsWebHookPublisherBuilder(pullRequestScannerBuilder)
         );
 
         return pullRequestScannerBuilder;
@@ -46,7 +46,7 @@ public static class PullRequestScannerBuilderExtensions
         pullRequestScannerBuilder.Services.AddSingleton(microsoftTeamsOptionsFactory);
         
         microsoftTeamsWebHookPublisherBuilder(
-            new MicrosoftTeamsWebHookPublisherBuilder(pullRequestScannerBuilder.Services)
+            new MicrosoftTeamsWebHookPublisherBuilder(pullRequestScannerBuilder)
         );
         
         return pullRequestScannerBuilder;
