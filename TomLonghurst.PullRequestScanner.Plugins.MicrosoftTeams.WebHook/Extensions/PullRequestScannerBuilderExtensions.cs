@@ -10,6 +10,7 @@ namespace TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Extensi
 
 public static class PullRequestScannerBuilderExtensions
 {
+    [Obsolete("This adds all Microsoft Teams Webhook plugins. Please instead consider using the overload with the MicrosoftTeamsWebHookPublisherBuilder to add desired plugins one by one with better configuration")]
     public static PullRequestScannerBuilder AddMicrosoftTeamsWebHookPublisher(
         this PullRequestScannerBuilder pullRequestScannerBuilder, MicrosoftTeamsOptions microsoftTeamsOptions)
     {
@@ -17,6 +18,7 @@ public static class PullRequestScannerBuilderExtensions
         return AddMicrosoftTeamsWebHookPublisher(pullRequestScannerBuilder);
     }
 
+    [Obsolete("This adds all Microsoft Teams Webhook plugins. Please instead consider using the overload with the MicrosoftTeamsWebHookPublisherBuilder to add desired plugins one by one with better configuration")]
     public static PullRequestScannerBuilder AddMicrosoftTeamsWebHookPublisher(
         this PullRequestScannerBuilder pullRequestScannerBuilder, Func<IServiceProvider, MicrosoftTeamsOptions> microsoftTeamsOptionsFactory)
     {
@@ -49,8 +51,7 @@ public static class PullRequestScannerBuilderExtensions
         
         return pullRequestScannerBuilder;
     }
-
-    [Obsolete("This adds all Microsoft Teams Webhook plugins. Please instead consider using the overload with the MicrosoftTeamsWebHookPublisherBuilder to add desired plugins one by one with better configuration")]
+    
     private static PullRequestScannerBuilder AddMicrosoftTeamsWebHookPublisher(this PullRequestScannerBuilder pullRequestScannerBuilder)
     {
         pullRequestScannerBuilder.Services.TryAddTransient<IPullRequestsOverviewCardMapper, PullRequestsOverviewCardMapper>();
