@@ -20,6 +20,7 @@ internal class GithubRepositoryService : BaseGitHubApiService, IGithubRepository
         return gitRepositoryResponse
             .Where(x => !x.Disabled)
             .Where(x => !x.Archived)
+            .Where(x => _githubOptions.RepositoriesToScan.Invoke(x))
             .ToList();
     }
 }
