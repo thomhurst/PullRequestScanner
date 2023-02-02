@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TomLonghurst.PullRequestSca
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook", "TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook\TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.csproj", "{6727C281-B5E9-443D-A739-8218046B3B15}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TomLonghurst.PullRequestScanner.Example", "TomLonghurst.PullRequestScanner.Example\TomLonghurst.PullRequestScanner.Example.csproj", "{9F8485B7-A53B-48BB-BC8A-1FE12D5CBB12}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{6727C281-B5E9-443D-A739-8218046B3B15}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6727C281-B5E9-443D-A739-8218046B3B15}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6727C281-B5E9-443D-A739-8218046B3B15}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9F8485B7-A53B-48BB-BC8A-1FE12D5CBB12}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F8485B7-A53B-48BB-BC8A-1FE12D5CBB12}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F8485B7-A53B-48BB-BC8A-1FE12D5CBB12}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F8485B7-A53B-48BB-BC8A-1FE12D5CBB12}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
