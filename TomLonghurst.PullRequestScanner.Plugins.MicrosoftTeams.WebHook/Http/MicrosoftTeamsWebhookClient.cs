@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Polly;
 using Polly.Extensions.Http;
@@ -11,11 +12,14 @@ internal class MicrosoftTeamsWebhookClient
 {
     private readonly HttpClient _httpClient;
     private readonly MicrosoftTeamsOptions _microsoftTeamsOptions;
+    private readonly ILogger<MicrosoftTeamsWebhookClient> _logger;
 
-    public MicrosoftTeamsWebhookClient(HttpClient httpClient, MicrosoftTeamsOptions microsoftTeamsOptions)
+    public MicrosoftTeamsWebhookClient(HttpClient httpClient, MicrosoftTeamsOptions microsoftTeamsOptions,
+        ILogger<MicrosoftTeamsWebhookClient> logger)
     {
         _httpClient = httpClient;
         _microsoftTeamsOptions = microsoftTeamsOptions;
+        _logger = logger;
     }
 
     public async Task CreateTeamsNotification(MicrosoftTeamsAdaptiveCard adaptiveCard)
@@ -24,6 +28,8 @@ internal class MicrosoftTeamsWebhookClient
             
         var adaptiveTeamsCardJsonString = JsonConvert.SerializeObject(TeamsNotificationCardWrapper.Wrap(adaptiveCard), Formatting.None);
 
+        _logger.LogTrace("Microsoft Teams Webhook Request Payload: {Payload}", adaptiveTeamsCardJsonString);
+        
         try
         {
             var teamsNotificationResponse = await HttpPolicyExtensions.HandleTransientHttpError()
@@ -40,6 +46,8 @@ internal class MicrosoftTeamsWebhookClient
                     return _httpClient.SendAsync(cardsRequest);
                 });
 
+            _logger.LogTrace("Microsoft Teams Webhook Response: {Response}", await teamsNotificationResponse.Content.ReadAsStringAsync());
+            
             teamsNotificationResponse.EnsureSuccessStatusCode();
         }
         catch (HttpRequestException e)
