@@ -36,9 +36,7 @@ public static class PullRequestScannerBuilderExtensions
 
                 var azureDevOpsOptions = provider.GetRequiredService<AzureDevOpsOptions>();
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",
-                    Convert.ToBase64String(
-                        Encoding.ASCII.GetBytes(
-                            $":{azureDevOpsOptions.PersonalAccessToken}")));
+                    Convert.ToBase64String(Encoding.ASCII.GetBytes(FormatAccessToken(azureDevOpsOptions?.PersonalAccessToken))));
 
                 client.BaseAddress =
                     new Uri(
@@ -51,5 +49,20 @@ public static class PullRequestScannerBuilderExtensions
             .AddSingleton<ITeamMembersProvider, AzureDevOpsTeamMembersProvider>();
 
         return pullRequestScannerBuilder.AddPullRequestProvider(ActivatorUtilities.GetServiceOrCreateInstance<AzureDevOpsPullRequestProvider>);
+    }
+
+    private static string FormatAccessToken(string personalAccessToken)
+    {
+        if (personalAccessToken == null)
+        {
+            throw new ArgumentNullException(nameof(personalAccessToken));
+        }
+
+        if (!personalAccessToken.Contains(':'))
+        {
+            return $":{personalAccessToken}";
+        }
+
+        return personalAccessToken;
     }
 }
