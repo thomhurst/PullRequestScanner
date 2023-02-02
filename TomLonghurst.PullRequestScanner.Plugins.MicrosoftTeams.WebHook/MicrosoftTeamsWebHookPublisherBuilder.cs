@@ -22,11 +22,13 @@ public class MicrosoftTeamsWebHookPublisherBuilder
     public MicrosoftTeamsWebHookPublisherBuilder AddOverviewCardPublisher()
     {
         _services.TryAddTransient<IPullRequestsOverviewCardMapper, PullRequestsOverviewCardMapper>();
-        _services.TryAddTransient<PullRequestOverviewMicrosoftTeamsWebHookPublisher>();
+        _services.TryAddTransient<PullRequestOverviewMicrosoftTeamsWebHookPublisher>(sp => 
+            new PullRequestOverviewMicrosoftTeamsWebHookPublisher(sp.GetRequiredService<MicrosoftTeamsWebhookClient>(), sp.GetRequiredService<IPullRequestsOverviewCardMapper>())
+        );
         
         _services.AddHttpClient<MicrosoftTeamsWebhookClient>();
-
-        _pullRequestScannerBuilder.AddPlugin<PullRequestOverviewMicrosoftTeamsWebHookPublisher>();
+        
+        _pullRequestScannerBuilder.AddPlugin(sp => sp.GetRequiredService<PullRequestOverviewMicrosoftTeamsWebHookPublisher>());
         
         return this;
     }
@@ -34,11 +36,13 @@ public class MicrosoftTeamsWebHookPublisherBuilder
     public MicrosoftTeamsWebHookPublisherBuilder AddLeaderboardCardPublisher()
     {
         _services.TryAddTransient<IPullRequestLeaderboardCardMapper, PullRequestLeaderboardCardMapper>();
-        _services.TryAddTransient<PullRequestLeaderboardMicrosoftTeamsWebHookPublisher>();
+        _services.TryAddTransient<PullRequestLeaderboardMicrosoftTeamsWebHookPublisher>(sp => 
+            new PullRequestLeaderboardMicrosoftTeamsWebHookPublisher(sp.GetRequiredService<MicrosoftTeamsWebhookClient>(), sp.GetRequiredService<IPullRequestLeaderboardCardMapper>())
+        );
 
         _services.AddHttpClient<MicrosoftTeamsWebhookClient>();
         
-        _pullRequestScannerBuilder.AddPlugin<PullRequestLeaderboardMicrosoftTeamsWebHookPublisher>();
+        _pullRequestScannerBuilder.AddPlugin(sp => sp.GetRequiredService<PullRequestLeaderboardMicrosoftTeamsWebHookPublisher>());
 
         return this;
     }
@@ -48,11 +52,13 @@ public class MicrosoftTeamsWebHookPublisherBuilder
         _services.AddSingleton(microsoftTeamsStatusPublishOptions ?? new MicrosoftTeamsStatusPublishOptions());
 
         _services.TryAddTransient<IPullRequestStatusCardMapper, PullRequestStatusCardMapper>();
-        _services.TryAddTransient<PullRequestStatusMicrosoftTeamsWebHookPublisher>();
-
+        _services.TryAddTransient<PullRequestStatusMicrosoftTeamsWebHookPublisher>(sp => 
+            new PullRequestStatusMicrosoftTeamsWebHookPublisher(sp.GetRequiredService<MicrosoftTeamsWebhookClient>(), sp.GetRequiredService<IPullRequestStatusCardMapper>(), microsoftTeamsStatusPublishOptions ?? new MicrosoftTeamsStatusPublishOptions())
+        );
+        
         _services.AddHttpClient<MicrosoftTeamsWebhookClient>();
         
-        _pullRequestScannerBuilder.AddPlugin<PullRequestStatusMicrosoftTeamsWebHookPublisher>();
+        _pullRequestScannerBuilder.AddPlugin(sp => sp.GetRequiredService<PullRequestStatusMicrosoftTeamsWebHookPublisher>());
 
         return this;
     }
