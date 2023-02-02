@@ -38,7 +38,17 @@ var host = Host.CreateDefaultBuilder(args)
                 {
                     microsoftTeamsWebHookPublisherBuilder.AddOverviewCardPublisher();
                     microsoftTeamsWebHookPublisherBuilder.AddLeaderboardCardPublisher();
-                    microsoftTeamsWebHookPublisherBuilder.AddStatusCardsPublisher();
+                    microsoftTeamsWebHookPublisherBuilder.AddStatusCardsPublisher(new MicrosoftTeamsStatusPublishOptions
+                    {
+                        StatusesToPublish = new()
+                        {
+                            PullRequestStatus.MergeConflicts,
+                            PullRequestStatus.ReadyToMerge,
+                            PullRequestStatus.FailingChecks,
+                            PullRequestStatus.NeedsReviewing,
+                            PullRequestStatus.Rejected
+                        }
+                    });
                 });
     })
     .Build();
