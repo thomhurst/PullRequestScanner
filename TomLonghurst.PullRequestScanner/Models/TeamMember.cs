@@ -1,6 +1,6 @@
 ﻿namespace TomLonghurst.PullRequestScanner.Models;
 
-public record TeamMember
+public class TeamMember
 {
     public string? DisplayName { get; set; }
     public HashSet<string> UniqueNames { get; } = new();
