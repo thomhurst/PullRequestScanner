@@ -59,6 +59,12 @@ That could either look like:
             .AddMicrosoftTeamsWebHookPublisher(new MicrosoftTeamsOptions
                 {
                     WebHookUri = new Uri(myMicrosoftTeamsWebhookUri)
+                },
+                microsoftTeamsWebHookPublisherBuilder =>
+                {
+                    microsoftTeamsWebHookPublisherBuilder.AddLeaderboardCardPublisher();
+                    microsoftTeamsWebHookPublisherBuilder.AddOverviewCardPublisher();
+                    microsoftTeamsWebHookPublisherBuilder.AddStatusCardsPublisher();
                 }
             );
 ```
@@ -114,10 +120,14 @@ If I want more control over my plugins or pull request data, I could do this:
 public class MorningTrigger
 {
     private readonly IPullRequestScanner _pullRequestScanner;
+    private readonly PullRequestOverviewMicrosoftTeamsWebHookPublisher _overviewCardPublisher;
+    private readonly PullRequestStatusMicrosoftTeamsWebHookPublisher _statusCardPublisher;
 
     public MorningTrigger(IPullRequestScanner pullRequestScanner)
     {
         _pullRequestScanner = pullRequestScanner;
+        _overviewCardPublisher = _pullRequestScanner.GetPlugin<PullRequestOverviewMicrosoftTeamsWebHookPublisher>();
+        _statusCardPublisher = _pullRequestScanner.GetPlugin<PullRequestStatusMicrosoftTeamsWebHookPublisher>();
     }
     
     [FunctionName("MorningTrigger")]
@@ -125,15 +135,12 @@ public class MorningTrigger
     {
         var pullRequests = await _pullRequestScanner.GetPullRequests();
         
-        await _pullRequestScanner.GetPlugin<IMicrosoftTeamsWebHookPublisher>().ExecuteAsync(pullRequests, new MicrosoftTeamsPublishOptions
+        await _overviewCardPublisher.ExecuteAsync(pullRequests);
+        
+        foreach (var pullRequestStatus in new[] { PullRequestStatus.MergeConflicts, PullRequestStatus.ReadyToMerge })
         {
-            PublishPullRequestReviewerLeaderboardCard = false,
-            CardStatusesToPublish = new List<PullRequestStatus>
-            {
-                PullRequestStatus.MergeConflicts,
-                PullRequestStatus.ReadyToMerge
-            }
-        });
+            await _statusCardPublisher.ExecuteAsync(pullRequests, pullRequestStatus);
+        }
     }
 }
 ```
