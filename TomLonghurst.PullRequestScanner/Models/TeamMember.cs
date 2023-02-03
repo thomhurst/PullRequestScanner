@@ -32,4 +32,9 @@ public record TeamMember
     {
         return DisplayOrUniqueName == other?.DisplayOrUniqueName;
     }
+
+    public override int GetHashCode()
+    {
+        return DisplayOrUniqueName.GetHashCode();
+    }
 }
