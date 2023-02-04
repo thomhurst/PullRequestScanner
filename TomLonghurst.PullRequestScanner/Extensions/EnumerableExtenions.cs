@@ -1,4 +1,5 @@
-﻿using TomLonghurst.PullRequestScanner.Models;
+﻿using System.Runtime.CompilerServices;
+using TomLonghurst.PullRequestScanner.Models;
 
 namespace TomLonghurst.PullRequestScanner.Extensions;
 

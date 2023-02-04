@@ -35,12 +35,14 @@ public static class PullRequestScannerBuilderExtensions
                     new MediaTypeWithQualityHeaderValue("application/json"));
 
                 var azureDevOpsOptions = provider.GetRequiredService<AzureDevOpsOptions>();
+
+
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",
-                    Convert.ToBase64String(Encoding.ASCII.GetBytes(FormatAccessToken(azureDevOpsOptions?.PersonalAccessToken))));
+                    Convert.ToBase64String(Encoding.ASCII.GetBytes(FormatAccessToken(azureDevOpsOptions.PersonalAccessToken))));
 
                 client.BaseAddress =
                     new Uri(
-                        $"https://dev.azure.com/{azureDevOpsOptions.OrganizationSlug}/{azureDevOpsOptions.ProjectSlug}/_apis/git/");
+                        $"https://dev.azure.com/{azureDevOpsOptions.OrganizationSlug}/");
             });
 
         pullRequestScannerBuilder.Services.AddTransient<IAzureDevOpsGitRepositoryService, AzureDevOpsGitRepositoryService>()

@@ -56,9 +56,17 @@ internal class AzureDevOpsPullRequestProvider : IPullRequestProvider
         }
         
         ValidatePopulated(_azureDevOpsOptions.OrganizationSlug, nameof(_azureDevOpsOptions.OrganizationSlug));
-        ValidatePopulated(_azureDevOpsOptions.ProjectSlug, nameof(_azureDevOpsOptions.ProjectSlug));
+        ValidateCollectionPopulated(_azureDevOpsOptions.GetProjects(), nameof(_azureDevOpsOptions.ProjectSlug));
         ValidatePopulated(_azureDevOpsOptions.PersonalAccessToken, nameof(_azureDevOpsOptions.PersonalAccessToken));
-        
+
+        void ValidateCollectionPopulated(IEnumerable<string> value, string propertyName)
+        {
+            if (!value.Any())
+            {
+                throw new ArgumentNullException(propertyName);
+            }
+        }
+
         void ValidatePopulated(string value, string propertyName)
         {
             if (string.IsNullOrEmpty(value))

@@ -1,8 +1,10 @@
 ﻿using TomLonghurst.EnumerableAsyncProcessor.Extensions;
+using TomLonghurst.PullRequestScanner.AzureDevOps.Extensions;
 using TomLonghurst.PullRequestScanner.AzureDevOps.Http;
 using TomLonghurst.PullRequestScanner.AzureDevOps.Models;
 using TomLonghurst.PullRequestScanner.AzureDevOps.Options;
 using TomLonghurst.PullRequestScanner.Contracts;
+using TomLonghurst.PullRequestScanner.Extensions;
 using TomLonghurst.PullRequestScanner.Models;
 
 namespace TomLonghurst.PullRequestScanner.AzureDevOps.Services;
@@ -25,21 +27,29 @@ internal class AzureDevOpsTeamMembersProvider : ITeamMembersProvider
             return Array.Empty<ITeamMember>();
         }
 
-        var teamsInProject = await _devOpsHttpClient.GetAll<AzureDevOpsTeamWrapper>(
-            $"https://dev.azure.com/{_azureDevOpsOptions.OrganizationSlug}/_apis/projects/{_azureDevOpsOptions.ProjectSlug}/teams?api-version=7.1-preview.2");
+        List<ITeamMember> allTeamMembers = new List<ITeamMember>();
 
-        var membersResponses = await teamsInProject
-            .SelectMany(x => x.Value)
-            .ToAsyncProcessorBuilder()
-            .SelectAsync(x => _devOpsHttpClient.GetAll<AzureDevOpsTeamMembersResponseWrapper>(
-                $"https://dev.azure.com/{_azureDevOpsOptions.OrganizationSlug}/_apis/projects/{_azureDevOpsOptions.ProjectSlug}/teams/{x.Id}/members?api-version=7.1-preview.2"))
-            .ProcessInParallel(50, TimeSpan.FromSeconds(5));
+        foreach (string project in _azureDevOpsOptions.GetProjects())
+        {
+            var teamsInProject = await _devOpsHttpClient
+                .ListTeams(project)
+                .ToImmutableList();
 
-        return membersResponses
-            .SelectMany(x => x)
-            .SelectMany(x => x.Value)
-            .Where(x => x.Identity.DisplayName != Constants.VstsDisplayName)
-            .Where(x => !x.Identity.UniqueName.StartsWith(Constants.VstfsUniqueNamePrefix))
-            .ToList();
+            var membersResponses = await teamsInProject
+                .ToAsyncProcessorBuilder()
+                .SelectAsync(x => _devOpsHttpClient.ListTeamMembers(project, x.Id).ToImmutableList())
+                .ProcessInParallel(50, TimeSpan.FromSeconds(5));
+
+            var members = membersResponses
+                .SelectMany(x => x)
+                .Where(x => x.Identity.DisplayName != Constants.VstsDisplayName)
+                .Where(x => !x.Identity.UniqueName.StartsWith(Constants.VstfsUniqueNamePrefix))
+                .ToList();
+
+            allTeamMembers.AddRange(members);
+        }
+
+        return allTeamMembers
+            .DistinctBy(x => x.Id);
     }
 }

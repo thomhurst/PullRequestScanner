@@ -17,14 +17,16 @@ internal class AzureDevOpsHttpClient
         _logger = logger;
     }
     
-    public async Task<T?> Get<T>(string path)
+    public async Task<T?> Get<T>(string path, CancellationToken cancellationToken = default)
     {
-        var httpResponseMessage = await GetHttpResponseMessage(path);
+        var httpResponseMessage = await GetHttpResponseMessage(path, cancellationToken);
 
-        return await httpResponseMessage.Content.ReadFromJsonAsync<T>();
+        return await httpResponseMessage
+            .Content
+            .ReadFromJsonAsync<T>(cancellationToken: cancellationToken);
     }
 
-    public async Task<IEnumerable<T>> GetAll<T>(string path) where T : IHasCount
+    public async Task<IEnumerable<T>> GetAll<T>(string path, CancellationToken cancellationToken = default) where T : IHasCount
     {
         var results = new List<T>();
 
@@ -35,7 +37,7 @@ internal class AzureDevOpsHttpClient
                 .AddQueryParam("$top", "100")
                 .AddQueryParam("$skip", (100 * iteration).ToString());
 
-            var response = await Get<T>(pathWithBatchingQueryParameters);
+            var response = await Get<T>(pathWithBatchingQueryParameters, cancellationToken);
 
             results.Add(response);
             
@@ -45,16 +47,16 @@ internal class AzureDevOpsHttpClient
         return results;
     }
 
-    private async Task<HttpResponseMessage> GetHttpResponseMessage(string path)
+    private async Task<HttpResponseMessage> GetHttpResponseMessage(string path, CancellationToken cancellationToken = default)
     {
         var response = await
             HttpPolicyExtensions.HandleTransientHttpError()
                 .WaitAndRetryAsync(5, i => TimeSpan.FromSeconds(i * 2))
-                .ExecuteAsync(() => _httpClient.GetAsync(path));
+                .ExecuteAsync(() => _httpClient.GetAsync(path, cancellationToken));
 
         if (!response.IsSuccessStatusCode)
         {
-            _logger.LogError("Error calling {Path}: {Response}", path, await response.Content.ReadAsStringAsync());
+            _logger.LogError("Error calling {Path}: {Response}", path, await response.Content.ReadAsStringAsync(cancellationToken));
         }
 
         return response.EnsureSuccessStatusCode();

@@ -1,4 +1,5 @@
-﻿using TomLonghurst.PullRequestScanner.AzureDevOps.Http;
+﻿using TomLonghurst.PullRequestScanner.AzureDevOps.Extensions;
+using TomLonghurst.PullRequestScanner.AzureDevOps.Http;
 using TomLonghurst.PullRequestScanner.AzureDevOps.Models;
 using TomLonghurst.PullRequestScanner.AzureDevOps.Options;
 
@@ -17,9 +18,28 @@ internal class AzureDevOpsGitRepositoryService : IAzureDevOpsGitRepositoryServic
     
     public async Task<IEnumerable<AzureDevOpsGitRepository>> GetGitRepositories()
     {
-        var gitRepositoryResponse = await _githubHttpClient.GetAll<AzureDevOpsGitRepositoryResponse>("repositories?api-version=7.1-preview.1");
-        return gitRepositoryResponse.SelectMany(x => x.Repositories)
-            .Where(x => !x.IsDisabled)
-            .Where(x => _azureDevOpsOptions.RepositoriesToScan.Invoke(x));
+        List<AzureDevOpsGitRepository> repositories = new List<AzureDevOpsGitRepository>();
+
+        foreach (string project in _azureDevOpsOptions.GetProjects())
+        {
+            await foreach (var repository in _githubHttpClient.ListGitRepositories(project))
+            {
+                if (repository.IsDisabled)
+                {
+                    continue;
+                }
+
+                bool includeRepository = _azureDevOpsOptions.RepositoriesToScan(repository);
+
+                if (!includeRepository)
+                {
+                    continue;
+                }
+
+                repositories.Add(repository);
+            }
+        }
+
+        return repositories;
     }
 }
