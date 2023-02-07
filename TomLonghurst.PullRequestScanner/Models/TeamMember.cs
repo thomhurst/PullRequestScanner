@@ -1,6 +1,6 @@
 ﻿namespace TomLonghurst.PullRequestScanner.Models;
 
-public class TeamMember
+public class TeamMember : IEquatable<TeamMember>
 {
     public string? DisplayName { get; set; }
     public HashSet<string> UniqueNames { get; } = new();
@@ -28,13 +28,50 @@ public class TeamMember
         }
     }
 
-    public virtual bool Equals(TeamMember? other)
+    public string UniqueIdentifier
     {
-        return DisplayOrUniqueName == other?.DisplayOrUniqueName;
+        get
+        {
+            var uniqueName = UniqueNames?.FirstOrDefault(x => !string.IsNullOrWhiteSpace(x));
+
+            if (!string.IsNullOrWhiteSpace(uniqueName))
+            {
+                return uniqueName;
+            }
+            
+            if (!string.IsNullOrWhiteSpace(Email))
+            {
+                return Email;
+            }
+            
+            var id = Ids?.FirstOrDefault(x => !string.IsNullOrWhiteSpace(x));
+
+            if (!string.IsNullOrWhiteSpace(id))
+            {
+                return id;
+            }
+
+            return DisplayName;
+        }
+    }
+
+    public bool Equals(TeamMember? other)
+    {
+        if (other is null)
+        {
+            return false;
+        }
+        
+        return UniqueIdentifier == other.UniqueIdentifier;
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return Equals(obj as TeamMember);
     }
 
     public override int GetHashCode()
     {
-        return DisplayOrUniqueName.GetHashCode();
+        return UniqueIdentifier.GetHashCode();
     }
 }
