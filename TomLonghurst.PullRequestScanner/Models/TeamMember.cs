@@ -3,10 +3,10 @@
 public class TeamMember : IEquatable<TeamMember>
 {
     public string? DisplayName { get; set; }
-    public HashSet<string> UniqueNames { get; } = new();
+    public List<string> UniqueNames { get; } = new();
     public string? Email { get; set; }
-    public HashSet<string> Ids { get; } = new();
-    public HashSet<string> ImageUrls { get; } = new();
+    public List<string> Ids { get; } = new();
+    public List<string> ImageUrls { get; } = new();
 
     public string DisplayOrUniqueName
     {
