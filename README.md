@@ -89,7 +89,7 @@ Then wherever you want to use it, just inject `IPullRequestScanner` into your cl
 -   Get a particular plugin and invoke it with more granular control
 
 ### Excluding Pull Requests
-You need to tag/label your pull request with 'prscanner-ignore'
+You need to tag/label your pull request with `prscanner-ignore`
 - In Azure DevOps, add as a tag to your pull request
 - In GitHub, add as a label to your pull request
 
