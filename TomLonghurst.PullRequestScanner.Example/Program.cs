@@ -25,8 +25,8 @@ var host = Host.CreateDefaultBuilder(args)
             })
             .AddAzureDevOps(new AzureDevOpsOptions()
             {
-                OrganizationSlug = "",
-                ProjectSlug = "",
+                Organization = "",
+                ProjectName = "",
                 PersonalAccessToken = "",
                 RepositoriesToScan = repository => true
             })

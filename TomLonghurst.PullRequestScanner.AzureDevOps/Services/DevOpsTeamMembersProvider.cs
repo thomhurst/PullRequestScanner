@@ -32,7 +32,7 @@ internal class AzureDevOpsTeamMembersProvider : ITeamMembersProvider
         do
         {
             var teamsInIteration = await _vssConnection.GetClient<TeamHttpClient>().GetTeamsAsync(
-                projectId: _azureDevOpsOptions.ProjectSlug,
+                projectId: _azureDevOpsOptions.ProjectGuid.ToString(),
                 top: 100,
                 skip: 100 * iteration);
 
@@ -68,7 +68,7 @@ internal class AzureDevOpsTeamMembersProvider : ITeamMembersProvider
         do
         {
             var membersInIteration = await _vssConnection.GetClient<TeamHttpClient>().GetTeamMembersWithExtendedPropertiesAsync(
-                projectId: _azureDevOpsOptions.ProjectSlug,
+                projectId: _azureDevOpsOptions.ProjectGuid.ToString(),
                 teamId: team.Id.ToString(),
                 top: 100,
                 skip: 100 * iteration);

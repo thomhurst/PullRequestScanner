@@ -1,9 +1,6 @@
-﻿using System.Net.Http.Headers;
-using System.Text;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.Services.Common;
 using Microsoft.VisualStudio.Services.WebApi;
-using TomLonghurst.PullRequestScanner.AzureDevOps.Http;
 using TomLonghurst.PullRequestScanner.AzureDevOps.Mappers;
 using TomLonghurst.PullRequestScanner.AzureDevOps.Options;
 using TomLonghurst.PullRequestScanner.AzureDevOps.Services;
@@ -33,45 +30,21 @@ public static class PullRequestScannerBuilderExtensions
         pullRequestScannerBuilder.Services.AddSingleton(sp =>
         {
             var azureDevOpsOptions = sp.GetRequiredService<AzureDevOpsOptions>();
-            
-            return new VssConnection(new Uri($"https://dev.azure.com/{azureDevOpsOptions.OrganizationSlug}"), new VssBasicCredential(string.Empty, azureDevOpsOptions?.PersonalAccessToken));
-        });
-        
-        pullRequestScannerBuilder.Services
-            .AddHttpClient<AzureDevOpsHttpClient>((provider, client) =>
+
+            var uri = new UriBuilder("https://dev.azure.com/")
             {
-                client.DefaultRequestHeaders.Accept.Add(
-                    new MediaTypeWithQualityHeaderValue("application/json"));
-
-                var azureDevOpsOptions = provider.GetRequiredService<AzureDevOpsOptions>();
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",
-                    Convert.ToBase64String(Encoding.ASCII.GetBytes(FormatAccessToken(azureDevOpsOptions?.PersonalAccessToken))));
-
-                client.BaseAddress =
-                    new Uri(
-                        $"https://dev.azure.com/{azureDevOpsOptions.OrganizationSlug}/{azureDevOpsOptions.ProjectSlug}/_apis/git/");
-            });
+                Path = $"/{azureDevOpsOptions.Organization}"
+            }.Uri;
+            
+            return new VssConnection(uri, new VssBasicCredential(string.Empty, azureDevOpsOptions?.PersonalAccessToken));
+        });
 
         pullRequestScannerBuilder.Services.AddTransient<IAzureDevOpsGitRepositoryService, AzureDevOpsGitRepositoryService>()
             .AddTransient<IAzureDevOpsPullRequestService, AzureDevOpsPullRequestService>()
             .AddTransient<IAzureDevOpsMapper, AzureDevOpsMapper>()
-            .AddSingleton<ITeamMembersProvider, AzureDevOpsTeamMembersProvider>();
+            .AddSingleton<ITeamMembersProvider, AzureDevOpsTeamMembersProvider>()
+            .AddSingleton<AzureDevOpsInitializer>();
 
         return pullRequestScannerBuilder.AddPullRequestProvider(ActivatorUtilities.GetServiceOrCreateInstance<AzureDevOpsPullRequestProvider>);
-    }
-
-    private static string FormatAccessToken(string personalAccessToken)
-    {
-        if (personalAccessToken == null)
-        {
-            throw new ArgumentNullException(nameof(personalAccessToken));
-        }
-
-        if (!personalAccessToken.Contains(':'))
-        {
-            return $":{personalAccessToken}";
-        }
-
-        return personalAccessToken;
     }
 }

@@ -6,6 +6,7 @@ using Comment = TomLonghurst.PullRequestScanner.Models.Comment;
 using CommentThread = TomLonghurst.PullRequestScanner.Models.CommentThread;
 using PullRequestStatus = TomLonghurst.PullRequestScanner.Enums.PullRequestStatus;
 using Repository = TomLonghurst.PullRequestScanner.Models.Repository;
+using TeamFoundation = Microsoft.TeamFoundation;
 
 namespace TomLonghurst.PullRequestScanner.AzureDevOps.Mappers;
 
@@ -31,7 +32,7 @@ internal class AzureDevOpsMapper : IAzureDevOpsMapper
             Number = pullRequest.PullRequestId.ToString(),
             Repository = GetRepository(pullRequest.Repository),
             IsDraft = pullRequest.IsDraft ?? false,
-            IsActive = pullRequest.Status == Microsoft.TeamFoundation.SourceControl.WebApi.PullRequestStatus.Active,
+            IsActive = pullRequest.Status == TeamFoundation.SourceControl.WebApi.PullRequestStatus.Active,
             PullRequestStatus = GetStatus(pullRequestContext),
             Author = GetPerson(pullRequest.CreatedBy.UniqueName, pullRequest.CreatedBy.DisplayName),
             Approvers = pullRequest.Reviewers
@@ -79,7 +80,7 @@ internal class AzureDevOpsMapper : IAzureDevOpsMapper
         };
     }
 
-    private Comment GetComment(Microsoft.TeamFoundation.SourceControl.WebApi.Comment azureDevOpsComment)
+    private Comment GetComment(TeamFoundation.SourceControl.WebApi.Comment azureDevOpsComment)
     {
         return new Comment
         {
@@ -145,12 +146,12 @@ internal class AzureDevOpsMapper : IAzureDevOpsMapper
 
     private PullRequestStatus GetStatus(AzureDevOpsPullRequestContext azureDevOpsPullRequestContext)
     {
-        if (azureDevOpsPullRequestContext.AzureDevOpsPullRequest.Status == Microsoft.TeamFoundation.SourceControl.WebApi.PullRequestStatus.Completed)
+        if (azureDevOpsPullRequestContext.AzureDevOpsPullRequest.Status == TeamFoundation.SourceControl.WebApi.PullRequestStatus.Completed)
         {
             return PullRequestStatus.Completed;
         }
         
-        if (azureDevOpsPullRequestContext.AzureDevOpsPullRequest.Status == Microsoft.TeamFoundation.SourceControl.WebApi.PullRequestStatus.Abandoned)
+        if (azureDevOpsPullRequestContext.AzureDevOpsPullRequest.Status == TeamFoundation.SourceControl.WebApi.PullRequestStatus.Abandoned)
         {
             return PullRequestStatus.Abandoned;
         }

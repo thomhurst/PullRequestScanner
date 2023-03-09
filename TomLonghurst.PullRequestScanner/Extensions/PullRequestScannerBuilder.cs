@@ -19,9 +19,7 @@ public class PullRequestScannerBuilder
             .AddTransient<IPullRequestScanner, Services.PullRequestScanner>();
 
         Services.AddLogging();
-        
-        Services.AddStartupInitializer<TeamMembersService>();
-        
+
         Services.AddMemoryCache();
     }
 

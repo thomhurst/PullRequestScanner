@@ -6,15 +6,19 @@ public class AzureDevOpsOptions
 {
     public bool IsEnabled { get; set; } = true;
     /**
-     * <summary>The URL slug for the organization</summary>
+     * <summary>The organization name</summary>
      */
-    public string OrganizationSlug { get; set; }
+    public string Organization { get; set; }
     /**
-     * <summary>The URL slug for the team</summary>
+     * <summary>The project name</summary>
      */
-    public string ProjectSlug { get; set; }
+    public string ProjectName { get; set; }
     /**
-     * <summary>Personal Access Token, usually in the format of "{username}:{PAT}"</summary>
+     * <summary>The project GUID</summary>
+     */
+    public Guid ProjectGuid { get; set; }
+    /**
+     * <summary>An Azure DevOps Personal Access Token</summary>
      */
     public string PersonalAccessToken { get; set; }
 

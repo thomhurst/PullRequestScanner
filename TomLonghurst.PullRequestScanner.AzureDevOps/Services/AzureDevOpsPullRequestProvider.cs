@@ -55,8 +55,13 @@ internal class AzureDevOpsPullRequestProvider : IPullRequestProvider
             return;
         }
         
-        ValidatePopulated(_azureDevOpsOptions.OrganizationSlug, nameof(_azureDevOpsOptions.OrganizationSlug));
-        ValidatePopulated(_azureDevOpsOptions.ProjectSlug, nameof(_azureDevOpsOptions.ProjectSlug));
+        ValidatePopulated(_azureDevOpsOptions.Organization, nameof(_azureDevOpsOptions.Organization));
+        
+        if (_azureDevOpsOptions.ProjectGuid == default)
+        {
+            ValidatePopulated(_azureDevOpsOptions.ProjectName, nameof(_azureDevOpsOptions.ProjectName));
+        }
+
         ValidatePopulated(_azureDevOpsOptions.PersonalAccessToken, nameof(_azureDevOpsOptions.PersonalAccessToken));
         
         void ValidatePopulated(string value, string propertyName)

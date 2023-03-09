@@ -132,7 +132,7 @@ internal class PullRequestLeaderboardCardMapper : IPullRequestLeaderboardCardMap
                                         new Uri(
                                             personsCommentsAndReview.Key.ImageUrls.FirstOrDefault()
                                             ?? "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
-                                            )
+                                        )
                                 }
                             },
                             Width = "50px"
@@ -163,7 +163,8 @@ internal class PullRequestLeaderboardCardMapper : IPullRequestLeaderboardCardMap
                             {
                                 new AdaptiveTextBlock
                                 {
-                                    Text = personsCommentsAndReview.Value.ReviewedCount.ToString()                                }
+                                    Text = personsCommentsAndReview.Value.ReviewedCount.ToString()                                
+                                }
                             }
                         }
                     }

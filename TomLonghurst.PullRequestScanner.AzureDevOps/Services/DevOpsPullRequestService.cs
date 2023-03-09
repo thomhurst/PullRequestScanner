@@ -25,7 +25,7 @@ internal class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestService
         do
         {
             var pullRequestsThisIteration = await _vssConnection.GetClient<GitHttpClient>().GetPullRequestsAsync(
-                project: _azureDevOpsOptions.ProjectSlug, 
+                project: _azureDevOpsOptions.ProjectGuid, 
                 repositoryId: repository.Id,
                 top: 100,
                 skip: 100 * iteration,
@@ -79,7 +79,7 @@ internal class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestService
     private async Task<List<GitPullRequestCommentThread>> GetThreads(GitPullRequest pullRequest)
     {
         return await _vssConnection.GetClient<GitHttpClient>().GetThreadsAsync(
-            project: _azureDevOpsOptions.ProjectSlug,
+            project: _azureDevOpsOptions.ProjectGuid,
             repositoryId: pullRequest.Repository.Id,
             pullRequestId: pullRequest.PullRequestId
         );
@@ -89,7 +89,7 @@ internal class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestService
     {
         return await _vssConnection.GetClient<GitHttpClient>().GetPullRequestStatusesAsync(
             
-            project: _azureDevOpsOptions.ProjectSlug,
+            project: _azureDevOpsOptions.ProjectGuid,
             repositoryId: pullRequest.Repository.Id,
             pullRequestId: pullRequest.PullRequestId
         );

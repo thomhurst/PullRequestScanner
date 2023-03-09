@@ -17,7 +17,7 @@ internal class AzureDevOpsGitRepositoryService : IAzureDevOpsGitRepositoryServic
     
     public async Task<List<GitRepository>> GetGitRepositories()
     {
-        var repositories = await _vssConnection.GetClient<GitHttpClient>().GetRepositoriesAsync(_azureDevOpsOptions.ProjectSlug);
+        var repositories = await _vssConnection.GetClient<GitHttpClient>().GetRepositoriesAsync(_azureDevOpsOptions.ProjectGuid);
 
         return repositories.Where(x => x.IsDisabled != false) 
             .Where(x => _azureDevOpsOptions.RepositoriesToScan.Invoke(x))
