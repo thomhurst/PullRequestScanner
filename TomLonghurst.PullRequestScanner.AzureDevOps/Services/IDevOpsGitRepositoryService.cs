@@ -1,8 +1,8 @@
-﻿using TomLonghurst.PullRequestScanner.AzureDevOps.Models;
+﻿using Microsoft.TeamFoundation.SourceControl.WebApi;
 
 namespace TomLonghurst.PullRequestScanner.AzureDevOps.Services;
 
 internal interface IAzureDevOpsGitRepositoryService
 {
-    Task<IEnumerable<AzureDevOpsGitRepository>> GetGitRepositories();
+    Task<List<GitRepository>> GetGitRepositories();
 }

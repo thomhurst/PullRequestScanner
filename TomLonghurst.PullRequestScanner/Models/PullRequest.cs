@@ -19,6 +19,7 @@ public record PullRequest
     public bool IsDraft { get; set; }
     public List<Approver> Approvers { get; set; } = new();
     public string Platform { get; set; }
+    public List<string> Labels { get; set; } = new();
 
     public Vote Vote
     {

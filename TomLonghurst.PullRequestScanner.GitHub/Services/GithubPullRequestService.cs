@@ -58,6 +58,10 @@ internal class GithubPullRequestService : BaseGitHubApiService, IGithubPullReque
                         BodyText = r.BodyText,
                         Url = r.Url
                     }).ToList(),
+                Labels = x.Labels(null, null, null, null, null)
+                    .AllPages()
+                    .Select(x => x.Name)
+                    .ToList()
             }).Compile();
 
         var pullRequests = (await _githubQueryRunner.RunQuery(query))

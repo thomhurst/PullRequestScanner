@@ -1,25 +1,26 @@
-﻿using TomLonghurst.PullRequestScanner.AzureDevOps.Http;
-using TomLonghurst.PullRequestScanner.AzureDevOps.Models;
+﻿using Microsoft.TeamFoundation.SourceControl.WebApi;
+using Microsoft.VisualStudio.Services.WebApi;
 using TomLonghurst.PullRequestScanner.AzureDevOps.Options;
 
 namespace TomLonghurst.PullRequestScanner.AzureDevOps.Services;
 
 internal class AzureDevOpsGitRepositoryService : IAzureDevOpsGitRepositoryService
 {
-    private readonly AzureDevOpsHttpClient _githubHttpClient;
+    private readonly VssConnection _vssConnection;
     private readonly AzureDevOpsOptions _azureDevOpsOptions;
 
-    public AzureDevOpsGitRepositoryService(AzureDevOpsHttpClient githubHttpClient, AzureDevOpsOptions azureDevOpsOptions)
+    public AzureDevOpsGitRepositoryService(VssConnection vssConnection, AzureDevOpsOptions azureDevOpsOptions)
     {
-        _githubHttpClient = githubHttpClient;
+        _vssConnection = vssConnection;
         _azureDevOpsOptions = azureDevOpsOptions;
     }
     
-    public async Task<IEnumerable<AzureDevOpsGitRepository>> GetGitRepositories()
+    public async Task<List<GitRepository>> GetGitRepositories()
     {
-        var gitRepositoryResponse = await _githubHttpClient.GetAll<AzureDevOpsGitRepositoryResponse>("repositories?api-version=7.1-preview.1");
-        return gitRepositoryResponse.SelectMany(x => x.Repositories)
-            .Where(x => !x.IsDisabled)
-            .Where(x => _azureDevOpsOptions.RepositoriesToScan.Invoke(x));
+        var repositories = await _vssConnection.GetClient<GitHttpClient>().GetRepositoriesAsync(_azureDevOpsOptions.ProjectSlug);
+
+        return repositories.Where(x => x.IsDisabled != false) 
+            .Where(x => _azureDevOpsOptions.RepositoriesToScan.Invoke(x))
+            .ToList();
     }
 }

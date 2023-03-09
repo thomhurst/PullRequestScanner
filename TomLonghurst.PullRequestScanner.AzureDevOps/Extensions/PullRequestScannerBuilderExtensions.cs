@@ -1,6 +1,8 @@
 ﻿using System.Net.Http.Headers;
 using System.Text;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.VisualStudio.Services.Common;
+using Microsoft.VisualStudio.Services.WebApi;
 using TomLonghurst.PullRequestScanner.AzureDevOps.Http;
 using TomLonghurst.PullRequestScanner.AzureDevOps.Mappers;
 using TomLonghurst.PullRequestScanner.AzureDevOps.Options;
@@ -28,6 +30,13 @@ public static class PullRequestScannerBuilderExtensions
 
     private static PullRequestScannerBuilder AddAzureDevOps(this PullRequestScannerBuilder pullRequestScannerBuilder)
     {
+        pullRequestScannerBuilder.Services.AddSingleton(sp =>
+        {
+            var azureDevOpsOptions = sp.GetRequiredService<AzureDevOpsOptions>();
+            
+            return new VssConnection(new Uri($"https://dev.azure.com/{azureDevOpsOptions.OrganizationSlug}"), new VssBasicCredential(string.Empty, azureDevOpsOptions?.PersonalAccessToken));
+        });
+        
         pullRequestScannerBuilder.Services
             .AddHttpClient<AzureDevOpsHttpClient>((provider, client) =>
             {

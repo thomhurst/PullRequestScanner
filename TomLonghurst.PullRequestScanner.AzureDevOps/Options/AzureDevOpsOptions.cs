@@ -1,4 +1,4 @@
-using TomLonghurst.PullRequestScanner.AzureDevOps.Models;
+using Microsoft.TeamFoundation.SourceControl.WebApi;
 
 namespace TomLonghurst.PullRequestScanner.AzureDevOps.Options;
 
@@ -18,5 +18,5 @@ public class AzureDevOpsOptions
      */
     public string PersonalAccessToken { get; set; }
 
-    public Func<AzureDevOpsGitRepository, bool> RepositoriesToScan { get; set; } = _ => true;
+    public Func<GitRepository, bool> RepositoriesToScan { get; set; } = _ => true;
 }
