@@ -88,6 +88,11 @@ Then wherever you want to use it, just inject `IPullRequestScanner` into your cl
 -   Execute All Plugins that meet a condition
 -   Get a particular plugin and invoke it with more granular control
 
+### Excluding Pull Requests
+You need to tag/label your pull request with 'prscanner-ignore'
+- In Azure DevOps, add as a tag to your pull request
+- In GitHub, add as a label to your pull request
+
 ## Example
 
 A simple Timed Azure Function to notify your team every morning can look as simple as this:
