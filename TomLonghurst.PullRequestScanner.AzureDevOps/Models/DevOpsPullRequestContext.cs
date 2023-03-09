@@ -1,8 +1,10 @@
-﻿namespace TomLonghurst.PullRequestScanner.AzureDevOps.Models;
+﻿using Microsoft.TeamFoundation.SourceControl.WebApi;
+
+namespace TomLonghurst.PullRequestScanner.AzureDevOps.Models;
 
 internal class AzureDevOpsPullRequestContext
 {
-    public AzureDevOpsPullRequest AzureDevOpsPullRequest { get; set; }
-    public IReadOnlyList<AzureDevOpsPullRequestThread> PullRequestThreads { get; set; }
-    public IReadOnlyList<AzureDevOpsPullRequestIteration> Iterations { get; set; }
+    public GitPullRequest AzureDevOpsPullRequest { get; set; }
+    public List<GitPullRequestCommentThread> PullRequestThreads { get; set; }
+    public List<GitPullRequestStatus> Iterations { get; set; }
 }

@@ -1,4 +1,5 @@
-﻿using Octokit.GraphQL.Model;
+﻿using Octokit.GraphQL.Core;
+using Octokit.GraphQL.Model;
 
 namespace TomLonghurst.PullRequestScanner.GitHub.Models;
 
@@ -24,4 +25,5 @@ public record GithubPullRequest
     public List<GithubThread> Threads { get; set; }
     public StatusState ChecksStatus { get; set; }
     public bool IsClosed { get; set; }
+    public List<string> Labels { get; set; }
 }

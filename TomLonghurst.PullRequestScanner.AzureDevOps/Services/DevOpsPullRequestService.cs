@@ -1,23 +1,43 @@
-﻿using System.Collections.Immutable;
-using TomLonghurst.PullRequestScanner.AzureDevOps.Http;
+﻿using Microsoft.TeamFoundation.SourceControl.WebApi;
+using Microsoft.VisualStudio.Services.WebApi;
 using TomLonghurst.PullRequestScanner.AzureDevOps.Models;
+using TomLonghurst.PullRequestScanner.AzureDevOps.Options;
 
 namespace TomLonghurst.PullRequestScanner.AzureDevOps.Services;
 
 internal class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestService
 {
-    private readonly AzureDevOpsHttpClient _devOpsHttpClient;
+    private readonly VssConnection _vssConnection;
+    private readonly AzureDevOpsOptions _azureDevOpsOptions;
 
-    public AzureDevOpsPullRequestService(AzureDevOpsHttpClient azureDevOpsHttpClient)
+    public AzureDevOpsPullRequestService(VssConnection vssConnection, AzureDevOpsOptions azureDevOpsOptions)
     {
-        _devOpsHttpClient = azureDevOpsHttpClient;
+        _vssConnection = vssConnection;
+        _azureDevOpsOptions = azureDevOpsOptions;
     }
     
-    public async Task<IReadOnlyList<AzureDevOpsPullRequestContext>> GetPullRequestsForRepository(AzureDevOpsGitRepository githubGitRepository)
+    public async Task<IReadOnlyList<AzureDevOpsPullRequestContext>> GetPullRequestsForRepository(
+        GitRepository repository)
     {
-        var response = await _devOpsHttpClient.GetAll<AzureDevOpsPullRequestsResponse>($"pullrequests?searchCriteria.status=all&searchCriteria.includeLinks=false&searchCriteria.repositoryId={githubGitRepository.Id}&includeCommits=true&api-version=7.1-preview.1");
-        var nonDraftedPullRequests = response.SelectMany(x => x.PullRequests)
-            .Where(IsActiveOrRecentlyClosed);
+        var pullRequests = new List<GitPullRequest>();
+
+        var iteration = 0;
+        do
+        {
+            var pullRequestsThisIteration = await _vssConnection.GetClient<GitHttpClient>().GetPullRequestsAsync(
+                project: _azureDevOpsOptions.ProjectGuid,
+                repositoryId: repository.Id,
+                top: 100,
+                skip: 100 * iteration,
+                searchCriteria: new GitPullRequestSearchCriteria());
+
+            pullRequests.AddRange(pullRequestsThisIteration);
+
+            iteration++;
+        } while (pullRequests.Count == 100 * iteration);
+            
+        
+        var nonDraftedPullRequests = pullRequests.Where(IsActiveOrRecentlyClosed);
 
         var pullRequestsWithThreads = new List<AzureDevOpsPullRequestContext>();
 
@@ -25,7 +45,7 @@ internal class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestService
         {
             var threads = await GetThreads(pullRequest);
             
-            var iterations = await GetIterations(pullRequest);
+            var iterations = await GetStatuses(pullRequest);
             
             pullRequestsWithThreads.Add(new AzureDevOpsPullRequestContext
             {
@@ -38,14 +58,14 @@ internal class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestService
         return pullRequestsWithThreads;
     }
 
-    private bool IsActiveOrRecentlyClosed(AzureDevOpsPullRequest azureDevOpsPullRequest)
+    private bool IsActiveOrRecentlyClosed(GitPullRequest gitPullRequest)
     {
-        if (azureDevOpsPullRequest.Status == "active")
+        if (gitPullRequest.Status == PullRequestStatus.Active)
         {
             return true;
         }
 
-        if (azureDevOpsPullRequest.ClosedDate >= DateTimeOffset.UtcNow.Date - TimeSpan.FromDays(1))
+        if (gitPullRequest.ClosedDate >= DateTimeOffset.UtcNow.Date - TimeSpan.FromDays(1))
         {
             return true;
         }
@@ -53,19 +73,22 @@ internal class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestService
         return false;
     }
 
-    private async Task<IReadOnlyList<AzureDevOpsPullRequestThread>> GetThreads(AzureDevOpsPullRequest githubPullRequest)
+    private async Task<List<GitPullRequestCommentThread>> GetThreads(GitPullRequest pullRequest)
     {
-        var response = await _devOpsHttpClient.Get<AzureDevOpsPullRequestThreadResponse>(
-            $"repositories/{githubPullRequest.Repository.Id}/pullRequests/{githubPullRequest.PullRequestId}/threads?api-version=7.1-preview.1");
-
-        return response.Threads.ToImmutableList();
+        return await _vssConnection.GetClient<GitHttpClient>().GetThreadsAsync(
+            project: _azureDevOpsOptions.ProjectGuid,
+            repositoryId: pullRequest.Repository.Id,
+            pullRequestId: pullRequest.PullRequestId
+        );
     }
 
-    private async Task<IReadOnlyList<AzureDevOpsPullRequestIteration>> GetIterations(AzureDevOpsPullRequest githubPullRequest)
+    private async Task<List<GitPullRequestStatus>> GetStatuses(GitPullRequest pullRequest)
     {
-        var response = await _devOpsHttpClient.Get<AzureDevOpsPullRequestIterationResponse>(
-            $"repositories/{githubPullRequest.Repository.Id}/pullRequests/{githubPullRequest.PullRequestId}/statuses?api-version=7.1-preview.1");
-
-        return response.Value.ToImmutableList();
+        return await _vssConnection.GetClient<GitHttpClient>().GetPullRequestStatusesAsync(
+            
+            project: _azureDevOpsOptions.ProjectGuid,
+            repositoryId: pullRequest.Repository.Id,
+            pullRequestId: pullRequest.PullRequestId
+        );
     }
 }

@@ -39,7 +39,8 @@ internal class GithubMapper : IGithubMapper
             CommentThreads = githubPullRequest.Threads
                 .Select(GetCommentThreads)
                 .ToList(),
-            Platform = "GitHub"
+            Platform = "GitHub",
+            Labels = githubPullRequest.Labels
         };
         
         foreach (var thread in pullRequestModel.CommentThreads)

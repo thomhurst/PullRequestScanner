@@ -1,9 +1,10 @@
-﻿using TomLonghurst.PullRequestScanner.Contracts;
+﻿using TomLonghurst.Microsoft.Extensions.DependencyInjection.ServiceInitialization;
+using TomLonghurst.PullRequestScanner.Contracts;
 using TomLonghurst.PullRequestScanner.Models;
 
 namespace TomLonghurst.PullRequestScanner.Services;
 
-internal class TeamMembersService : ITeamMembersService, IPullRequestScannerInitializer
+internal class TeamMembersService : ITeamMembersService, IInitializer
 {
     private readonly IEnumerable<ITeamMembersProvider> _teamMembersServices;
 
@@ -15,14 +16,9 @@ internal class TeamMembersService : ITeamMembersService, IPullRequestScannerInit
         _teamMembersServices = teamMembersServices;
     }
 
-    public IReadOnlyList<TeamMember> GetTeamMembers()
+    public async Task InitializeAsync()
     {
-        return _teamMembers;
-    }
-
-    public async Task Initialize()
-    {
-        if (_isInitialized)
+        if(_isInitialized)
         {
             return;
         }
@@ -52,7 +48,12 @@ internal class TeamMembersService : ITeamMembersService, IPullRequestScannerInit
 
         _isInitialized = true;
     }
-    
+
+    public TeamMember? FindTeamMember(string uniqueName)
+    {
+        return _teamMembers.FirstOrDefault(x => x.UniqueNames.Contains(uniqueName));
+    }
+
     private TeamMember? FindTeamMember(ITeamMember teamMember)
     {
         return
@@ -60,11 +61,6 @@ internal class TeamMembersService : ITeamMembersService, IPullRequestScannerInit
             ?? FindUserWithPropertyContaining(x => x.Id, x => x.Ids, teamMember)
             ?? FindUserWithPropertyContaining(x => x.UniqueName, x => x.UniqueNames, teamMember)
             ?? FindUserWithMatchingProperty(x => x.DisplayName, x => x.DisplayName, teamMember);
-    }
-    
-    public TeamMember? FindTeamMember(string uniqueName)
-    {
-        return _teamMembers.FirstOrDefault(x => x.UniqueNames.Contains(uniqueName));
     }
 
     private TeamMember? FindUserWithMatchingProperty(Func<ITeamMember, string> property1, Func<TeamMember, string> property2, ITeamMember memberDetails)
@@ -136,4 +132,6 @@ internal class TeamMembersService : ITeamMembersService, IPullRequestScannerInit
             foundUser.ImageUrls.Add(newUserDetails.ImageUrl);
         }
     }
+
+    public int Order { get; } = int.MaxValue;
 }

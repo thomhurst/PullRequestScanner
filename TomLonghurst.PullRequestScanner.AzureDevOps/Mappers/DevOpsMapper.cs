@@ -1,9 +1,12 @@
-﻿using TomLonghurst.PullRequestScanner.AzureDevOps.Models;
-using TomLonghurst.PullRequestScanner.Enums;
+﻿using Microsoft.TeamFoundation.SourceControl.WebApi;
+using TomLonghurst.PullRequestScanner.AzureDevOps.Models;
 using TomLonghurst.PullRequestScanner.Models;
 using TomLonghurst.PullRequestScanner.Services;
-using AzureDevOpsRepository = TomLonghurst.PullRequestScanner.AzureDevOps.Models.Repository;
+using Comment = TomLonghurst.PullRequestScanner.Models.Comment;
+using CommentThread = TomLonghurst.PullRequestScanner.Models.CommentThread;
+using PullRequestStatus = TomLonghurst.PullRequestScanner.Enums.PullRequestStatus;
 using Repository = TomLonghurst.PullRequestScanner.Models.Repository;
+using TeamFoundation = Microsoft.TeamFoundation;
 
 namespace TomLonghurst.PullRequestScanner.AzureDevOps.Mappers;
 
@@ -28,8 +31,8 @@ internal class AzureDevOpsMapper : IAzureDevOpsMapper
             Id = pullRequest.PullRequestId.ToString(),
             Number = pullRequest.PullRequestId.ToString(),
             Repository = GetRepository(pullRequest.Repository),
-            IsDraft = pullRequest.IsDraft,
-            IsActive = pullRequest.Status == "active",
+            IsDraft = pullRequest.IsDraft ?? false,
+            IsActive = pullRequest.Status == TeamFoundation.SourceControl.WebApi.PullRequestStatus.Active,
             PullRequestStatus = GetStatus(pullRequestContext),
             Author = GetPerson(pullRequest.CreatedBy.UniqueName, pullRequest.CreatedBy.DisplayName),
             Approvers = pullRequest.Reviewers
@@ -42,7 +45,8 @@ internal class AzureDevOpsMapper : IAzureDevOpsMapper
             CommentThreads = pullRequestContext.PullRequestThreads
                 .Select(GetCommentThread)
                 .ToList(),
-            Platform = "AzureDevOps"
+            Platform = "AzureDevOps",
+            Labels = pullRequest.Labels?.Where(x => x.Active != false).Select(x => x.Name).ToList() ?? new List<string>()
         };
         
         foreach (var thread in pullRequestModel.CommentThreads)
@@ -62,26 +66,26 @@ internal class AzureDevOpsMapper : IAzureDevOpsMapper
         return pullRequestModel;
     }
 
-    private CommentThread GetCommentThread(AzureDevOpsPullRequestThread azureDevOpsPullRequestThread)
+    private CommentThread GetCommentThread(GitPullRequestCommentThread azureDevOpsPullRequestThread)
     {
         return new CommentThread
         {
-            Status = GetThreadStatus(azureDevOpsPullRequestThread.ThreadStatus),
+            Status = GetThreadStatus(azureDevOpsPullRequestThread.Status),
             Comments = azureDevOpsPullRequestThread
                 .Comments
-                .Where(x => !x.AzureDevOpsAuthor.UniqueName.StartsWith(Constants.VstfsUniqueNamePrefix))
-                .Where(x => x.AzureDevOpsAuthor.DisplayName != Constants.VstsDisplayName)
+                .Where(x => !x.Author.UniqueName.StartsWith(Constants.VstfsUniqueNamePrefix))
+                .Where(x => x.Author.DisplayName != Constants.VstsDisplayName)
                 .Select(GetComment)
                 .ToList()
         };
     }
 
-    private Comment GetComment(AzureDevOpsComment azureDevOpsComment)
+    private Comment GetComment(TeamFoundation.SourceControl.WebApi.Comment azureDevOpsComment)
     {
         return new Comment
         {
             LastUpdated = azureDevOpsComment.LastUpdatedDate,
-            Author = GetPerson(azureDevOpsComment.AzureDevOpsAuthor.UniqueName, azureDevOpsComment.AzureDevOpsAuthor.DisplayName)
+            Author = GetPerson(azureDevOpsComment.Author.UniqueName, azureDevOpsComment.Author.DisplayName)
         };
     }
 
@@ -101,9 +105,9 @@ internal class AzureDevOpsMapper : IAzureDevOpsMapper
         return foundTeamMember;
     }
 
-    private ThreadStatus GetThreadStatus(string threadStatus)
+    private ThreadStatus GetThreadStatus(CommentThreadStatus threadStatus)
     {
-        if (threadStatus is "active" or "pending")
+        if (threadStatus is CommentThreadStatus.Active or CommentThreadStatus.Pending)
         {
             return ThreadStatus.Active;
         }
@@ -111,16 +115,16 @@ internal class AzureDevOpsMapper : IAzureDevOpsMapper
         return ThreadStatus.Closed;
     }
 
-    private Approver GetApprover(Reviewer reviewer, IReadOnlyList<AzureDevOpsPullRequestThread> azureDevOpsPullRequestThreads)
+    private Approver GetApprover(IdentityRefWithVote reviewer, List<GitPullRequestCommentThread> azureDevOpsPullRequestThreads)
     {
         return new Approver
         {
             Vote = GetVote(reviewer.Vote),
-            IsRequired = reviewer.IsRequired == true,
+            IsRequired = reviewer.IsRequired,
             TeamMember = GetPerson(reviewer.UniqueName, reviewer.DisplayName),
             Time = azureDevOpsPullRequestThreads
-                .Where(x => x.Properties?.CodeReviewThreadType?.Value == "VoteUpdate")
-                .LastOrDefault(x => x.Comments?.SingleOrDefault(c => c.AzureDevOpsAuthor.UniqueName == reviewer.UniqueName) != null)
+                .Where(x => x.Properties.GetValue("codeReviewThreadType", string.Empty) == "VoteUpdate")
+                .LastOrDefault(x => x.Comments?.SingleOrDefault(c => c.Author.UniqueName == reviewer.UniqueName) != null)
                 ?.LastUpdatedDate
         };
     }
@@ -142,22 +146,22 @@ internal class AzureDevOpsMapper : IAzureDevOpsMapper
 
     private PullRequestStatus GetStatus(AzureDevOpsPullRequestContext azureDevOpsPullRequestContext)
     {
-        if (azureDevOpsPullRequestContext.AzureDevOpsPullRequest.Status == "completed")
+        if (azureDevOpsPullRequestContext.AzureDevOpsPullRequest.Status == TeamFoundation.SourceControl.WebApi.PullRequestStatus.Completed)
         {
             return PullRequestStatus.Completed;
         }
         
-        if (azureDevOpsPullRequestContext.AzureDevOpsPullRequest.Status == "abandoned")
+        if (azureDevOpsPullRequestContext.AzureDevOpsPullRequest.Status == TeamFoundation.SourceControl.WebApi.PullRequestStatus.Abandoned)
         {
             return PullRequestStatus.Abandoned;
         }
         
-        if (azureDevOpsPullRequestContext.AzureDevOpsPullRequest.MergeStatus == "conflicts")
+        if (azureDevOpsPullRequestContext.AzureDevOpsPullRequest.MergeStatus == PullRequestAsyncStatus.Conflicts)
         {
             return PullRequestStatus.MergeConflicts;
         }
 
-        if (azureDevOpsPullRequestContext.AzureDevOpsPullRequest.IsDraft)
+        if (azureDevOpsPullRequestContext.AzureDevOpsPullRequest.IsDraft == true)
         {
             return PullRequestStatus.Draft;
         }
@@ -176,13 +180,13 @@ internal class AzureDevOpsMapper : IAzureDevOpsMapper
 
             if (checksInLastIteration
                 .GroupBy(x => x.Context)
-                .Any(group => group.MaxBy(s => s.Id).State == "failed"))
+                .Any(group => group.MaxBy(s => s.Id)?.State == GitStatusState.Failed))
             {
                 return PullRequestStatus.FailingChecks;
             }
         }
 
-        if (azureDevOpsPullRequestContext.PullRequestThreads.Any(t => t.ThreadStatus is "active" or "pending"))
+        if (azureDevOpsPullRequestContext.PullRequestThreads.Any(t => t.Status is CommentThreadStatus.Active or CommentThreadStatus.Pending))
         {
             return PullRequestStatus.OutStandingComments;
         }
@@ -205,12 +209,12 @@ internal class AzureDevOpsMapper : IAzureDevOpsMapper
         return PullRequestStatus.NeedsReviewing;
     }
 
-    private Repository GetRepository(AzureDevOpsRepository azureDevOpsRepository)
+    private Repository GetRepository(GitRepository azureDevOpsRepository)
     {
         return new Repository
         {
             Name = azureDevOpsRepository.Name,
-            Id = azureDevOpsRepository.Id,
+            Id = azureDevOpsRepository.Id.ToString(),
             Url = GetRepositoryUiUrl(azureDevOpsRepository.Url)
         };
     }
