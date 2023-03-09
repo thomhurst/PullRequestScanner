@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using TomLonghurst.Microsoft.Extensions.DependencyInjection.ServiceInitialization.Extensions;
 using TomLonghurst.PullRequestScanner.Contracts;
 using TomLonghurst.PullRequestScanner.Services;
 
@@ -19,6 +20,8 @@ public class PullRequestScannerBuilder
             .AddTransient<IPullRequestScanner, Services.PullRequestScanner>();
 
         Services.AddLogging();
+
+        services.AddInitializers();
 
         Services.AddMemoryCache();
     }
