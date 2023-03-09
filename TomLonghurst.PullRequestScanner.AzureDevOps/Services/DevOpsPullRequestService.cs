@@ -25,14 +25,11 @@ internal class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestService
         do
         {
             var pullRequestsThisIteration = await _vssConnection.GetClient<GitHttpClient>().GetPullRequestsAsync(
-                project: _azureDevOpsOptions.ProjectGuid, 
+                project: _azureDevOpsOptions.ProjectGuid,
                 repositoryId: repository.Id,
                 top: 100,
                 skip: 100 * iteration,
-                searchCriteria: new GitPullRequestSearchCriteria
-                {
-                    RepositoryId = repository.Id
-                });
+                searchCriteria: new GitPullRequestSearchCriteria());
 
             pullRequests.AddRange(pullRequestsThisIteration);
 

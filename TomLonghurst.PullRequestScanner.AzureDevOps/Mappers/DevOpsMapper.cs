@@ -46,7 +46,7 @@ internal class AzureDevOpsMapper : IAzureDevOpsMapper
                 .Select(GetCommentThread)
                 .ToList(),
             Platform = "AzureDevOps",
-            Labels = pullRequest.Labels.Where(x => x.Active != false).Select(x => x.Name).ToList()
+            Labels = pullRequest.Labels?.Where(x => x.Active != false).Select(x => x.Name).ToList() ?? new List<string>()
         };
         
         foreach (var thread in pullRequestModel.CommentThreads)

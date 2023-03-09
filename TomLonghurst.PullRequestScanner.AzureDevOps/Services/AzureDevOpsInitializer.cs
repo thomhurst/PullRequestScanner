@@ -31,7 +31,7 @@ public class AzureDevOpsInitializer : IInitializer
         {
             throw new ArgumentException($"Unique project with name '{_azureDevOpsOptions.ProjectName}' not found");
         }
-
+        
         _azureDevOpsOptions.ProjectGuid = foundProject.Id;
     }
 

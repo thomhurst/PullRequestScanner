@@ -1,6 +1,6 @@
 ﻿using System.Collections.Immutable;
 using Microsoft.Extensions.Caching.Memory;
-using TomLonghurst.Microsoft.Extensions.DependencyInjection.ServiceInitialization;
+using TomLonghurst.Microsoft.Extensions.DependencyInjection.ServiceInitialization.Extensions;
 using TomLonghurst.PullRequestScanner.Contracts;
 using TomLonghurst.PullRequestScanner.Exceptions;
 using TomLonghurst.PullRequestScanner.Models;
@@ -12,17 +12,16 @@ internal class PullRequestService : IPullRequestService
     private const string PullRequestsCacheKey = "PullRequests";
     
     private readonly IEnumerable<IPullRequestProvider> _pullRequestProviders;
-    private readonly IEnumerable<IInitializer> _initializers;
-    private readonly IEnumerable<ITeamMembersService> _teamMembersServices;
+    private readonly IServiceProvider _serviceProvider;
     private readonly IMemoryCache _memoryCache;
     private readonly SemaphoreSlim _lock = new(1, 1);
 
     public PullRequestService(IEnumerable<IPullRequestProvider> pullRequestProviders,
-        IEnumerable<IInitializer> initializers,
+        IServiceProvider serviceProvider,
         IMemoryCache memoryCache)
     {
         _pullRequestProviders = pullRequestProviders;
-        _initializers = initializers;
+        _serviceProvider = serviceProvider;
         _memoryCache = memoryCache;
     }
 
@@ -63,9 +62,6 @@ internal class PullRequestService : IPullRequestService
 
     private async Task Initialize()
     {
-        foreach (var orderedInitializerGroup in _initializers.GroupBy(x => x.Order).OrderBy(x => x.Key))
-        {
-            await Task.WhenAll(orderedInitializerGroup.Select(x => x.InitializeAsync()));   
-        }
+        await _serviceProvider.InitializeAsync();
     }
 }
