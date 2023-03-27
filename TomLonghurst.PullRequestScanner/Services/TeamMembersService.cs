@@ -29,6 +29,7 @@ internal class TeamMembersService : ITeamMembersService, IInitializer
         foreach (var teamMember in teamMembers)
         {
             var foundUser = FindTeamMember(teamMember);
+            
             if (foundUser == null)
             {
                 _teamMembers.Add(new TeamMember
@@ -57,52 +58,10 @@ internal class TeamMembersService : ITeamMembersService, IInitializer
     private TeamMember? FindTeamMember(ITeamMember teamMember)
     {
         return
-            FindUserWithMatchingProperty(x => x.Email, x => x.Email, teamMember)
-            ?? FindUserWithPropertyContaining(x => x.Id, x => x.Ids, teamMember)
-            ?? FindUserWithPropertyContaining(x => x.UniqueName, x => x.UniqueNames, teamMember)
-            ?? FindUserWithMatchingProperty(x => x.DisplayName, x => x.DisplayName, teamMember);
-    }
-
-    private TeamMember? FindUserWithMatchingProperty(Func<ITeamMember, string> property1, Func<TeamMember, string> property2, ITeamMember memberDetails)
-    {
-        var propertyValue = property1.Invoke(memberDetails);
-        
-        if (string.IsNullOrEmpty(propertyValue))
-        {
-            return null;
-        }
-        
-        foreach (var teamMember in _teamMembers)
-        {
-            var teamMemberProperty = property2.Invoke(teamMember);
-            if (string.Equals(propertyValue, teamMemberProperty, StringComparison.InvariantCultureIgnoreCase))
-            {
-                return teamMember;
-            }
-        }
-
-        return null;
-    }
-    
-    private TeamMember? FindUserWithPropertyContaining(Func<ITeamMember, string> property1, Func<TeamMember, IEnumerable<string>> property2, ITeamMember memberDetails)
-    {
-        var propertyValue = property1.Invoke(memberDetails);
-        
-        if (string.IsNullOrEmpty(propertyValue))
-        {
-            return null;
-        }
-        
-        foreach (var teamMember in _teamMembers)
-        {
-            var teamMemberProperty = property2.Invoke(teamMember);
-            if(teamMemberProperty.Any(p => p.Contains(propertyValue, StringComparison.InvariantCultureIgnoreCase)))
-            {
-                return teamMember;
-            }
-        }
-
-        return null;
+            _teamMembers.FirstOrDefault(tm => string.Equals(tm.Email, teamMember.Email, StringComparison.InvariantCultureIgnoreCase))
+            ?? _teamMembers.FirstOrDefault(tm => tm.Ids.Contains(teamMember.Id, StringComparer.InvariantCultureIgnoreCase))
+            ?? _teamMembers.FirstOrDefault(tm => tm.UniqueNames.Contains(teamMember.UniqueName, StringComparer.InvariantCultureIgnoreCase))
+            ?? _teamMembers.FirstOrDefault(tm => string.Equals(tm.DisplayName, teamMember.DisplayName, StringComparison.InvariantCultureIgnoreCase));
     }
 
     private void UpdateFoundUser(TeamMember foundUser, ITeamMember newUserDetails)

@@ -21,7 +21,7 @@ public class PullRequestScannerBuilder
 
         Services.AddLogging();
 
-        services.AddInitializers();
+        Services.AddInitializers();
 
         Services.AddMemoryCache();
     }
