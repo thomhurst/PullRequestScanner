@@ -72,7 +72,7 @@ internal class GithubMapper : IGithubMapper
 
     private TeamMember GetPerson(string author)
     {
-        var foundTeamMember = _teamMembersService.FindTeamMember(author);
+        var foundTeamMember = _teamMembersService.FindTeamMember(author, author);
 
         if (foundTeamMember == null)
         {

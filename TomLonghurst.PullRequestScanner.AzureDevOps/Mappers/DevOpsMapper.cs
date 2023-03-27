@@ -34,7 +34,7 @@ internal class AzureDevOpsMapper : IAzureDevOpsMapper
             IsDraft = pullRequest.IsDraft ?? false,
             IsActive = pullRequest.Status == TeamFoundation.SourceControl.WebApi.PullRequestStatus.Active,
             PullRequestStatus = GetStatus(pullRequestContext),
-            Author = GetPerson(pullRequest.CreatedBy.UniqueName, pullRequest.CreatedBy.DisplayName),
+            Author = GetPerson(pullRequest.CreatedBy.UniqueName, pullRequest.CreatedBy.DisplayName, pullRequest.CreatedBy.Id),
             Approvers = pullRequest.Reviewers
                 .Where(x => x.Vote != 0)
                 .Where(x => x.UniqueName != pullRequest.CreatedBy.UniqueName)
@@ -85,13 +85,13 @@ internal class AzureDevOpsMapper : IAzureDevOpsMapper
         return new Comment
         {
             LastUpdated = azureDevOpsComment.LastUpdatedDate,
-            Author = GetPerson(azureDevOpsComment.Author.UniqueName, azureDevOpsComment.Author.DisplayName)
+            Author = GetPerson(azureDevOpsComment.Author.UniqueName, azureDevOpsComment.Author.DisplayName, azureDevOpsComment.Author.Id)
         };
     }
 
-    private TeamMember GetPerson(string uniqueName, string displayName)
+    private TeamMember GetPerson(string uniqueName, string displayName, string id)
     {
-        var foundTeamMember = _teamMembersService.FindTeamMember(uniqueName);
+        var foundTeamMember = _teamMembersService.FindTeamMember(uniqueName, id);
 
         if (foundTeamMember == null)
         {
@@ -117,11 +117,12 @@ internal class AzureDevOpsMapper : IAzureDevOpsMapper
 
     private Approver GetApprover(IdentityRefWithVote reviewer, List<GitPullRequestCommentThread> azureDevOpsPullRequestThreads)
     {
+        
         return new Approver
         {
             Vote = GetVote(reviewer.Vote),
             IsRequired = reviewer.IsRequired,
-            TeamMember = GetPerson(reviewer.UniqueName, reviewer.DisplayName),
+            TeamMember = GetPerson(reviewer.UniqueName, reviewer.DisplayName, reviewer.Id),
             Time = azureDevOpsPullRequestThreads
                 .Where(x => x.Properties.GetValue("codeReviewThreadType", string.Empty) == "VoteUpdate")
                 .LastOrDefault(x => x.Comments?.SingleOrDefault(c => c.Author.UniqueName == reviewer.UniqueName) != null)

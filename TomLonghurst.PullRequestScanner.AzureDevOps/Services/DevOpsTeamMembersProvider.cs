@@ -1,4 +1,6 @@
 ﻿using Microsoft.TeamFoundation.Core.WebApi;
+using Microsoft.VisualStudio.Services.Identity.Client;
+using Microsoft.VisualStudio.Services.Profile.Client;
 using Microsoft.VisualStudio.Services.WebApi;
 using TomLonghurst.EnumerableAsyncProcessor.Extensions;
 using TomLonghurst.PullRequestScanner.AzureDevOps.Options;
@@ -41,13 +43,16 @@ internal class AzureDevOpsTeamMembersProvider : ITeamMembersProvider
             iteration++;
         } while (teams.Count == 100 * iteration);
 
-        var membersResponses = await teams
+        var membersResponsesArrays = await teams
             .ToAsyncProcessorBuilder()
             .SelectAsync(GetTeamMembers)
             .ProcessInParallel(50, TimeSpan.FromSeconds(5));
 
-        return membersResponses
+        var membersResponses = membersResponsesArrays
             .SelectMany(x => x)
+            .ToList();
+        
+        return membersResponses
             .Where(x => x.Identity.DisplayName != Constants.VstsDisplayName)
             .Where(x => !x.Identity.UniqueName.StartsWith(Constants.VstfsUniqueNamePrefix))
             .Select(x => new TeamMemberImpl

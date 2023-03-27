@@ -50,9 +50,10 @@ internal class TeamMembersService : ITeamMembersService, IInitializer
         _isInitialized = true;
     }
 
-    public TeamMember? FindTeamMember(string uniqueName)
+    public TeamMember? FindTeamMember(string uniqueName, string id)
     {
-        return _teamMembers.FirstOrDefault(x => x.UniqueNames.Contains(uniqueName, StringComparer.InvariantCultureIgnoreCase));
+        return _teamMembers.FirstOrDefault(x => x.UniqueNames.Contains(uniqueName, StringComparer.InvariantCultureIgnoreCase))
+        ?? _teamMembers.FirstOrDefault(x => x.Ids.Contains(id, StringComparer.InvariantCultureIgnoreCase));
     }
 
     private TeamMember? FindTeamMember(ITeamMember teamMember)
