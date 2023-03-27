@@ -6,14 +6,14 @@ namespace TomLonghurst.PullRequestScanner.Services;
 
 internal class TeamMembersService : ITeamMembersService, IInitializer
 {
-    private readonly IEnumerable<ITeamMembersProvider> _teamMembersServices;
+    private readonly IEnumerable<ITeamMembersProvider> _teamMembersProviders;
 
     private readonly List<TeamMember> _teamMembers = new();
     private bool _isInitialized;
 
-    public TeamMembersService(IEnumerable<ITeamMembersProvider> teamMembersServices)
+    public TeamMembersService(IEnumerable<ITeamMembersProvider> teamMembersProviders)
     {
-        _teamMembersServices = teamMembersServices;
+        _teamMembersProviders = teamMembersProviders;
     }
 
     public async Task InitializeAsync()
@@ -23,7 +23,7 @@ internal class TeamMembersService : ITeamMembersService, IInitializer
             return;
         }
 
-        var teamMembersEnumerable = await Task.WhenAll(_teamMembersServices.Select(x => x.GetTeamMembers()));
+        var teamMembersEnumerable = await Task.WhenAll(_teamMembersProviders.Select(x => x.GetTeamMembers()));
         var teamMembers = teamMembersEnumerable.SelectMany(x => x).ToList();
 
         foreach (var teamMember in teamMembers)
