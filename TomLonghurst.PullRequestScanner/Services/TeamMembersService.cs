@@ -52,7 +52,7 @@ internal class TeamMembersService : ITeamMembersService, IInitializer
 
     public TeamMember? FindTeamMember(string uniqueName)
     {
-        return _teamMembers.FirstOrDefault(x => x.UniqueNames.Contains(uniqueName));
+        return _teamMembers.FirstOrDefault(x => x.UniqueNames.Contains(uniqueName, StringComparer.InvariantCultureIgnoreCase));
     }
 
     private TeamMember? FindTeamMember(ITeamMember teamMember)
