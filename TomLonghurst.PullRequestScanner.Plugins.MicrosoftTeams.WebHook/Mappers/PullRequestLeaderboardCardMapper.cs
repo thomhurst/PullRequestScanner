@@ -172,7 +172,7 @@ internal class PullRequestLeaderboardCardMapper : IPullRequestLeaderboardCardMap
         }
         
         teamsNotificationCard.MsTeams.Entitities = personsCommentsAndReviews
-            .Where(x => x.Value.CommentsCount != 0 && x.Value.ReviewedCount != 0)
+            .Where(x => x.Value.CommentsCount != 0 || x.Value.ReviewedCount != 0)
             .Select(x => x.Key)
             .ToAdaptiveCardMentionEntities();
 
