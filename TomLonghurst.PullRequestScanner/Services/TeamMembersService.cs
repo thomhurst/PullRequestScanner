@@ -59,10 +59,20 @@ internal class TeamMembersService : ITeamMembersService, IInitializer
     private TeamMember? FindTeamMember(ITeamMember teamMember)
     {
         return
-            _teamMembers.FirstOrDefault(tm => string.Equals(tm.Email, teamMember.Email, StringComparison.InvariantCultureIgnoreCase))
-            ?? _teamMembers.FirstOrDefault(tm => tm.Ids.Contains(teamMember.Id, StringComparer.InvariantCultureIgnoreCase))
-            ?? _teamMembers.FirstOrDefault(tm => tm.UniqueNames.Contains(teamMember.UniqueName, StringComparer.InvariantCultureIgnoreCase))
-            ?? _teamMembers.FirstOrDefault(tm => string.Equals(tm.DisplayName, teamMember.DisplayName, StringComparison.InvariantCultureIgnoreCase));
+            _teamMembers.FirstOrDefault(tm => NotEmptyAndEquals(tm.Email, teamMember.Email))
+            ?? _teamMembers.FirstOrDefault(tm => NotEmptyAndInList(tm.Ids, teamMember.Id))
+            ?? _teamMembers.FirstOrDefault(tm => NotEmptyAndInList(tm.UniqueNames, teamMember.UniqueName))
+            ?? _teamMembers.FirstOrDefault(tm => NotEmptyAndEquals(tm.DisplayName, teamMember.DisplayName));
+
+        bool NotEmptyAndEquals(string value1, string value2)
+        {
+            return !string.IsNullOrEmpty(value1) && !string.IsNullOrEmpty(value2) && string.Equals(value1, value2, StringComparison.InvariantCultureIgnoreCase);
+        }
+        
+        bool NotEmptyAndInList(IList<string> list, string value)
+        {
+            return !string.IsNullOrEmpty(value) && list.Contains(value, StringComparer.InvariantCultureIgnoreCase);
+        }
     }
 
     private void UpdateFoundUser(TeamMember foundUser, ITeamMember newUserDetails)

@@ -12,7 +12,7 @@ internal static class AdaptiveCardExtensions
             .Select(x => new AdaptiveCardMentionedEntity(
                 Type: "mention",
                 Text: x.ToAtMarkupTag(),
-                Mentioned: new Mentioned(Id: x.Email, Name: x.DisplayOrUniqueName)
+                Mentioned: new Mentioned(Id: x.Email!, Name: x.DisplayOrUniqueName)
             ))
             .ToArray();
     }
