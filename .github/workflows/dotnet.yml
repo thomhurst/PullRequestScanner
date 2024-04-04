@@ -18,7 +18,7 @@ on:
 jobs:
   modularpipeline:
     environment: ${{ github.ref == 'refs/heads/main' && 'Production' || 'Pull Requests' }}
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3
@@ -28,12 +28,10 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: 7.0.x
-      - name: setup-msbuild
-        uses: microsoft/setup-msbuild@v1.3.1
+          dotnet-version: 8.0.x
       - name: Run Pipeline
         run: dotnet run -c Release
-        working-directory: "EnumerableAsyncProcessor.Pipeline"
+        working-directory: "TomLonghurst.PullRequestScanner.Pipeline"
         env:
           DOTNET_ENVIRONMENT: ${{ github.ref == 'refs/heads/main' && 'Production' || 'Development' }}
           NuGet__ApiKey: ${{ github.ref == 'refs/heads/main' && secrets.NuGet__ApiKey || null }}
