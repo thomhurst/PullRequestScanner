@@ -1,14 +1,12 @@
+using EnumerableAsyncProcessor.Extensions;
 using TomLonghurst.PullRequestScanner.Pipeline.Settings;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ModularPipelines.Attributes;
 using ModularPipelines.Context;
-using ModularPipelines.Extensions;
-using ModularPipelines.Git.Extensions;
+using ModularPipelines.DotNet.Extensions;
+using ModularPipelines.DotNet.Options;
 using ModularPipelines.Models;
 using ModularPipelines.Modules;
-using ModularPipelines.NuGet.Extensions;
-using ModularPipelines.NuGet.Options;
 
 namespace TomLonghurst.PullRequestScanner.Pipeline.Modules;
 
@@ -23,20 +21,9 @@ public class UploadPackagesToNugetModule : Module<CommandResult[]>
         _options = options;
     }
 
-    protected override async Task OnBeforeExecute(IPipelineContext context)
-    {
-        var packagePaths = await GetModule<PackagePathsParserModule>();
-
-        foreach (var packagePath in packagePaths.Value!)
-        {
-            context.Logger.LogInformation("Uploading {File}", packagePath);
-        }
-
-        await base.OnBeforeExecute(context);
-    }
-
     protected override async Task<SkipDecision> ShouldSkip(IPipelineContext context)
     {
+        await Task.Yield();
         var publishPackages =
             context.Environment.EnvironmentVariables.GetEnvironmentVariable("PUBLISH_PACKAGES")!;
 
@@ -53,20 +40,15 @@ public class UploadPackagesToNugetModule : Module<CommandResult[]>
     {
         ArgumentNullException.ThrowIfNull(_options.Value.ApiKey);
 
-        var gitVersionInformation = await context.Git().Versioning.GetGitVersioningInformation();
-
-        if (gitVersionInformation.BranchName != "main")
-        {
-            return await NothingAsync();
-        }
-
         var packagePaths = await GetModule<PackagePathsParserModule>();
 
-        return await context.NuGet()
-            .UploadPackages(new NuGetUploadOptions(packagePaths.Value!.AsPaths(), new Uri("https://api.nuget.org/v3/index.json"))
+        return await packagePaths.Value!
+            .SelectAsync(async nugetFile => await context.DotNet().Nuget.Push(new DotNetNugetPushOptions
             {
+                Path = nugetFile,
+                Source = "https://api.nuget.org/v3/index.json",
                 ApiKey = _options.Value.ApiKey!,
-                NoSymbols = true
-            });
+            }, cancellationToken), cancellationToken: cancellationToken)
+            .ProcessOneAtATime();
     }
 }

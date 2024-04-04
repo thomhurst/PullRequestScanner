@@ -22,7 +22,18 @@ public class PackProjectsModule : Module<List<CommandResult>>
         var projectFiles = context.Git().RootDirectory!.GetFiles(f => GetProjectsPredicate(f, context));
         foreach (var projectFile in projectFiles)
         {
-            results.Add(await context.DotNet().Pack(new DotNetPackOptions { TargetPath = projectFile.Path, Configuration = Configuration.Release, Properties = new[] { $"PackageVersion={packageVersion.Value}", $"Version={packageVersion.Value}", } }, cancellationToken));
+            results.Add(await context.DotNet().Pack(new DotNetPackOptions
+            {
+                ProjectSolution = projectFile.Path,
+                Configuration = Configuration.Release,
+                IncludeSource = !projectFile.Path.Contains("Analyzer"),
+                NoRestore = true,
+                Properties = new List<KeyValue>
+                {
+                    ("PackageVersion", packageVersion.Value!),
+                    ("Version", packageVersion.Value!),
+                },
+            }, cancellationToken));
         }
 
         return results;
