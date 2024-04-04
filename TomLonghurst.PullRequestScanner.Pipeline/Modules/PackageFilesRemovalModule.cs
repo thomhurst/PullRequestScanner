@@ -1,9 +1,5 @@
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using ModularPipelines.Context;
 using ModularPipelines.Git.Extensions;
-using ModularPipelines.Models;
 using ModularPipelines.Modules;
 
 namespace TomLonghurst.PullRequestScanner.Pipeline.Modules;

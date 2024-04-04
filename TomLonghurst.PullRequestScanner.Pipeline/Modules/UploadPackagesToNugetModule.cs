@@ -1,6 +1,3 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using TomLonghurst.PullRequestScanner.Pipeline.Settings;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -10,7 +7,6 @@ using ModularPipelines.Extensions;
 using ModularPipelines.Git.Extensions;
 using ModularPipelines.Models;
 using ModularPipelines.Modules;
-using ModularPipelines.Enums;
 using ModularPipelines.NuGet.Extensions;
 using ModularPipelines.NuGet.Options;
 
@@ -41,22 +37,16 @@ public class UploadPackagesToNugetModule : Module<CommandResult[]>
 
     protected override async Task<SkipDecision> ShouldSkip(IPipelineContext context)
     {
-        var gitVersionInfo = await context.Git().Versioning.GetGitVersioningInformation();
-
-        if (gitVersionInfo.BranchName != "main")
-        {
-            return true;
-        }
-        
         var publishPackages =
             context.Environment.EnvironmentVariables.GetEnvironmentVariable("PUBLISH_PACKAGES")!;
 
-        if (!bool.TryParse(publishPackages, out var shouldPublishPackages) || !shouldPublishPackages)
+        if (!bool.TryParse(publishPackages, out var shouldPublishPackages) 
+            || !shouldPublishPackages)
         {
-            return true;
+            return SkipDecision.Skip("User hasn't selected to publish");
         }
 
-        return false;
+        return SkipDecision.DoNotSkip;
     }
 
     protected override async Task<CommandResult[]?> ExecuteAsync(IPipelineContext context, CancellationToken cancellationToken)

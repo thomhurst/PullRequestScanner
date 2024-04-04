@@ -1,10 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using ModularPipelines.Extensions;
 using ModularPipelines.Host;
 using TomLonghurst.PullRequestScanner.Pipeline.Modules;
-using TomLonghurst.PullRequestScanner.Pipeline.Modules.LocalMachine;
 using TomLonghurst.PullRequestScanner.Pipeline.Settings;
 
 await PipelineHostBuilder.Create()
@@ -17,21 +14,11 @@ await PipelineHostBuilder.Create()
     .ConfigureServices((context, collection) =>
     {
         collection.Configure<NuGetSettings>(context.Configuration.GetSection("NuGet"));
-
-        if (context.HostingEnvironment.IsDevelopment())
-        {
-            collection.AddModule<CreateLocalNugetFolderModule>()
-                .AddModule<AddLocalNugetSourceModule>()
-                .AddModule<UploadPackagesToLocalNuGetModule>();
-        }
-        else
-        {
-            collection.AddModule<UploadPackagesToNugetModule>();
-        }
     })
     .AddModule<RunUnitTestsModule>()
     .AddModule<NugetVersionGeneratorModule>()
     .AddModule<PackProjectsModule>()
     .AddModule<PackageFilesRemovalModule>()
     .AddModule<PackagePathsParserModule>()
+    .AddModule<UploadPackagesToNugetModule>()
     .ExecutePipelineAsync();
