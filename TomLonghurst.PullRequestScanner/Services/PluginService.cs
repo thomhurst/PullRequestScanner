@@ -1,8 +1,4 @@
-﻿// <copyright file="PluginService.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
-namespace TomLonghurst.PullRequestScanner.Services;
+﻿namespace TomLonghurst.PullRequestScanner.Services;
 
 using EnumerableAsyncProcessor.Extensions;
 using TomLonghurst.PullRequestScanner.Contracts;

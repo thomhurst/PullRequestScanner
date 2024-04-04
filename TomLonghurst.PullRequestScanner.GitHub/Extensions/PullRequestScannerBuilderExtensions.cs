@@ -1,7 +1,3 @@
-// <copyright file="PullRequestScannerBuilderExtensions.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
 namespace TomLonghurst.PullRequestScanner.GitHub.Extensions;
 
 using System.Net.Http.Headers;

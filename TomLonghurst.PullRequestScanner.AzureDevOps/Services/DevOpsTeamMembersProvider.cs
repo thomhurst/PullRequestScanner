@@ -1,8 +1,4 @@
-﻿// <copyright file="DevOpsTeamMembersProvider.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
-namespace TomLonghurst.PullRequestScanner.AzureDevOps.Services;
+﻿namespace TomLonghurst.PullRequestScanner.AzureDevOps.Services;
 
 using EnumerableAsyncProcessor.Extensions;
 using Microsoft.TeamFoundation.Core.WebApi;

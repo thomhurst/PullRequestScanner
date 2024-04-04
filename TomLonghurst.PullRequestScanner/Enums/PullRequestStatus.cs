@@ -1,7 +1,3 @@
-// <copyright file="PullRequestStatus.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
 namespace TomLonghurst.PullRequestScanner.Enums;
 
 public enum PullRequestStatus

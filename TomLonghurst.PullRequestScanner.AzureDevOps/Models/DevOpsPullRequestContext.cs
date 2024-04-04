@@ -1,7 +1,3 @@
-// <copyright file="DevOpsPullRequestContext.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
 namespace TomLonghurst.PullRequestScanner.AzureDevOps.Models;
 
 using Microsoft.TeamFoundation.SourceControl.WebApi;

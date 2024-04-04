@@ -1,7 +1,3 @@
-// <copyright file="Constants.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
 namespace TomLonghurst.PullRequestScanner;
 
 public static class Constants

@@ -1,7 +1,3 @@
-// <copyright file="AdaptiveCardExtensions.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
 namespace TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Extensions;
 
 using TomLonghurst.PullRequestScanner.Models;

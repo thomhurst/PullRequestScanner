@@ -1,7 +1,3 @@
-// <copyright file="PullRequestStatusMapper.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
 namespace TomLonghurst.PullRequestScanner.Mappers;
 
 using TomLonghurst.PullRequestScanner.Enums;

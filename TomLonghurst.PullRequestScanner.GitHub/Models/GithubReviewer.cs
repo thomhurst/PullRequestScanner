@@ -1,8 +1,4 @@
-﻿// <copyright file="GithubReviewer.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
-namespace TomLonghurst.PullRequestScanner.GitHub.Models;
+﻿namespace TomLonghurst.PullRequestScanner.GitHub.Models;
 
 using PullRequestReviewState = Octokit.GraphQL.Model.PullRequestReviewState;
 

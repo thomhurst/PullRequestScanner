@@ -1,8 +1,4 @@
-﻿// <copyright file="PullRequest.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
-namespace TomLonghurst.PullRequestScanner.GitHub.Models.GraphQl;
+﻿namespace TomLonghurst.PullRequestScanner.GitHub.Models.GraphQl;
 
 using System.Text.Json.Serialization;
 

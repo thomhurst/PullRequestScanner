@@ -1,7 +1,3 @@
-// <copyright file="Attachment.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
 namespace TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Models;
 
 using Newtonsoft.Json;

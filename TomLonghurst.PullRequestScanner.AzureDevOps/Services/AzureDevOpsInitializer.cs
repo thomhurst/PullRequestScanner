@@ -1,7 +1,3 @@
-// <copyright file="AzureDevOpsInitializer.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
 namespace TomLonghurst.PullRequestScanner.AzureDevOps.Services;
 
 using Initialization.Microsoft.Extensions.DependencyInjection;

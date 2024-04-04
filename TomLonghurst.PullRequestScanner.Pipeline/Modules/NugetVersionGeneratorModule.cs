@@ -1,7 +1,3 @@
-// <copyright file="NugetVersionGeneratorModule.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
 #pragma warning disable CS0162
 
 namespace TomLonghurst.PullRequestScanner.Pipeline.Modules;

@@ -1,8 +1,4 @@
-﻿// <copyright file="AzureDevOpsPullRequestProvider.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
-namespace TomLonghurst.PullRequestScanner.AzureDevOps.Services;
+﻿namespace TomLonghurst.PullRequestScanner.AzureDevOps.Services;
 
 using System.Collections.Immutable;
 using EnumerableAsyncProcessor.Extensions;

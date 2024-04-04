@@ -1,7 +1,3 @@
-// <copyright file="GithubRepository.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
 namespace TomLonghurst.PullRequestScanner.GitHub.Models;
 
 using System.Text.Json.Serialization;

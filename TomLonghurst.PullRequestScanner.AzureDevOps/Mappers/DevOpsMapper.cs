@@ -1,7 +1,3 @@
-// <copyright file="DevOpsMapper.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
 namespace TomLonghurst.PullRequestScanner.AzureDevOps.Mappers;
 
 using Microsoft.TeamFoundation.SourceControl.WebApi;

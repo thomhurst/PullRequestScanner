@@ -1,8 +1,4 @@
-﻿// <copyright file="GitHubPullRequestProvider.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
-namespace TomLonghurst.PullRequestScanner.GitHub.Services;
+﻿namespace TomLonghurst.PullRequestScanner.GitHub.Services;
 
 using System.Collections.Immutable;
 using EnumerableAsyncProcessor.Extensions;

@@ -1,7 +1,3 @@
-// <copyright file="MicrosoftTeamsAdaptiveCard.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
 namespace TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Models
 {
     using AdaptiveCards;

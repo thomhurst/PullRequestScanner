@@ -1,7 +1,3 @@
-// <copyright file="MicrosoftTeamsWebHookPublisher.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
 namespace TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Services;
 
 using TomLonghurst.PullRequestScanner.Enums;
