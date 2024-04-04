@@ -15,14 +15,14 @@ internal class TeamsNotificationCardWrapper
         return new TeamsNotificationCardWrapper
         {
             Type = "message",
-            Attachments = new[]
-            {
+            Attachments =
+            [
                 new Attachment
                 {
                     ContentType = "application/vnd.microsoft.card.adaptive",
                     Content = adaptiveCard
                 }
-            },
+            ],
         };
     }
 }

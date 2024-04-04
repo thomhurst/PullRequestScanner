@@ -39,14 +39,14 @@ var host = Host.CreateDefaultBuilder(args)
                     microsoftTeamsWebHookPublisherBuilder.AddLeaderboardCardPublisher();
                     microsoftTeamsWebHookPublisherBuilder.AddStatusCardsPublisher(new MicrosoftTeamsStatusPublishOptions
                     {
-                        StatusesToPublish = new()
-                        {
+                        StatusesToPublish =
+                        [
                             PullRequestStatus.MergeConflicts,
                             PullRequestStatus.ReadyToMerge,
                             PullRequestStatus.FailingChecks,
                             PullRequestStatus.NeedsReviewing,
                             PullRequestStatus.Rejected
-                        },
+                        ],
                     });
                 });
     })

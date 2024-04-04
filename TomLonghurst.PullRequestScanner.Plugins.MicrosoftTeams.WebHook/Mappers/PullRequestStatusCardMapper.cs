@@ -33,15 +33,15 @@ internal class PullRequestStatusCardMapper : IPullRequestStatusCardMapper
             {
                 Width = "full",
             },
-            Body = new List<AdaptiveElement>
-            {
+            Body =
+            [
                 new AdaptiveTextBlock
                 {
                     Weight = AdaptiveTextWeight.Bolder,
                     Size = AdaptiveTextSize.ExtraLarge,
                     Text = pullRequestStatus.GetMessage()
                 }
-            },
+            ],
         };
 
         var mentionedUsers = new List<TeamMember>();
@@ -52,43 +52,45 @@ internal class PullRequestStatusCardMapper : IPullRequestStatusCardMapper
             {
                 Spacing = AdaptiveSpacing.ExtraLarge,
                 Style = AdaptiveContainerStyle.Emphasis,
-                Items = new List<AdaptiveElement>
-                {
+                Items =
+                [
                     new AdaptiveTextBlock
                     {
                         Text =
                             $"**Repository:** [{pullRequestsInRepo.First().Repository.Name}]({pullRequestsInRepo.First().Repository.Url})"
                     },
+
                     new AdaptiveColumnSet
                     {
-                        Columns = new List<AdaptiveColumn>
-                        {
-                            new()
+                        Columns =
+                        [
+                            new AdaptiveColumn
                             {
-                                Items = new List<AdaptiveElement>
-                                {
+                                Items =
+                                [
                                     new AdaptiveTextBlock
                                     {
                                         Weight = AdaptiveTextWeight.Bolder,
                                         Text = "Pull Request"
                                     }
-                                }
+                                ]
                             },
-                            new()
+
+                            new AdaptiveColumn
                             {
-                                Items = new List<AdaptiveElement>
-                                {
+                                Items =
+                                [
                                     new AdaptiveTextBlock
                                     {
                                         Weight = AdaptiveTextWeight.Bolder,
                                         Text = "Author"
                                     }
-                                },
+                                ],
                                 Width = "auto"
                             }
-                        }
+                        ]
                     }
-                },
+                ],
             };
 
             teamsNotificationCard.Body.Add(adaptiveContainer);
@@ -102,30 +104,31 @@ internal class PullRequestStatusCardMapper : IPullRequestStatusCardMapper
 
                 adaptiveContainer.Items.Add(new AdaptiveColumnSet
                 {
-                    Columns = new List<AdaptiveColumn>
-                    {
-                        new()
+                    Columns =
+                    [
+                        new AdaptiveColumn
                         {
-                            Items = new List<AdaptiveElement>
-                            {
+                            Items =
+                            [
                                 new AdaptiveTextBlock
                                 {
                                     Text = $"[#{pullRequest.Number}]({pullRequest.Url}) {pullRequest.Title}"
                                 }
-                            }
+                            ]
                         },
-                        new()
+
+                        new AdaptiveColumn
                         {
-                            Items = new List<AdaptiveElement>
-                            {
+                            Items =
+                            [
                                 new AdaptiveTextBlock
                                 {
                                     Text = pullRequest.Author.ToAtMarkupTag()
                                 }
-                            },
+                            ],
                             Width = "auto"
                         }
-                    },
+                    ],
                 });
 
                 var jsonString = JsonConvert.SerializeObject(teamsNotificationCard, Formatting.None);

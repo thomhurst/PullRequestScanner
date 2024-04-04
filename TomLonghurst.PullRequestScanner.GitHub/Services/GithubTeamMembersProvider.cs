@@ -25,17 +25,18 @@ internal class GithubTeamMembersProvider : ITeamMembersProvider
         {
             Name = user.Login,
             Id = user.Id.ToString(),
-            Members = new List<GithubMember>
-            {
-                new()
+            Members =
+            [
+                new GithubMember
                 {
                     Id = user.Id.ToString(),
                     DisplayName = user.Name ?? user.Login,
                     UniqueName = user.Login,
                     Email = user.Email,
                     ImageUrl = user.AvatarUrl
-                },
-            },
+                }
+
+            ],
             Slug = user.Login,
         };
     }
@@ -73,7 +74,7 @@ internal class GithubTeamMembersProvider : ITeamMembersProvider
     {
         if (!_githubOptions.IsEnabled)
         {
-            return Array.Empty<ITeamMember>();
+            return [];
         }
 
         if (_githubOptions is GithubOrganizationTeamOptions githubOrganizationTeamOptions)
@@ -88,6 +89,6 @@ internal class GithubTeamMembersProvider : ITeamMembersProvider
             return team.Members;
         }
 
-        return new List<GithubMember>();
+        return [];
     }
 }

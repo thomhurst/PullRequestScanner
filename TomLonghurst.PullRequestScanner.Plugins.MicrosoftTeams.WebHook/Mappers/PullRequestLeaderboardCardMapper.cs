@@ -28,66 +28,70 @@ internal class PullRequestLeaderboardCardMapper : IPullRequestLeaderboardCardMap
             {
                 Width = "full",
             },
-            Body = new List<AdaptiveElement>
-            {
+            Body =
+            [
                 new AdaptiveTextBlock
                 {
                     Weight = AdaptiveTextWeight.Bolder,
                     Size = AdaptiveTextSize.ExtraLarge,
                     Text = "Yesterday's Pull Request Reviewer Leaderboard"
                 },
+
                 new AdaptiveColumnSet
                 {
-                    Columns = new List<AdaptiveColumn>
-                    {
-                        new()
+                    Columns =
+                    [
+                        new AdaptiveColumn
                         {
-                            Items = new List<AdaptiveElement>
-                            {
+                            Items =
+                            [
                                 new AdaptiveTextBlock
                                 {
                                     Weight = AdaptiveTextWeight.Bolder,
                                     Text = "Image"
                                 }
-                            },
+                            ],
                             Width = "50px"
                         },
-                        new()
+
+                        new AdaptiveColumn
                         {
-                            Items = new List<AdaptiveElement>
-                            {
+                            Items =
+                            [
                                 new AdaptiveTextBlock
                                 {
                                     Weight = AdaptiveTextWeight.Bolder,
                                     Text = "Name"
                                 }
-                            }
+                            ]
                         },
-                        new()
+
+                        new AdaptiveColumn
                         {
-                            Items = new List<AdaptiveElement>
-                            {
+                            Items =
+                            [
                                 new AdaptiveTextBlock
                                 {
                                     Weight = AdaptiveTextWeight.Bolder,
                                     Text = "Comments"
                                 }
-                            }
+                            ]
                         },
-                        new()
+
+                        new AdaptiveColumn
                         {
-                            Items = new List<AdaptiveElement>
-                            {
+                            Items =
+                            [
                                 new AdaptiveTextBlock
                                 {
                                     Weight = AdaptiveTextWeight.Bolder,
                                     Text = "Pull Requests Reviewed"
                                 }
-                            }
+                            ]
                         }
-                    }
+                    ]
                 }
-            },
+            ],
         };
 
         var personsCommentsAndReviews = new ConcurrentDictionary<TeamMember, PullRequestReviewLeaderboardModel>();
@@ -119,12 +123,12 @@ internal class PullRequestLeaderboardCardMapper : IPullRequestLeaderboardCardMap
             teamsNotificationCard.Body.Add(
                 new AdaptiveColumnSet
                 {
-                    Columns = new List<AdaptiveColumn>
-                    {
-                        new()
+                    Columns =
+                    [
+                        new AdaptiveColumn
                         {
-                            Items = new List<AdaptiveElement>
-                            {
+                            Items =
+                            [
                                 new AdaptiveImage
                                 {
                                     PixelWidth = 50,
@@ -132,42 +136,46 @@ internal class PullRequestLeaderboardCardMapper : IPullRequestLeaderboardCardMap
                                     Url =
                                         new Uri(
                                             personsCommentsAndReview.Key.ImageUrls.FirstOrDefault()
-                                            ?? "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png")
+                                            ??
+                                            "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png")
                                 }
-                            },
+                            ],
                             Width = "50px"
                         },
-                        new()
+
+                        new AdaptiveColumn
                         {
-                            Items = new List<AdaptiveElement>
-                            {
+                            Items =
+                            [
                                 new AdaptiveTextBlock
                                 {
                                     Text = personsCommentsAndReview.Key.ToAtMarkupTag()
                                 }
-                            }
+                            ]
                         },
-                        new()
+
+                        new AdaptiveColumn
                         {
-                            Items = new List<AdaptiveElement>
-                            {
+                            Items =
+                            [
                                 new AdaptiveTextBlock
                                 {
                                     Text = personsCommentsAndReview.Value.CommentsCount.ToString()
                                 }
-                            }
+                            ]
                         },
-                        new()
+
+                        new AdaptiveColumn
                         {
-                            Items = new List<AdaptiveElement>
-                            {
+                            Items =
+                            [
                                 new AdaptiveTextBlock
                                 {
                                     Text = personsCommentsAndReview.Value.ReviewedCount.ToString()
                                 }
-                            }
+                            ]
                         }
-                    },
+                    ],
                 });
         }
 

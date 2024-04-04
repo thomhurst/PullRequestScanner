@@ -8,12 +8,12 @@ public class MicrosoftTeamsPublishOptions
 
     public bool PublishPullRequestReviewerLeaderboardCard { get; set; } = true;
 
-    public List<PullRequestStatus> CardStatusesToPublish { get; set; } = new List<PullRequestStatus>
-    {
+    public List<PullRequestStatus> CardStatusesToPublish { get; set; } =
+    [
         PullRequestStatus.MergeConflicts,
         PullRequestStatus.ReadyToMerge,
         PullRequestStatus.FailingChecks,
         PullRequestStatus.NeedsReviewing,
-        PullRequestStatus.Rejected,
-    };
+        PullRequestStatus.Rejected
+    ];
 }

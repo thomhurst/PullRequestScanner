@@ -31,15 +31,16 @@ internal class PullRequestsOverviewCardMapper : IPullRequestsOverviewCardMapper
             {
                 Width = "full",
             },
-            Body = new List<AdaptiveElement>
-            {
+            Body =
+            [
                 new AdaptiveTextBlock
                 {
                     Weight = AdaptiveTextWeight.Bolder,
                     Size = AdaptiveTextSize.Large,
                     Text = $"Pull Request Statuses {GetCardNumberString(cardCount)}"
-                },
-            },
+                }
+
+            ],
         };
 
         var mentionedUsers = new List<TeamMember>();
@@ -50,66 +51,71 @@ internal class PullRequestsOverviewCardMapper : IPullRequestsOverviewCardMapper
             {
                 Spacing = AdaptiveSpacing.ExtraLarge,
                 Style = AdaptiveContainerStyle.Emphasis,
-                Items = new List<AdaptiveElement>
-                {
+                Items =
+                [
                     new AdaptiveTextBlock
                     {
-                        Text = $"**Repository:** [{repo.Values.First().Repository.Name}]({repo.Values.First().Repository.Url})"
+                        Text =
+                            $"**Repository:** [{repo.Values.First().Repository.Name}]({repo.Values.First().Repository.Url})"
                     },
+
                     new AdaptiveColumnSet
                     {
-                        Columns = new List<AdaptiveColumn>
-                        {
-                            new()
+                        Columns =
+                        [
+                            new AdaptiveColumn
                             {
-                                Items = new List<AdaptiveElement>
-                                {
+                                Items =
+                                [
                                     new AdaptiveTextBlock
                                     {
                                         Weight = AdaptiveTextWeight.Bolder,
                                         Text = "Pull Request"
                                     }
-                                }
+                                ]
                             },
-                            new()
+
+                            new AdaptiveColumn
                             {
-                                Items = new List<AdaptiveElement>
-                                {
+                                Items =
+                                [
                                     new AdaptiveTextBlock
                                     {
                                         Weight = AdaptiveTextWeight.Bolder,
                                         Text = "Author"
                                     }
-                                },
+                                ],
                                 Width = "150px"
                             },
-                            new()
+
+                            new AdaptiveColumn
                             {
-                                Items = new List<AdaptiveElement>
-                                {
+                                Items =
+                                [
                                     new AdaptiveTextBlock
                                     {
                                         Weight = AdaptiveTextWeight.Bolder,
                                         Text = "Status"
                                     }
-                                },
+                                ],
                                 Width = "120px"
                             },
-                            new()
+
+                            new AdaptiveColumn
                             {
-                                Items = new List<AdaptiveElement>
-                                {
+                                Items =
+                                [
                                     new AdaptiveTextBlock
                                     {
                                         Weight = AdaptiveTextWeight.Bolder,
                                         Text = "Age"
                                     }
-                                },
+                                ],
                                 Width = "50px"
                             }
-                        }
+                        ]
                     }
-                },
+                ],
             };
 
             teamsNotificationCard.Body.Add(adaptiveContainer);
@@ -121,56 +127,59 @@ internal class PullRequestsOverviewCardMapper : IPullRequestsOverviewCardMapper
                 mentionedUsers.Add(pullRequest.Author);
                 adaptiveContainer.Items.Add(new AdaptiveColumnSet
                 {
-                    Columns = new List<AdaptiveColumn>
-                    {
-                        new()
+                    Columns =
+                    [
+                        new AdaptiveColumn
                         {
-                            Items = new List<AdaptiveElement>
-                            {
+                            Items =
+                            [
                                 new AdaptiveTextBlock
                                 {
                                     Text = $"[#{pullRequest.Number}]({pullRequest.Url}) {pullRequest.Title}",
                                     Color = pullRequest.IsDraft ? AdaptiveTextColor.Accent : AdaptiveTextColor.Default
                                 }
-                            }
+                            ]
                         },
-                        new()
+
+                        new AdaptiveColumn
                         {
-                            Items = new List<AdaptiveElement>
-                            {
+                            Items =
+                            [
                                 new AdaptiveTextBlock
                                 {
                                     Text = pullRequest.Author.ToAtMarkupTag(),
                                     Color = pullRequest.IsDraft ? AdaptiveTextColor.Accent : AdaptiveTextColor.Default
                                 }
-                            },
+                            ],
                             Width = "150px"
                         },
-                        new()
+
+                        new AdaptiveColumn
                         {
-                            Items = new List<AdaptiveElement>
-                            {
+                            Items =
+                            [
                                 new AdaptiveTextBlock
                                 {
                                     Text = pullRequest.PullRequestStatus.GetMessage(),
                                     Color = GetColorForStatus(pullRequest.PullRequestStatus)
                                 }
-                            },
+                            ],
                             Width = "120px"
                         },
-                        new()
+
+                        new AdaptiveColumn
                         {
-                            Items = new List<AdaptiveElement>
-                            {
+                            Items =
+                            [
                                 new AdaptiveTextBlock
                                 {
                                     Text = GetAge(pullRequest.Created),
                                     Color = GetColorForAge(pullRequest.Created)
                                 }
-                            },
+                            ],
                             Width = "50px"
                         }
-                    },
+                    ],
                 });
 
                 teamsNotificationCard.MsTeams.Entitities = mentionedUsers.ToAdaptiveCardMentionEntities();
