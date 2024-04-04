@@ -139,7 +139,7 @@ internal class GithubMapper : IGithubMapper
     
     private PullRequestStatus GetStatus(GithubPullRequest pullRequest)
     {
-        if (pullRequest.State == ItemState.Closed)
+        if (pullRequest.IsMerged)
         {
             return PullRequestStatus.Completed;
         }

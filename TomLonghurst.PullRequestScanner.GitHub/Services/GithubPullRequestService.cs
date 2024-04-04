@@ -33,6 +33,7 @@ internal class GithubPullRequestService : BaseGitHubApiService, IGithubPullReque
                 Id = x.Id.ToString(),
                 PullRequestNumber = x.Number,
                 IsDraft = x.Draft,
+                IsMerged = x.Merged,
                 Mergeable = x.MergeableState?.Value ?? MergeableState.Unknown,
                 State = x.State.Value,
                 IsClosed = x.ClosedAt != null,

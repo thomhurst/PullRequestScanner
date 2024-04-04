@@ -28,4 +28,5 @@ public record GithubPullRequest
     public StatusState ChecksStatus { get; set; }
     public bool IsClosed { get; set; }
     public List<string> Labels { get; set; }
+    public bool IsMerged { get; set; }
 }
