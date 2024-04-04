@@ -17,13 +17,13 @@ var host = Host.CreateDefaultBuilder(args)
     .ConfigureServices(services =>
     {
         services.AddPullRequestScanner()
-            .AddGithub(new GithubOrganizationTeamOptions()
+            .AddGithub(new GithubOrganizationTeamOptions
             {
                 OrganizationSlug = "",
                 PersonalAccessToken = "",
                 RepositoriesToScan = repository => true
             })
-            .AddAzureDevOps(new AzureDevOpsOptions()
+            .AddAzureDevOps(new AzureDevOpsOptions
             {
                 Organization = "",
                 ProjectName = "",

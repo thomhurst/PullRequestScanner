@@ -21,7 +21,7 @@ internal class GithubTeamMembersProvider : ITeamMembersProvider
     {
         var user = await _gitHubClient.User.Get(githubUserOptions.Username);
 
-        return new GithubTeam()
+        return new GithubTeam
         {
             Name = user.Login,
             Id = user.Id.ToString(),
