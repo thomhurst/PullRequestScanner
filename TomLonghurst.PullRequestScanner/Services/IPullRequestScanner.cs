@@ -1,7 +1,7 @@
 namespace TomLonghurst.PullRequestScanner.Services;
 
-using TomLonghurst.PullRequestScanner.Contracts;
-using TomLonghurst.PullRequestScanner.Models;
+using Contracts;
+using Models;
 
 public interface IPullRequestScanner : IHasPlugins
 {

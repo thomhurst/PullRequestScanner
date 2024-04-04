@@ -10,7 +10,7 @@ internal class GithubQueryRunner : IGithubQueryRunner
 
     public GithubQueryRunner(IGithubGraphQlClientProvider githubGraphQlClientProvider)
     {
-        this._githubGraphQlClientProvider = githubGraphQlClientProvider;
+        _githubGraphQlClientProvider = githubGraphQlClientProvider;
     }
 
     public async Task<T> RunQuery<T>(ICompiledQuery<T> query)

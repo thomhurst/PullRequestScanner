@@ -2,8 +2,8 @@ namespace TomLonghurst.PullRequestScanner.GitHub.Mappers;
 
 using Octokit;
 using Octokit.GraphQL.Model;
-using TomLonghurst.PullRequestScanner.Enums;
-using TomLonghurst.PullRequestScanner.GitHub.Models;
+using Enums;
+using Models;
 using TomLonghurst.PullRequestScanner.Models;
 using TomLonghurst.PullRequestScanner.Services;
 using MergeableState = Octokit.MergeableState;
@@ -16,7 +16,7 @@ internal class GithubMapper : IGithubMapper
 
     public GithubMapper(ITeamMembersService teamMembersService)
     {
-        this._teamMembersService = teamMembersService;
+        _teamMembersService = teamMembersService;
     }
 
     public PullRequest ToPullRequestModel(GithubPullRequest githubPullRequest)

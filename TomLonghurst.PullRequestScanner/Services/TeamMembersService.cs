@@ -1,8 +1,8 @@
 namespace TomLonghurst.PullRequestScanner.Services;
 
 using Initialization.Microsoft.Extensions.DependencyInjection;
-using TomLonghurst.PullRequestScanner.Contracts;
-using TomLonghurst.PullRequestScanner.Models;
+using Contracts;
+using Models;
 
 internal class TeamMembersService : ITeamMembersService, IInitializer
 {
@@ -32,7 +32,7 @@ internal class TeamMembersService : ITeamMembersService, IInitializer
 
             if (foundUser == null)
             {
-                this._teamMembers.Add(new TeamMember
+                _teamMembers.Add(new TeamMember
                 {
                     Email = teamMember.Email,
                     Ids = { teamMember.Id },

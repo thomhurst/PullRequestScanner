@@ -3,9 +3,9 @@ namespace TomLonghurst.PullRequestScanner.Services;
 using System.Collections.Immutable;
 using Initialization.Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Caching.Memory;
-using TomLonghurst.PullRequestScanner.Contracts;
-using TomLonghurst.PullRequestScanner.Exceptions;
-using TomLonghurst.PullRequestScanner.Models;
+using Contracts;
+using Exceptions;
+using Models;
 
 internal class PullRequestService : IPullRequestService
 {
@@ -21,9 +21,9 @@ internal class PullRequestService : IPullRequestService
         IServiceProvider serviceProvider,
         IMemoryCache memoryCache)
     {
-        this._pullRequestProviders = pullRequestProviders;
-        this._serviceProvider = serviceProvider;
-        this._memoryCache = memoryCache;
+        _pullRequestProviders = pullRequestProviders;
+        _serviceProvider = serviceProvider;
+        _memoryCache = memoryCache;
     }
 
     public async Task<IReadOnlyList<PullRequest>> GetPullRequests()

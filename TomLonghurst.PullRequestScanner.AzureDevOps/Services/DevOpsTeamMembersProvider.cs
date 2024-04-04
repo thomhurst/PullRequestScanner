@@ -3,8 +3,8 @@
 using EnumerableAsyncProcessor.Extensions;
 using Microsoft.TeamFoundation.Core.WebApi;
 using Microsoft.VisualStudio.Services.WebApi;
-using TomLonghurst.PullRequestScanner.AzureDevOps.Options;
-using TomLonghurst.PullRequestScanner.Contracts;
+using Options;
+using Contracts;
 using TomLonghurst.PullRequestScanner.Models;
 using TeamMember = Microsoft.VisualStudio.Services.WebApi.TeamMember;
 

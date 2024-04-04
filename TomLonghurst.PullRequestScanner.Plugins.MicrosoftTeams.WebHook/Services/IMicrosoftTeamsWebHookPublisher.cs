@@ -1,8 +1,8 @@
 namespace TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Services;
 
-using TomLonghurst.PullRequestScanner.Contracts;
+using Contracts;
 using TomLonghurst.PullRequestScanner.Models;
-using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Options;
+using Options;
 
 public interface IMicrosoftTeamsWebHookPublisher : IPullRequestPlugin
 {

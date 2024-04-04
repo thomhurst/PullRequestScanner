@@ -1,6 +1,6 @@
 namespace TomLonghurst.PullRequestScanner.GitHub.Services;
 
-using TomLonghurst.PullRequestScanner.GitHub.Models;
+using Models;
 
 internal interface IGithubRepositoryService
 {

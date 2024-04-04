@@ -1,6 +1,6 @@
 namespace TomLonghurst.PullRequestScanner.Services;
 
-using TomLonghurst.PullRequestScanner.Models;
+using Models;
 
 public interface ITeamMembersService
 {

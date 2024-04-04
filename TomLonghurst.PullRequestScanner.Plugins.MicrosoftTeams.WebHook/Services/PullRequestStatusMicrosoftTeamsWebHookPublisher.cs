@@ -1,11 +1,11 @@
 namespace TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Services;
 
-using TomLonghurst.PullRequestScanner.Contracts;
-using TomLonghurst.PullRequestScanner.Enums;
+using Contracts;
+using Enums;
 using TomLonghurst.PullRequestScanner.Models;
-using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Http;
-using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Mappers;
-using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Options;
+using Http;
+using Mappers;
+using Options;
 
 public class PullRequestStatusMicrosoftTeamsWebHookPublisher : MicrosoftTeamsWebHookPublisherBase, IPullRequestPlugin
 {
@@ -15,8 +15,8 @@ public class PullRequestStatusMicrosoftTeamsWebHookPublisher : MicrosoftTeamsWeb
     internal PullRequestStatusMicrosoftTeamsWebHookPublisher(MicrosoftTeamsWebhookClient microsoftTeamsWebhookClient, IPullRequestStatusCardMapper pullRequestStatusCardMapper, MicrosoftTeamsStatusPublishOptions options)
         : base(microsoftTeamsWebhookClient)
     {
-        this._pullRequestStatusCardMapper = pullRequestStatusCardMapper;
-        this._options = options;
+        _pullRequestStatusCardMapper = pullRequestStatusCardMapper;
+        _options = options;
     }
 
     public override async Task ExecuteAsync(IReadOnlyList<PullRequest> pullRequests)

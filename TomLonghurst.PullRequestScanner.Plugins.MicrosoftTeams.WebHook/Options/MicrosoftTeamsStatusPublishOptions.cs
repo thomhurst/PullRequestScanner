@@ -1,6 +1,6 @@
 namespace TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Options;
 
-using TomLonghurst.PullRequestScanner.Enums;
+using Enums;
 
 public class MicrosoftTeamsStatusPublishOptions
 {

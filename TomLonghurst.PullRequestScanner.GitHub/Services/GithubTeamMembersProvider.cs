@@ -1,9 +1,9 @@
 namespace TomLonghurst.PullRequestScanner.GitHub.Services;
 
 using Octokit;
-using TomLonghurst.PullRequestScanner.Contracts;
-using TomLonghurst.PullRequestScanner.GitHub.Models;
-using TomLonghurst.PullRequestScanner.GitHub.Options;
+using Contracts;
+using Models;
+using Options;
 using TomLonghurst.PullRequestScanner.Models;
 
 internal class GithubTeamMembersProvider : ITeamMembersProvider
@@ -13,8 +13,8 @@ internal class GithubTeamMembersProvider : ITeamMembersProvider
 
     public GithubTeamMembersProvider(IGitHubClient gitHubClient, GithubOptions githubOptions)
     {
-        this._gitHubClient = gitHubClient;
-        this._githubOptions = githubOptions;
+        _gitHubClient = gitHubClient;
+        _githubOptions = githubOptions;
     }
 
     private async Task<GithubTeam> GetUser(GithubUserOptions githubUserOptions)

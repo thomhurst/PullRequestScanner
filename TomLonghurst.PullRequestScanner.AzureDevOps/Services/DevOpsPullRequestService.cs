@@ -2,8 +2,8 @@ namespace TomLonghurst.PullRequestScanner.AzureDevOps.Services;
 
 using Microsoft.TeamFoundation.SourceControl.WebApi;
 using Microsoft.VisualStudio.Services.WebApi;
-using TomLonghurst.PullRequestScanner.AzureDevOps.Models;
-using TomLonghurst.PullRequestScanner.AzureDevOps.Options;
+using Models;
+using Options;
 
 internal class AzureDevOpsPullRequestService(VssConnection vssConnection, AzureDevOpsOptions azureDevOpsOptions) : IAzureDevOpsPullRequestService
 {

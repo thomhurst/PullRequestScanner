@@ -1,8 +1,8 @@
 namespace TomLonghurst.PullRequestScanner.GitHub.Services;
 
-using TomLonghurst.PullRequestScanner.GitHub.Http;
-using TomLonghurst.PullRequestScanner.GitHub.Models;
-using TomLonghurst.PullRequestScanner.GitHub.Options;
+using Http;
+using Models;
+using Options;
 
 internal class GithubRepositoryService : BaseGitHubApiService, IGithubRepositoryService
 {
@@ -11,7 +11,7 @@ internal class GithubRepositoryService : BaseGitHubApiService, IGithubRepository
     public GithubRepositoryService(GithubHttpClient githubHttpClient, GithubOptions githubOptions)
         : base(githubHttpClient)
     {
-        this._githubOptions = githubOptions;
+        _githubOptions = githubOptions;
     }
 
     public async Task<List<GithubRepository>> GetGitRepositories()

@@ -8,7 +8,7 @@ using ModularPipelines.DotNet.Extensions;
 using ModularPipelines.DotNet.Options;
 using ModularPipelines.Models;
 using ModularPipelines.Modules;
-using TomLonghurst.PullRequestScanner.Pipeline.Settings;
+using Settings;
 
 [DependsOn<RunUnitTestsModule>]
 [DependsOn<PackagePathsParserModule>]
@@ -18,7 +18,7 @@ public class UploadPackagesToNugetModule : Module<CommandResult[]>
 
     public UploadPackagesToNugetModule(IOptions<NuGetSettings> options)
     {
-        this._options = options;
+        _options = options;
     }
 
     protected override async Task<SkipDecision> ShouldSkip(IPipelineContext context)

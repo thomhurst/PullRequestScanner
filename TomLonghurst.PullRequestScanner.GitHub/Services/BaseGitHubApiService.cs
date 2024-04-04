@@ -1,6 +1,6 @@
 namespace TomLonghurst.PullRequestScanner.GitHub.Services;
 
-using TomLonghurst.PullRequestScanner.GitHub.Http;
+using Http;
 
 internal abstract class BaseGitHubApiService
 {
@@ -8,7 +8,7 @@ internal abstract class BaseGitHubApiService
 
     protected BaseGitHubApiService(GithubHttpClient githubHttpClient)
     {
-        this._githubHttpClient = githubHttpClient;
+        _githubHttpClient = githubHttpClient;
     }
 
     protected async Task<List<T>> Get<T>(string path)

@@ -2,9 +2,9 @@
 
 using System.Collections.Immutable;
 using EnumerableAsyncProcessor.Extensions;
-using TomLonghurst.PullRequestScanner.AzureDevOps.Mappers;
-using TomLonghurst.PullRequestScanner.AzureDevOps.Options;
-using TomLonghurst.PullRequestScanner.Contracts;
+using Mappers;
+using Options;
+using Contracts;
 using TomLonghurst.PullRequestScanner.Models;
 
 internal class AzureDevOpsPullRequestProvider : IPullRequestProvider
@@ -20,7 +20,7 @@ internal class AzureDevOpsPullRequestProvider : IPullRequestProvider
         IAzureDevOpsPullRequestService azureDevOpsPullRequestService,
         IAzureDevOpsMapper azureDevOpsMapper)
     {
-        this._azureDevOpsOptions = azureDevOpsOptions;
+        _azureDevOpsOptions = azureDevOpsOptions;
         _devOpsGitRepositoryService = azureDevOpsGitRepositoryService;
         _devOpsPullRequestService = azureDevOpsPullRequestService;
         _devOpsMapper = azureDevOpsMapper;

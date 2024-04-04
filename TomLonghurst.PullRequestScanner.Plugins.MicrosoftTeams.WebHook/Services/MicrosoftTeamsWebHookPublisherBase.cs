@@ -1,9 +1,9 @@
 namespace TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Services;
 
-using TomLonghurst.PullRequestScanner.Contracts;
+using Contracts;
 using TomLonghurst.PullRequestScanner.Models;
-using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Http;
-using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Models;
+using Http;
+using Models;
 
 public abstract class MicrosoftTeamsWebHookPublisherBase : IPullRequestPlugin
 {
@@ -12,7 +12,7 @@ public abstract class MicrosoftTeamsWebHookPublisherBase : IPullRequestPlugin
     internal MicrosoftTeamsWebHookPublisherBase(
         MicrosoftTeamsWebhookClient microsoftTeamsWebhookClient)
     {
-        this._microsoftTeamsWebhookClient = microsoftTeamsWebhookClient;
+        _microsoftTeamsWebhookClient = microsoftTeamsWebhookClient;
     }
 
     internal async Task Publish(Func<IEnumerable<MicrosoftTeamsAdaptiveCard>> cardGenerator)

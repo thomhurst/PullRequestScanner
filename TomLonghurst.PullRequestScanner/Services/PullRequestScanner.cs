@@ -1,7 +1,7 @@
 namespace TomLonghurst.PullRequestScanner.Services;
 
-using TomLonghurst.PullRequestScanner.Contracts;
-using TomLonghurst.PullRequestScanner.Models;
+using Contracts;
+using Models;
 
 internal class PullRequestScanner : IPullRequestScanner
 {
@@ -16,8 +16,8 @@ internal class PullRequestScanner : IPullRequestScanner
 
     public PullRequestScanner(IPullRequestService pullRequestService, IPluginService pluginService)
     {
-        this._pullRequestService = pullRequestService;
-        this._pluginService = pluginService;
+        _pullRequestService = pullRequestService;
+        _pluginService = pluginService;
     }
 
     public Task<IReadOnlyList<PullRequest>> GetPullRequests()

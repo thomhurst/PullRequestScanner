@@ -2,9 +2,9 @@
 
 using System.Collections.Immutable;
 using EnumerableAsyncProcessor.Extensions;
-using TomLonghurst.PullRequestScanner.Contracts;
-using TomLonghurst.PullRequestScanner.GitHub.Mappers;
-using TomLonghurst.PullRequestScanner.GitHub.Options;
+using Contracts;
+using Mappers;
+using Options;
 using TomLonghurst.PullRequestScanner.Models;
 
 internal class GitHubPullRequestProvider : IPullRequestProvider
@@ -20,10 +20,10 @@ internal class GitHubPullRequestProvider : IPullRequestProvider
         IGithubPullRequestService githubPullRequestService,
         IGithubMapper githubMapper)
     {
-        this._githubOptions = githubOptions;
-        this._githubRepositoryService = githubRepositoryService;
-        this._githubPullRequestService = githubPullRequestService;
-        this._githubMapper = githubMapper;
+        _githubOptions = githubOptions;
+        _githubRepositoryService = githubRepositoryService;
+        _githubPullRequestService = githubPullRequestService;
+        _githubMapper = githubMapper;
 
         ValidateOptions();
     }

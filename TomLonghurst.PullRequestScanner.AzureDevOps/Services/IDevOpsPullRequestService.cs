@@ -1,7 +1,7 @@
 namespace TomLonghurst.PullRequestScanner.AzureDevOps.Services;
 
 using Microsoft.TeamFoundation.SourceControl.WebApi;
-using TomLonghurst.PullRequestScanner.AzureDevOps.Models;
+using Models;
 
 internal interface IAzureDevOpsPullRequestService
 {

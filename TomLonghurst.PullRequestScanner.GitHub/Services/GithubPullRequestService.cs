@@ -4,8 +4,8 @@ using EnumerableAsyncProcessor.Extensions;
 using Octokit;
 using Octokit.GraphQL;
 using Octokit.GraphQL.Model;
-using TomLonghurst.PullRequestScanner.GitHub.Http;
-using TomLonghurst.PullRequestScanner.GitHub.Models;
+using Http;
+using Models;
 using MergeableState = Octokit.MergeableState;
 using PullRequest = Octokit.PullRequest;
 
@@ -17,8 +17,8 @@ internal class GithubPullRequestService : BaseGitHubApiService, IGithubPullReque
     public GithubPullRequestService(GithubHttpClient githubHttpClient, IGitHubClient gitHubClient, IGithubQueryRunner githubQueryRunner)
         : base(githubHttpClient)
     {
-        this._gitHubClient = gitHubClient;
-        this._githubQueryRunner = githubQueryRunner;
+        _gitHubClient = gitHubClient;
+        _githubQueryRunner = githubQueryRunner;
     }
 
     public async Task<IEnumerable<GithubPullRequest>> GetPullRequests(GithubRepository repository)

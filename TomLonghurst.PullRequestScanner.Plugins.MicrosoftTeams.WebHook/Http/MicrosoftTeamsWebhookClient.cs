@@ -5,8 +5,8 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Polly;
 using Polly.Extensions.Http;
-using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Models;
-using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Options;
+using Models;
+using Options;
 
 internal class MicrosoftTeamsWebhookClient
 {
@@ -17,9 +17,9 @@ internal class MicrosoftTeamsWebhookClient
     public MicrosoftTeamsWebhookClient(HttpClient httpClient, MicrosoftTeamsOptions microsoftTeamsOptions,
         ILogger<MicrosoftTeamsWebhookClient> logger)
     {
-        this._httpClient = httpClient;
-        this._microsoftTeamsOptions = microsoftTeamsOptions;
-        this._logger = logger;
+        _httpClient = httpClient;
+        _microsoftTeamsOptions = microsoftTeamsOptions;
+        _logger = logger;
     }
 
     public async Task CreateTeamsNotification(MicrosoftTeamsAdaptiveCard adaptiveCard)

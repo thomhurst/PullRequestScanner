@@ -1,9 +1,9 @@
 ﻿namespace TomLonghurst.PullRequestScanner.Services;
 
 using EnumerableAsyncProcessor.Extensions;
-using TomLonghurst.PullRequestScanner.Contracts;
-using TomLonghurst.PullRequestScanner.Exceptions;
-using TomLonghurst.PullRequestScanner.Models;
+using Contracts;
+using Exceptions;
+using Models;
 
 internal class PluginService : IPluginService
 {

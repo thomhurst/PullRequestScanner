@@ -1,11 +1,11 @@
 namespace TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Services;
 
-using TomLonghurst.PullRequestScanner.Enums;
+using Enums;
 using TomLonghurst.PullRequestScanner.Models;
-using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Http;
-using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Mappers;
-using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Models;
-using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Options;
+using Http;
+using Mappers;
+using Models;
+using Options;
 
 internal class MicrosoftTeamsWebHookPublisher : IMicrosoftTeamsWebHookPublisher
 {
@@ -22,11 +22,11 @@ internal class MicrosoftTeamsWebHookPublisher : IMicrosoftTeamsWebHookPublisher
         IPullRequestStatusCardMapper pullRequestStatusCardMapper,
         IPullRequestLeaderboardCardMapper pullRequestLeaderboardCardMapper)
     {
-        this._microsoftTeamsOptions = microsoftTeamsOptions;
-        this._microsoftTeamsWebhookClient = microsoftTeamsWebhookClient;
-        this._pullRequestsOverviewCardMapper = pullRequestsOverviewCardMapper;
-        this._pullRequestStatusCardMapper = pullRequestStatusCardMapper;
-        this._pullRequestLeaderboardCardMapper = pullRequestLeaderboardCardMapper;
+        _microsoftTeamsOptions = microsoftTeamsOptions;
+        _microsoftTeamsWebhookClient = microsoftTeamsWebhookClient;
+        _pullRequestsOverviewCardMapper = pullRequestsOverviewCardMapper;
+        _pullRequestStatusCardMapper = pullRequestStatusCardMapper;
+        _pullRequestLeaderboardCardMapper = pullRequestLeaderboardCardMapper;
     }
 
     public Task ExecuteAsync(IReadOnlyList<PullRequest> pullRequests)

@@ -15,7 +15,7 @@ internal class GithubHttpClient
         ILogger<GithubHttpClient> logger)
     {
         _client = httpClient;
-        this._logger = logger;
+        _logger = logger;
     }
 
     public async Task<T?> Get<T>(string path)

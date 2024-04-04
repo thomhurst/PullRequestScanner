@@ -2,8 +2,8 @@ namespace TomLonghurst.PullRequestScanner.Extensions;
 
 using Initialization.Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.DependencyInjection;
-using TomLonghurst.PullRequestScanner.Contracts;
-using TomLonghurst.PullRequestScanner.Services;
+using Contracts;
+using Services;
 
 public class PullRequestScannerBuilder
 {
