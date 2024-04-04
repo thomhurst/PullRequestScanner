@@ -34,6 +34,6 @@ jobs:
         working-directory: "TomLonghurst.PullRequestScanner.Pipeline"
         env:
           DOTNET_ENVIRONMENT: ${{ github.ref == 'refs/heads/main' && 'Production' || 'Development' }}
-          NuGet__ApiKey: ${{ secrets.NuGet__ApiKey }}
+          NuGet__ApiKey: ${{ secrets.NUGET__APIKEY }}
           PULL_REQUEST_BRANCH: ${{ github.event.pull_request.head.ref }}
           PUBLISH_PACKAGES: ${{ github.event.inputs.publish-packages }}
