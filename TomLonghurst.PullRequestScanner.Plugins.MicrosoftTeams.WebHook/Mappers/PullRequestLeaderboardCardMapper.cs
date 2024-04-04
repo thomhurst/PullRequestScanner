@@ -1,4 +1,4 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 using AdaptiveCards;
 using TomLonghurst.PullRequestScanner.Extensions;
 using TomLonghurst.PullRequestScanner.Models;

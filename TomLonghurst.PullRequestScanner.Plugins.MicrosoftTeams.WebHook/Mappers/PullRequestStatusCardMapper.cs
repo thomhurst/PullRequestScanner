@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using AdaptiveCards;
 using Newtonsoft.Json;
 using TomLonghurst.PullRequestScanner.Enums;

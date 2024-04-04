@@ -1,4 +1,4 @@
-﻿using TomLonghurst.PullRequestScanner.AzureDevOps.Models;
+using TomLonghurst.PullRequestScanner.AzureDevOps.Models;
 using TomLonghurst.PullRequestScanner.Models;
 
 namespace TomLonghurst.PullRequestScanner.AzureDevOps.Mappers;

@@ -1,4 +1,4 @@
-﻿using Octokit;
+using Octokit;
 using TomLonghurst.PullRequestScanner.Contracts;
 using TomLonghurst.PullRequestScanner.GitHub.Models;
 using TomLonghurst.PullRequestScanner.GitHub.Options;

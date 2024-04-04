@@ -1,4 +1,4 @@
-﻿namespace TomLonghurst.PullRequestScanner.GitHub.Models;
+namespace TomLonghurst.PullRequestScanner.GitHub.Models;
 
 internal class GithubTeam
 {

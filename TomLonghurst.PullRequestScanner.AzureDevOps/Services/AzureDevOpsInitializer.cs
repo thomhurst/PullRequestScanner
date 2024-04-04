@@ -1,4 +1,4 @@
-﻿using Initialization.Microsoft.Extensions.DependencyInjection;
+using Initialization.Microsoft.Extensions.DependencyInjection;
 using Microsoft.TeamFoundation.Core.WebApi;
 using Microsoft.VisualStudio.Services.WebApi;
 using TomLonghurst.PullRequestScanner.AzureDevOps.Options;

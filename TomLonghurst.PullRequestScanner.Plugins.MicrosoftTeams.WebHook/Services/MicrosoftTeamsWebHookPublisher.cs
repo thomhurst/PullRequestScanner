@@ -1,4 +1,4 @@
-﻿using TomLonghurst.PullRequestScanner.Enums;
+using TomLonghurst.PullRequestScanner.Enums;
 using TomLonghurst.PullRequestScanner.Models;
 using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Http;
 using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Mappers;

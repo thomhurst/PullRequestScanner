@@ -1,4 +1,4 @@
-﻿using Microsoft.TeamFoundation.SourceControl.WebApi;
+using Microsoft.TeamFoundation.SourceControl.WebApi;
 using TomLonghurst.PullRequestScanner.AzureDevOps.Models;
 
 namespace TomLonghurst.PullRequestScanner.AzureDevOps.Services;

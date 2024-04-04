@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using TomLonghurst.PullRequestScanner.Extensions;
 using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Http;

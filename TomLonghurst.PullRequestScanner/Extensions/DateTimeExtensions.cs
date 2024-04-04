@@ -1,4 +1,4 @@
-﻿namespace TomLonghurst.PullRequestScanner.Extensions;
+namespace TomLonghurst.PullRequestScanner.Extensions;
 
 public static class DateTimeExtensions
 {

@@ -1,4 +1,4 @@
-﻿using TomLonghurst.PullRequestScanner.Enums;
+using TomLonghurst.PullRequestScanner.Enums;
 
 namespace TomLonghurst.PullRequestScanner.Models;
 

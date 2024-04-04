@@ -1,4 +1,4 @@
-﻿using TomLonghurst.PullRequestScanner.GitHub.Models;
+using TomLonghurst.PullRequestScanner.GitHub.Models;
 
 namespace TomLonghurst.PullRequestScanner.GitHub.Services;
 

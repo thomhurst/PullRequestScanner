@@ -1,4 +1,4 @@
-﻿using Initialization.Microsoft.Extensions.DependencyInjection;
+using Initialization.Microsoft.Extensions.DependencyInjection;
 using TomLonghurst.PullRequestScanner.Contracts;
 using TomLonghurst.PullRequestScanner.Models;
 

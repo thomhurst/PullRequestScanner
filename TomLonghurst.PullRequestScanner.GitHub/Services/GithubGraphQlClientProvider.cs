@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using Octokit.GraphQL;
 using TomLonghurst.PullRequestScanner.GitHub.Options;
 

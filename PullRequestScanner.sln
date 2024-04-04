@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TomLonghurst.PullRequestScanner", "TomLonghurst.PullRequestScanner\TomLonghurst.PullRequestScanner.csproj", "{3DB24D0C-E3D9-4955-8DA6-DFDEEB4D5539}"
 EndProject
@@ -9,6 +9,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook", "TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook\TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.csproj", "{6727C281-B5E9-443D-A739-8218046B3B15}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TomLonghurst.PullRequestScanner.Example", "TomLonghurst.PullRequestScanner.Example\TomLonghurst.PullRequestScanner.Example.csproj", "{9F8485B7-A53B-48BB-BC8A-1FE12D5CBB12}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TomLonghurst.PullRequestScanner.Pipeline", "TomLonghurst.PullRequestScanner.Pipeline\TomLonghurst.PullRequestScanner.Pipeline.csproj", "{38D9DD6D-37AD-4B2D-AF42-DBF7D7C29480}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,5 +38,9 @@ Global
 		{9F8485B7-A53B-48BB-BC8A-1FE12D5CBB12}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9F8485B7-A53B-48BB-BC8A-1FE12D5CBB12}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9F8485B7-A53B-48BB-BC8A-1FE12D5CBB12}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38D9DD6D-37AD-4B2D-AF42-DBF7D7C29480}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38D9DD6D-37AD-4B2D-AF42-DBF7D7C29480}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38D9DD6D-37AD-4B2D-AF42-DBF7D7C29480}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38D9DD6D-37AD-4B2D-AF42-DBF7D7C29480}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

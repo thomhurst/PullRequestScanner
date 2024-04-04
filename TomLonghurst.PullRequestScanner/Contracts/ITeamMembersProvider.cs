@@ -1,4 +1,4 @@
-﻿using TomLonghurst.PullRequestScanner.Models;
+using TomLonghurst.PullRequestScanner.Models;
 
 namespace TomLonghurst.PullRequestScanner.Contracts;
 

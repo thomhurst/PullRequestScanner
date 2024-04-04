@@ -1,4 +1,4 @@
-﻿using System.Web;
+using System.Web;
 
 namespace TomLonghurst.PullRequestScanner.Extensions;
 

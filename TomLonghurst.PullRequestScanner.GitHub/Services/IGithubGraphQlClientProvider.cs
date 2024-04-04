@@ -1,4 +1,4 @@
-﻿using Octokit.GraphQL;
+using Octokit.GraphQL;
 
 namespace TomLonghurst.PullRequestScanner.GitHub.Services;
 

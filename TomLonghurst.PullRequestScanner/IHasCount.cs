@@ -1,4 +1,4 @@
-﻿namespace TomLonghurst.PullRequestScanner;
+namespace TomLonghurst.PullRequestScanner;
 
 public interface IHasCount
 {

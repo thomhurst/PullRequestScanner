@@ -1,4 +1,4 @@
-﻿using Octokit;
+using Octokit;
 using Octokit.GraphQL.Model;
 using TomLonghurst.PullRequestScanner.Enums;
 using TomLonghurst.PullRequestScanner.GitHub.Models;
@@ -6,7 +6,6 @@ using TomLonghurst.PullRequestScanner.Models;
 using TomLonghurst.PullRequestScanner.Services;
 using MergeableState = Octokit.MergeableState;
 using PullRequest = TomLonghurst.PullRequestScanner.Models.PullRequest;
-using PullRequestReviewState = Octokit.PullRequestReviewState;
 using Repository = TomLonghurst.PullRequestScanner.Models.Repository;
 
 namespace TomLonghurst.PullRequestScanner.GitHub.Mappers;

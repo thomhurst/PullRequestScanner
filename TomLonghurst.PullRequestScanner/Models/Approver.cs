@@ -1,4 +1,4 @@
-﻿namespace TomLonghurst.PullRequestScanner.Models;
+namespace TomLonghurst.PullRequestScanner.Models;
 
 public record Approver
 {

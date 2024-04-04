@@ -1,4 +1,4 @@
-﻿namespace TomLonghurst.PullRequestScanner.Enums;
+namespace TomLonghurst.PullRequestScanner.Enums;
 
 public enum PullRequestStatus
 {

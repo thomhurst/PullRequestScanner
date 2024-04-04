@@ -1,4 +1,4 @@
-﻿using Octokit;
+using Octokit;
 using Octokit.GraphQL.Model;
 using LockReason = Octokit.LockReason;
 using MergeableState = Octokit.MergeableState;
