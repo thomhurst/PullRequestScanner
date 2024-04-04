@@ -6,9 +6,6 @@ using Options;
 
 internal class AzureDevOpsGitRepositoryService(VssConnection vssConnection, AzureDevOpsOptions azureDevOpsOptions) : IAzureDevOpsGitRepositoryService
 {
-    private readonly VssConnection vssConnection = vssConnection;
-    private readonly AzureDevOpsOptions azureDevOpsOptions = azureDevOpsOptions;
-
     public async Task<List<GitRepository>> GetGitRepositories()
     {
         var repositories = await vssConnection.GetClient<GitHttpClient>().GetRepositoriesAsync(azureDevOpsOptions.ProjectGuid);

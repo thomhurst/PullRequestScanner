@@ -7,9 +7,6 @@ using Options;
 
 public class AzureDevOpsInitializer(AzureDevOpsOptions azureDevOpsOptions, VssConnection vssConnection) : IInitializer
 {
-    private readonly AzureDevOpsOptions azureDevOpsOptions = azureDevOpsOptions;
-    private readonly VssConnection vssConnection = vssConnection;
-
     public async Task InitializeAsync()
     {
         if (azureDevOpsOptions.ProjectGuid != default)

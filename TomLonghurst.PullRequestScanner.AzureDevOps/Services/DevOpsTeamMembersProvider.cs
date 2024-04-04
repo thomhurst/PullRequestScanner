@@ -10,9 +10,6 @@ using TeamMember = Microsoft.VisualStudio.Services.WebApi.TeamMember;
 
 internal class AzureDevOpsTeamMembersProvider(AzureDevOpsOptions azureDevOpsOptions, VssConnection vssConnection) : ITeamMembersProvider
 {
-    private readonly AzureDevOpsOptions azureDevOpsOptions = azureDevOpsOptions;
-    private readonly VssConnection vssConnection = vssConnection;
-
     public async Task<IEnumerable<ITeamMember>> GetTeamMembers()
     {
         if (!azureDevOpsOptions.IsEnabled)

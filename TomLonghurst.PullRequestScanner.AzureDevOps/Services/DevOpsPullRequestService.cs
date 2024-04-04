@@ -7,9 +7,6 @@ using Options;
 
 internal class AzureDevOpsPullRequestService(VssConnection vssConnection, AzureDevOpsOptions azureDevOpsOptions) : IAzureDevOpsPullRequestService
 {
-    private readonly VssConnection vssConnection = vssConnection;
-    private readonly AzureDevOpsOptions azureDevOpsOptions = azureDevOpsOptions;
-
     public async Task<IReadOnlyList<AzureDevOpsPullRequestContext>> GetPullRequestsForRepository(
         GitRepository repository)
     {

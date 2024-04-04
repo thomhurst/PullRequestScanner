@@ -12,8 +12,6 @@ using TeamFoundation = Microsoft.TeamFoundation;
 
 internal class AzureDevOpsMapper(ITeamMembersService teamMembersService) : IAzureDevOpsMapper
 {
-    private readonly ITeamMembersService teamMembersService = teamMembersService;
-
     public PullRequest ToPullRequestModel(AzureDevOpsPullRequestContext pullRequestContext)
     {
         var pullRequest = pullRequestContext.AzureDevOpsPullRequest;
