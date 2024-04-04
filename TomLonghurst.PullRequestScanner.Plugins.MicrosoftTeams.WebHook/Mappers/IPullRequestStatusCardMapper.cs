@@ -1,8 +1,8 @@
 namespace TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Mappers;
 
-using TomLonghurst.PullRequestScanner.Enums;
+using Enums;
 using TomLonghurst.PullRequestScanner.Models;
-using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Models;
+using Models;
 
 internal interface IPullRequestStatusCardMapper
 {

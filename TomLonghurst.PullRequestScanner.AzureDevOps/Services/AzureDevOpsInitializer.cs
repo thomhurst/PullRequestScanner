@@ -3,7 +3,7 @@ namespace TomLonghurst.PullRequestScanner.AzureDevOps.Services;
 using Initialization.Microsoft.Extensions.DependencyInjection;
 using Microsoft.TeamFoundation.Core.WebApi;
 using Microsoft.VisualStudio.Services.WebApi;
-using TomLonghurst.PullRequestScanner.AzureDevOps.Options;
+using Options;
 
 public class AzureDevOpsInitializer(AzureDevOpsOptions azureDevOpsOptions, VssConnection vssConnection) : IInitializer
 {
@@ -12,15 +12,15 @@ public class AzureDevOpsInitializer(AzureDevOpsOptions azureDevOpsOptions, VssCo
 
     public async Task InitializeAsync()
     {
-        if (this.azureDevOpsOptions.ProjectGuid != default)
+        if (azureDevOpsOptions.ProjectGuid != default)
         {
             return;
         }
 
-        var projects = await this.GetProjects();
+        var projects = await GetProjects();
 
-        var foundProject = projects.SingleOrDefault(x => string.Equals(x.Name, this.azureDevOpsOptions.ProjectName, StringComparison.OrdinalIgnoreCase)) ?? throw new ArgumentException($"Unique project with name '{this.azureDevOpsOptions.ProjectName}' not found");
-        this.azureDevOpsOptions.ProjectGuid = foundProject.Id;
+        var foundProject = projects.SingleOrDefault(x => string.Equals(x.Name, azureDevOpsOptions.ProjectName, StringComparison.OrdinalIgnoreCase)) ?? throw new ArgumentException($"Unique project with name '{azureDevOpsOptions.ProjectName}' not found");
+        azureDevOpsOptions.ProjectGuid = foundProject.Id;
     }
 
     private async Task<List<TeamProjectReference>> GetProjects()
@@ -30,7 +30,7 @@ public class AzureDevOpsInitializer(AzureDevOpsOptions azureDevOpsOptions, VssCo
         string continuationToken;
         do
         {
-            var projectsInIteration = await this.vssConnection.GetClient<ProjectHttpClient>().GetProjects();
+            var projectsInIteration = await vssConnection.GetClient<ProjectHttpClient>().GetProjects();
 
             projects.AddRange(projectsInIteration);
 

@@ -4,8 +4,8 @@ using System.Collections.Concurrent;
 using AdaptiveCards;
 using TomLonghurst.PullRequestScanner.Extensions;
 using TomLonghurst.PullRequestScanner.Models;
-using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Extensions;
-using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Models;
+using Extensions;
+using Models;
 
 internal class PullRequestLeaderboardCardMapper : IPullRequestLeaderboardCardMapper
 {

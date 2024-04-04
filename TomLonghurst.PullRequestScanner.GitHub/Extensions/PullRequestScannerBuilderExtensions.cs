@@ -6,12 +6,12 @@ using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using Octokit;
 using Octokit.Internal;
-using TomLonghurst.PullRequestScanner.Contracts;
+using Contracts;
 using TomLonghurst.PullRequestScanner.Extensions;
-using TomLonghurst.PullRequestScanner.GitHub.Http;
-using TomLonghurst.PullRequestScanner.GitHub.Mappers;
-using TomLonghurst.PullRequestScanner.GitHub.Options;
-using TomLonghurst.PullRequestScanner.GitHub.Services;
+using Http;
+using Mappers;
+using Options;
+using Services;
 using TomLonghurst.PullRequestScanner.Services;
 using ProductHeaderValue = Octokit.ProductHeaderValue;
 

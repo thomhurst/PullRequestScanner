@@ -1,9 +1,9 @@
 namespace TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Services;
 
-using TomLonghurst.PullRequestScanner.Contracts;
+using Contracts;
 using TomLonghurst.PullRequestScanner.Models;
-using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Http;
-using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Models;
+using Http;
+using Models;
 
 public abstract class MicrosoftTeamsWebHookPublisherBase : IPullRequestPlugin
 {
@@ -21,7 +21,7 @@ public abstract class MicrosoftTeamsWebHookPublisherBase : IPullRequestPlugin
 
         foreach (var microsoftTeamsAdaptiveCard in cards)
         {
-            await this.microsoftTeamsWebhookClient.CreateTeamsNotification(microsoftTeamsAdaptiveCard);
+            await microsoftTeamsWebhookClient.CreateTeamsNotification(microsoftTeamsAdaptiveCard);
         }
     }
 

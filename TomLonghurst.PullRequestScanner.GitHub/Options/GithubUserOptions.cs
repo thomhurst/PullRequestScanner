@@ -9,6 +9,6 @@ public class GithubUserOptions : GithubOptions
 
     internal override string CreateUriPathPrefix()
     {
-        return $"users/{this.Username}/";
+        return $"users/{Username}/";
     }
 }

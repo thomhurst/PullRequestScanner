@@ -1,6 +1,6 @@
 namespace TomLonghurst.PullRequestScanner.Models;
 
-using TomLonghurst.PullRequestScanner.Enums;
+using Enums;
 
 public record PullRequest
 {
@@ -20,7 +20,7 @@ public record PullRequest
 
     public List<CommentThread> CommentThreads { get; set; } = new();
 
-    public List<Comment> AllComments => this.CommentThreads.SelectMany(t => t.Comments).ToList();
+    public List<Comment> AllComments => CommentThreads.SelectMany(t => t.Comments).ToList();
 
     public DateTimeOffset Created { get; set; }
 
@@ -40,17 +40,17 @@ public record PullRequest
     {
         get
         {
-            if (this.Approvers?.Any(x => x.Vote == Vote.Rejected) == true)
+            if (Approvers?.Any(x => x.Vote == Vote.Rejected) == true)
             {
                 return Vote.Rejected;
             }
 
-            if (this.Approvers?.Any(x => x.Vote != Vote.Approved && x.IsRequired) == true)
+            if (Approvers?.Any(x => x.Vote != Vote.Approved && x.IsRequired) == true)
             {
                 return Vote.NoVote;
             }
 
-            if (this.Approvers?.Any(x => x.Vote == Vote.Approved) == true)
+            if (Approvers?.Any(x => x.Vote == Vote.Approved) == true)
             {
                 return Vote.Approved;
             }
@@ -63,13 +63,13 @@ public record PullRequest
     {
         get
         {
-            return this.Approvers
+            return Approvers
                 .Where(x => x.Vote != Vote.NoVote)
                 .Select(a => a.TeamMember)
-                .Concat(this.AllComments.Select(c => c.Author))
+                .Concat(AllComments.Select(c => c.Author))
                 .Where(reviewer => reviewer.DisplayName != Constants.VstsDisplayName)
                 .Where(reviewer => reviewer.UniqueNames.All(un => un.StartsWith(Constants.VstfsUniqueNamePrefix) != true))
-                .Where(reviewer => reviewer != this.Author)
+                .Where(reviewer => reviewer != Author)
                 .Distinct()
                 .ToList();
         }
@@ -77,13 +77,13 @@ public record PullRequest
 
     public int GetCommentCountWhere(TeamMember teamMember, Func<Comment, bool> condition)
     {
-        if (teamMember == this.Author)
+        if (teamMember == Author)
         {
             // We don't count comments on your own PR!
             return 0;
         }
 
-        return this.CommentThreads
+        return CommentThreads
             .SelectMany(c => c.Comments)
             .Where(c => condition?.Invoke(c) ?? true)
             .Count(c => c.Author == teamMember);
@@ -91,13 +91,13 @@ public record PullRequest
 
     public bool HasVotedWhere(TeamMember teamMember, Func<Approver, bool> condition)
     {
-        if (teamMember == this.Author)
+        if (teamMember == Author)
         {
             // You can't vote for your own PR
             return false;
         }
 
-        return this.Approvers
+        return Approvers
             .Where(a => a.TeamMember == teamMember)
             .Where(a => condition?.Invoke(a) ?? true)
             .Any(x => x.Vote != Vote.NoVote);

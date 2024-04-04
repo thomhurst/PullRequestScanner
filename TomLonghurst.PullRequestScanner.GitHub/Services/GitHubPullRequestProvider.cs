@@ -2,9 +2,9 @@
 
 using System.Collections.Immutable;
 using EnumerableAsyncProcessor.Extensions;
-using TomLonghurst.PullRequestScanner.Contracts;
-using TomLonghurst.PullRequestScanner.GitHub.Mappers;
-using TomLonghurst.PullRequestScanner.GitHub.Options;
+using Contracts;
+using Mappers;
+using Options;
 using TomLonghurst.PullRequestScanner.Models;
 
 internal class GitHubPullRequestProvider : IPullRequestProvider
@@ -25,26 +25,26 @@ internal class GitHubPullRequestProvider : IPullRequestProvider
         this.githubPullRequestService = githubPullRequestService;
         this.githubMapper = githubMapper;
 
-        this.ValidateOptions();
+        ValidateOptions();
     }
 
     public async Task<IReadOnlyList<PullRequest>> GetPullRequests()
     {
-        if (this.githubOptions?.IsEnabled != true)
+        if (githubOptions?.IsEnabled != true)
         {
             return Array.Empty<PullRequest>();
         }
 
-        var repositories = await this.githubRepositoryService.GetGitRepositories();
+        var repositories = await githubRepositoryService.GetGitRepositories();
 
         var pullRequestsEnumerable = await repositories.ToAsyncProcessorBuilder()
-            .SelectAsync(repo => this.githubPullRequestService.GetPullRequests(repo))
+            .SelectAsync(repo => githubPullRequestService.GetPullRequests(repo))
             .ProcessInParallel(50, TimeSpan.FromSeconds(5));
 
         var pullRequests = pullRequestsEnumerable.SelectMany(x => x).ToImmutableList();
 
         var mappedPullRequests = pullRequests
-            .Select(pr => this.githubMapper.ToPullRequestModel(pr))
+            .Select(pr => githubMapper.ToPullRequestModel(pr))
             .ToImmutableList();
 
         return mappedPullRequests;
@@ -52,23 +52,23 @@ internal class GitHubPullRequestProvider : IPullRequestProvider
 
     private void ValidateOptions()
     {
-        if (this.githubOptions.IsEnabled != true)
+        if (githubOptions.IsEnabled != true)
         {
             return;
         }
 
-        if (this.githubOptions is GithubOrganizationTeamOptions githubOrganizationTeamOptions)
+        if (githubOptions is GithubOrganizationTeamOptions githubOrganizationTeamOptions)
         {
             ValidatePopulated(githubOrganizationTeamOptions.OrganizationSlug, nameof(githubOrganizationTeamOptions.OrganizationSlug));
             ValidatePopulated(githubOrganizationTeamOptions.TeamSlug, nameof(githubOrganizationTeamOptions.TeamSlug));
         }
 
-        if (this.githubOptions is GithubUserOptions githubUserOptions)
+        if (githubOptions is GithubUserOptions githubUserOptions)
         {
             ValidatePopulated(githubUserOptions.Username, nameof(githubUserOptions.Username));
         }
 
-        ValidatePopulated(this.githubOptions.PersonalAccessToken, nameof(this.githubOptions.PersonalAccessToken));
+        ValidatePopulated(githubOptions.PersonalAccessToken, nameof(githubOptions.PersonalAccessToken));
 
         static void ValidatePopulated(string value, string propertyName)
         {

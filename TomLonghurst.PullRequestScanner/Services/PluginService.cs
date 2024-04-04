@@ -1,9 +1,9 @@
 ﻿namespace TomLonghurst.PullRequestScanner.Services;
 
 using EnumerableAsyncProcessor.Extensions;
-using TomLonghurst.PullRequestScanner.Contracts;
-using TomLonghurst.PullRequestScanner.Exceptions;
-using TomLonghurst.PullRequestScanner.Models;
+using Contracts;
+using Exceptions;
+using Models;
 
 internal class PluginService : IPluginService
 {
@@ -13,18 +13,18 @@ internal class PluginService : IPluginService
 
     public PluginService(IEnumerable<IPullRequestPlugin> plugins)
     {
-        this.Plugins = plugins;
+        Plugins = plugins;
     }
 
     public async Task ExecuteAsync(IReadOnlyList<PullRequest> pullRequests, Func<IPullRequestPlugin, bool>? predicate = null)
     {
-        if (!this.Plugins.Any())
+        if (!Plugins.Any())
         {
             throw new NoPullRequestPluginsRegisteredException();
         }
 
-        await this.Plugins
-            .Where(predicate ?? this.defaultPredicate)
+        await Plugins
+            .Where(predicate ?? defaultPredicate)
             .ToAsyncProcessorBuilder()
             .ForEachAsync(plugin => plugin.ExecuteAsync(pullRequests))
             .ProcessInParallel();
@@ -33,6 +33,6 @@ internal class PluginService : IPluginService
     public TPlugin GetPlugin<TPlugin>()
         where TPlugin : IPullRequestPlugin
     {
-        return this.Plugins.OfType<TPlugin>().Single();
+        return Plugins.OfType<TPlugin>().Single();
     }
 }

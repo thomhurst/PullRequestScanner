@@ -14,7 +14,7 @@ internal class GithubHttpClient
         HttpClient httpClient,
         ILogger<GithubHttpClient> logger)
     {
-        this.client = httpClient;
+        client = httpClient;
         this.logger = logger;
     }
 
@@ -23,11 +23,11 @@ internal class GithubHttpClient
         var response = await
             HttpPolicyExtensions.HandleTransientHttpError()
                 .WaitAndRetryAsync(5, i => TimeSpan.FromSeconds(i * 2))
-                .ExecuteAsync(() => this.client.GetAsync(path));
+                .ExecuteAsync(() => client.GetAsync(path));
 
         if (!response.IsSuccessStatusCode)
         {
-            this.logger.LogError("Error calling {Path}: {Response}", path, await response.Content.ReadAsStringAsync());
+            logger.LogError("Error calling {Path}: {Response}", path, await response.Content.ReadAsStringAsync());
         }
 
         return await response.EnsureSuccessStatusCode().Content.ReadFromJsonAsync<T>();

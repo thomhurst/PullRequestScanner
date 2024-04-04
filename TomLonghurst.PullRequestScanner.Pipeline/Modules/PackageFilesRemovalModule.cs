@@ -15,6 +15,6 @@ public class PackageFilesRemovalModule : Module
             packageFile.Delete();
         }
 
-        return await this.NothingAsync();
+        return await NothingAsync();
     }
 }

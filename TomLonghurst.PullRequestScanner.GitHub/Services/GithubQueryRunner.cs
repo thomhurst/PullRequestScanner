@@ -15,10 +15,10 @@ internal class GithubQueryRunner : IGithubQueryRunner
 
     public async Task<T> RunQuery<T>(ICompiledQuery<T> query)
     {
-        return await Policy.Handle<HttpRequestException>(this.ShouldHandleException)
+        return await Policy.Handle<HttpRequestException>(ShouldHandleException)
             .Or<OperationCanceledException>()
             .WaitAndRetryAsync(5, i => TimeSpan.FromSeconds(i * 2))
-            .ExecuteAsync(() => this.githubGraphQlClientProvider.GithubGraphQlClient.Run(query));
+            .ExecuteAsync(() => githubGraphQlClientProvider.GithubGraphQlClient.Run(query));
     }
 
     private bool ShouldHandleException(HttpRequestException httpRequestException)

@@ -1,6 +1,6 @@
 namespace TomLonghurst.PullRequestScanner.Extensions;
 
-using TomLonghurst.PullRequestScanner.Models;
+using Models;
 
 public static class EnumerableExtenions
 {

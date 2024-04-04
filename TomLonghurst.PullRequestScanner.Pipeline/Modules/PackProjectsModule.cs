@@ -18,7 +18,7 @@ public class PackProjectsModule : Module<List<CommandResult>>
     protected override async Task<List<CommandResult>?> ExecuteAsync(IPipelineContext context, CancellationToken cancellationToken)
     {
         var results = new List<CommandResult>();
-        var packageVersion = await this.GetModule<NugetVersionGeneratorModule>();
+        var packageVersion = await GetModule<NugetVersionGeneratorModule>();
         var projectFiles = context.Git().RootDirectory!.GetFiles(f => GetProjectsPredicate(f, context));
         foreach (var projectFile in projectFiles)
         {

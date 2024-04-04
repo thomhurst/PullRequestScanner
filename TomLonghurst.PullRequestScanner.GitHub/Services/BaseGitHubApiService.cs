@@ -1,6 +1,6 @@
 namespace TomLonghurst.PullRequestScanner.GitHub.Services;
 
-using TomLonghurst.PullRequestScanner.GitHub.Http;
+using Http;
 
 internal abstract class BaseGitHubApiService
 {
@@ -19,7 +19,7 @@ internal abstract class BaseGitHubApiService
         var list = new List<T>();
         do
         {
-            var arrayResponse = await this.githubHttpClient.Get<List<T>>($"{path}?per_page=100&page={iteration}");
+            var arrayResponse = await githubHttpClient.Get<List<T>>($"{path}?per_page=100&page={iteration}");
 
             if (arrayResponse?.Count is null or 0)
             {

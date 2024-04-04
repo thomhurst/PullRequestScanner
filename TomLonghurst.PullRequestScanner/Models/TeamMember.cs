@@ -16,19 +16,19 @@ public class TeamMember : IEquatable<TeamMember>
     {
         get
         {
-            if (!string.IsNullOrWhiteSpace(this.DisplayName))
+            if (!string.IsNullOrWhiteSpace(DisplayName))
             {
-                return this.DisplayName;
+                return DisplayName;
             }
 
-            var userName = this.UniqueNames.FirstOrDefault(u => !string.IsNullOrWhiteSpace(u));
+            var userName = UniqueNames.FirstOrDefault(u => !string.IsNullOrWhiteSpace(u));
 
             if (userName != null)
             {
                 return userName;
             }
 
-            return this.Email;
+            return Email;
         }
     }
 
@@ -36,26 +36,26 @@ public class TeamMember : IEquatable<TeamMember>
     {
         get
         {
-            var uniqueName = this.UniqueNames?.FirstOrDefault(x => !string.IsNullOrWhiteSpace(x));
+            var uniqueName = UniqueNames?.FirstOrDefault(x => !string.IsNullOrWhiteSpace(x));
 
             if (!string.IsNullOrWhiteSpace(uniqueName))
             {
                 return uniqueName;
             }
 
-            if (!string.IsNullOrWhiteSpace(this.Email))
+            if (!string.IsNullOrWhiteSpace(Email))
             {
-                return this.Email;
+                return Email;
             }
 
-            var id = this.Ids?.FirstOrDefault(x => !string.IsNullOrWhiteSpace(x));
+            var id = Ids?.FirstOrDefault(x => !string.IsNullOrWhiteSpace(x));
 
             if (!string.IsNullOrWhiteSpace(id))
             {
                 return id;
             }
 
-            return this.DisplayName;
+            return DisplayName;
         }
     }
 
@@ -66,16 +66,16 @@ public class TeamMember : IEquatable<TeamMember>
             return false;
         }
 
-        return this.UniqueIdentifier == other.UniqueIdentifier;
+        return UniqueIdentifier == other.UniqueIdentifier;
     }
 
     public override bool Equals(object? obj)
     {
-        return this.Equals(obj as TeamMember);
+        return Equals(obj as TeamMember);
     }
 
     public override int GetHashCode()
     {
-        return this.UniqueIdentifier.GetHashCode();
+        return UniqueIdentifier.GetHashCode();
     }
 }

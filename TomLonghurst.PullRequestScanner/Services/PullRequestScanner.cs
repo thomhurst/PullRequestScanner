@@ -1,18 +1,18 @@
 namespace TomLonghurst.PullRequestScanner.Services;
 
-using TomLonghurst.PullRequestScanner.Contracts;
-using TomLonghurst.PullRequestScanner.Models;
+using Contracts;
+using Models;
 
 internal class PullRequestScanner : IPullRequestScanner
 {
     private readonly IPullRequestService pullRequestService;
     private readonly IPluginService pluginService;
 
-    public IEnumerable<IPullRequestPlugin> Plugins => this.pluginService.Plugins;
+    public IEnumerable<IPullRequestPlugin> Plugins => pluginService.Plugins;
 
     public TPlugin GetPlugin<TPlugin>()
         where TPlugin : IPullRequestPlugin
-        => this.pluginService.GetPlugin<TPlugin>();
+        => pluginService.GetPlugin<TPlugin>();
 
     public PullRequestScanner(IPullRequestService pullRequestService, IPluginService pluginService)
     {
@@ -22,14 +22,14 @@ internal class PullRequestScanner : IPullRequestScanner
 
     public Task<IReadOnlyList<PullRequest>> GetPullRequests()
     {
-        return this.pullRequestService.GetPullRequests();
+        return pullRequestService.GetPullRequests();
     }
 
     public async Task ExecutePluginsAsync(Func<IPullRequestPlugin, bool>? predicate)
     {
-        var pullRequests = await this.GetPullRequests();
+        var pullRequests = await GetPullRequests();
 
-        await this.ExecutePluginsAsync(pullRequests, predicate);
+        await ExecutePluginsAsync(pullRequests, predicate);
     }
 
     public Task ExecutePluginsAsync(IReadOnlyList<PullRequest> pullRequests, Func<IPullRequestPlugin, bool>? predicate)
@@ -39,6 +39,6 @@ internal class PullRequestScanner : IPullRequestScanner
             throw new ArgumentNullException(nameof(pullRequests));
         }
 
-        return this.pluginService.ExecuteAsync(pullRequests, predicate);
+        return pluginService.ExecuteAsync(pullRequests, predicate);
     }
 }

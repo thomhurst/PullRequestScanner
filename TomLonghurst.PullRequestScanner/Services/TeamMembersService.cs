@@ -1,8 +1,8 @@
 namespace TomLonghurst.PullRequestScanner.Services;
 
 using Initialization.Microsoft.Extensions.DependencyInjection;
-using TomLonghurst.PullRequestScanner.Contracts;
-using TomLonghurst.PullRequestScanner.Models;
+using Contracts;
+using Models;
 
 internal class TeamMembersService : ITeamMembersService, IInitializer
 {
@@ -18,17 +18,17 @@ internal class TeamMembersService : ITeamMembersService, IInitializer
 
     public async Task InitializeAsync()
     {
-        if (this.isInitialized)
+        if (isInitialized)
         {
             return;
         }
 
-        var teamMembersEnumerable = await Task.WhenAll(this.teamMembersProviders.Select(x => x.GetTeamMembers()));
+        var teamMembersEnumerable = await Task.WhenAll(teamMembersProviders.Select(x => x.GetTeamMembers()));
         var teamMembers = teamMembersEnumerable.SelectMany(x => x).ToList();
 
         foreach (var teamMember in teamMembers)
         {
-            var foundUser = this.FindTeamMember(teamMember);
+            var foundUser = FindTeamMember(teamMember);
 
             if (foundUser == null)
             {
@@ -47,22 +47,22 @@ internal class TeamMembersService : ITeamMembersService, IInitializer
             }
         }
 
-        this.isInitialized = true;
+        isInitialized = true;
     }
 
     public TeamMember? FindTeamMember(string uniqueName, string id)
     {
-        return this.teamMembers.FirstOrDefault(x => x.UniqueNames.Contains(uniqueName, StringComparer.InvariantCultureIgnoreCase))
-        ?? this.teamMembers.FirstOrDefault(x => x.Ids.Contains(id, StringComparer.InvariantCultureIgnoreCase));
+        return teamMembers.FirstOrDefault(x => x.UniqueNames.Contains(uniqueName, StringComparer.InvariantCultureIgnoreCase))
+        ?? teamMembers.FirstOrDefault(x => x.Ids.Contains(id, StringComparer.InvariantCultureIgnoreCase));
     }
 
     private TeamMember? FindTeamMember(ITeamMember teamMember)
     {
         return
-            this.teamMembers.FirstOrDefault(tm => NotEmptyAndEquals(tm.Email, teamMember.Email))
-            ?? this.teamMembers.FirstOrDefault(tm => NotEmptyAndInList(tm.Ids, teamMember.Id))
-            ?? this.teamMembers.FirstOrDefault(tm => NotEmptyAndInList(tm.UniqueNames, teamMember.UniqueName))
-            ?? this.teamMembers.FirstOrDefault(tm => NotEmptyAndEquals(tm.DisplayName, teamMember.DisplayName));
+            teamMembers.FirstOrDefault(tm => NotEmptyAndEquals(tm.Email, teamMember.Email))
+            ?? teamMembers.FirstOrDefault(tm => NotEmptyAndInList(tm.Ids, teamMember.Id))
+            ?? teamMembers.FirstOrDefault(tm => NotEmptyAndInList(tm.UniqueNames, teamMember.UniqueName))
+            ?? teamMembers.FirstOrDefault(tm => NotEmptyAndEquals(tm.DisplayName, teamMember.DisplayName));
 
         bool NotEmptyAndEquals(string value1, string value2)
         {

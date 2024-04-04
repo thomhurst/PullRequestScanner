@@ -3,9 +3,9 @@ namespace TomLonghurst.PullRequestScanner.Services;
 using System.Collections.Immutable;
 using Initialization.Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Caching.Memory;
-using TomLonghurst.PullRequestScanner.Contracts;
-using TomLonghurst.PullRequestScanner.Exceptions;
-using TomLonghurst.PullRequestScanner.Models;
+using Contracts;
+using Exceptions;
+using Models;
 
 internal class PullRequestService : IPullRequestService
 {
@@ -28,41 +28,41 @@ internal class PullRequestService : IPullRequestService
 
     public async Task<IReadOnlyList<PullRequest>> GetPullRequests()
     {
-        if (!this.pullRequestProviders.Any())
+        if (!pullRequestProviders.Any())
         {
             throw new NoPullRequestProvidersRegisteredException();
         }
 
-        await this.@lock.WaitAsync();
+        await @lock.WaitAsync();
 
         try
         {
-            await this.Initialize();
+            await Initialize();
 
-            if (this.memoryCache.TryGetValue(PullRequestsCacheKey, out ImmutableList<PullRequest> prs))
+            if (memoryCache.TryGetValue(PullRequestsCacheKey, out ImmutableList<PullRequest> prs))
             {
                 return prs;
             }
 
-            var pullRequests = await Task.WhenAll(this.pullRequestProviders.Select(x => x.GetPullRequests()));
+            var pullRequests = await Task.WhenAll(pullRequestProviders.Select(x => x.GetPullRequests()));
 
             var pullRequestsImmutableList = pullRequests
                 .SelectMany(x => x)
                 .Where(x => x.Labels?.Contains(Constants.PullRequestScannerIgnoreTag, StringComparer.CurrentCultureIgnoreCase) != true)
                 .ToImmutableList();
 
-            this.memoryCache.Set(PullRequestsCacheKey, pullRequestsImmutableList, TimeSpan.FromMinutes(5));
+            memoryCache.Set(PullRequestsCacheKey, pullRequestsImmutableList, TimeSpan.FromMinutes(5));
 
             return pullRequestsImmutableList;
         }
         finally
         {
-            this.@lock.Release();
+            @lock.Release();
         }
     }
 
     private async Task Initialize()
     {
-        await this.serviceProvider.InitializeAsync();
+        await serviceProvider.InitializeAsync();
     }
 }

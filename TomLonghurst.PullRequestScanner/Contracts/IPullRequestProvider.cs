@@ -1,6 +1,6 @@
 namespace TomLonghurst.PullRequestScanner.Contracts;
 
-using TomLonghurst.PullRequestScanner.Models;
+using Models;
 
 public interface IPullRequestProvider
 {

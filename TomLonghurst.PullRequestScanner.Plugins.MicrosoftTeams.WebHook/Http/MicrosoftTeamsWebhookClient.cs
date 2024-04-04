@@ -5,8 +5,8 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Polly;
 using Polly.Extensions.Http;
-using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Models;
-using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Options;
+using Models;
+using Options;
 
 internal class MicrosoftTeamsWebhookClient
 {
@@ -24,11 +24,11 @@ internal class MicrosoftTeamsWebhookClient
 
     public async Task CreateTeamsNotification(MicrosoftTeamsAdaptiveCard adaptiveCard)
     {
-        ArgumentNullException.ThrowIfNull(this.microsoftTeamsOptions.WebHookUri);
+        ArgumentNullException.ThrowIfNull(microsoftTeamsOptions.WebHookUri);
 
         var adaptiveTeamsCardJsonString = JsonConvert.SerializeObject(TeamsNotificationCardWrapper.Wrap(adaptiveCard), Formatting.None);
 
-        this.logger.LogTrace("Microsoft Teams Webhook Request Payload: {Payload}", adaptiveTeamsCardJsonString);
+        logger.LogTrace("Microsoft Teams Webhook Request Payload: {Payload}", adaptiveTeamsCardJsonString);
 
         try
         {
@@ -40,13 +40,13 @@ internal class MicrosoftTeamsWebhookClient
                     {
                         Method = HttpMethod.Post,
                         Content = new StringContent(adaptiveTeamsCardJsonString),
-                        RequestUri = this.microsoftTeamsOptions.WebHookUri,
+                        RequestUri = microsoftTeamsOptions.WebHookUri,
                     };
 
-                    return this.httpClient.SendAsync(cardsRequest);
+                    return httpClient.SendAsync(cardsRequest);
                 });
 
-            this.logger.LogTrace("Microsoft Teams Webhook Response: {Response}", await teamsNotificationResponse.Content.ReadAsStringAsync());
+            logger.LogTrace("Microsoft Teams Webhook Response: {Response}", await teamsNotificationResponse.Content.ReadAsStringAsync());
 
             teamsNotificationResponse.EnsureSuccessStatusCode();
         }

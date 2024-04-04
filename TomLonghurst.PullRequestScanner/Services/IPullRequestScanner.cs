@@ -1,15 +1,15 @@
 namespace TomLonghurst.PullRequestScanner.Services;
 
-using TomLonghurst.PullRequestScanner.Contracts;
-using TomLonghurst.PullRequestScanner.Models;
+using Contracts;
+using Models;
 
 public interface IPullRequestScanner : IHasPlugins
 {
     Task<IReadOnlyList<PullRequest>> GetPullRequests();
 
-    Task ExecutePluginsAsync() => this.ExecutePluginsAsync(null as Func<IPullRequestPlugin, bool>);
+    Task ExecutePluginsAsync() => ExecutePluginsAsync(null as Func<IPullRequestPlugin, bool>);
 
-    Task ExecutePluginsAsync(IReadOnlyList<PullRequest> pullRequests) => this.ExecutePluginsAsync(pullRequests, null);
+    Task ExecutePluginsAsync(IReadOnlyList<PullRequest> pullRequests) => ExecutePluginsAsync(pullRequests, null);
 
     Task ExecutePluginsAsync(Func<IPullRequestPlugin, bool>? predicate);
 

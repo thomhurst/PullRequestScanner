@@ -4,8 +4,8 @@ using EnumerableAsyncProcessor.Extensions;
 using Octokit;
 using Octokit.GraphQL;
 using Octokit.GraphQL.Model;
-using TomLonghurst.PullRequestScanner.GitHub.Http;
-using TomLonghurst.PullRequestScanner.GitHub.Models;
+using Http;
+using Models;
 using MergeableState = Octokit.MergeableState;
 using PullRequest = Octokit.PullRequest;
 
@@ -23,7 +23,7 @@ internal class GithubPullRequestService : BaseGitHubApiService, IGithubPullReque
 
     public async Task<IEnumerable<GithubPullRequest>> GetPullRequests(GithubRepository repository)
     {
-        var pullRequests = await this.gitHubClient.PullRequest
+        var pullRequests = await gitHubClient.PullRequest
             .GetAllForRepository(owner: repository.Owner.Login, name: repository.Name);
 
         var mapped = await pullRequests
@@ -40,22 +40,22 @@ internal class GithubPullRequestService : BaseGitHubApiService, IGithubPullReque
                 IsClosed = x.ClosedAt != null,
                 Created = x.CreatedAt,
                 Author = x.User.Login,
-                ReviewDecision = await this.GetReviewDecision(repository, x),
+                ReviewDecision = await GetReviewDecision(repository, x),
                 LockReason = x.ActiveLockReason?.Value,
                 LastUpdated = x.UpdatedAt,
                 Url = x.Url,
                 RepositoryId = repository.Id.ToString(),
                 RepositoryName = repository.Name,
                 RepositoryUrl = repository.Url,
-                ChecksStatus = await this.GetLastCommitCheckStatus(repository, x),
-                Reviewers = await this.GetReviewers(repository, x),
+                ChecksStatus = await GetLastCommitCheckStatus(repository, x),
+                Reviewers = await GetReviewers(repository, x),
                 Labels = x.Labels.Select(x => x.Name).ToList(),
-                Threads = await this.GetThreads(repository, x),
+                Threads = await GetThreads(repository, x),
             })
             .ProcessInParallel();
 
         return mapped
-        .Where(this.IsActiveOrRecentlyClosed);
+        .Where(IsActiveOrRecentlyClosed);
     }
 
     private async Task<List<GithubReviewer>> GetReviewers(GithubRepository repository, PullRequest pullRequest)
@@ -75,7 +75,7 @@ internal class GithubPullRequestService : BaseGitHubApiService, IGithubPullReque
             })
             .Compile();
 
-        var reviewers = await this.githubQueryRunner.RunQuery(query);
+        var reviewers = await githubQueryRunner.RunQuery(query);
 
         return reviewers.ToList();
     }
@@ -103,7 +103,7 @@ internal class GithubPullRequestService : BaseGitHubApiService, IGithubPullReque
                         }).ToList(),
             }).Compile();
 
-        var threads = await this.githubQueryRunner.RunQuery(threadQuery);
+        var threads = await githubQueryRunner.RunQuery(threadQuery);
 
         return threads.ToList();
     }
@@ -119,7 +119,7 @@ internal class GithubPullRequestService : BaseGitHubApiService, IGithubPullReque
                 x.Commit == null ? StatusState.Expected :
                 x.Commit.StatusCheckRollup == null ? StatusState.Expected : x.Commit.StatusCheckRollup.State).Compile();
 
-        var statuses = await this.githubQueryRunner.RunQuery(query);
+        var statuses = await githubQueryRunner.RunQuery(query);
 
         return statuses.LastOrDefault();
     }
@@ -132,7 +132,7 @@ internal class GithubPullRequestService : BaseGitHubApiService, IGithubPullReque
             .Select(x => x.ReviewDecision)
             .Compile();
 
-        var reviewDecision = await this.githubQueryRunner.RunQuery(query);
+        var reviewDecision = await githubQueryRunner.RunQuery(query);
 
         return reviewDecision;
     }

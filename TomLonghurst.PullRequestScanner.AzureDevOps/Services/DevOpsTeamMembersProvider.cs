@@ -3,8 +3,8 @@
 using EnumerableAsyncProcessor.Extensions;
 using Microsoft.TeamFoundation.Core.WebApi;
 using Microsoft.VisualStudio.Services.WebApi;
-using TomLonghurst.PullRequestScanner.AzureDevOps.Options;
-using TomLonghurst.PullRequestScanner.Contracts;
+using Options;
+using Contracts;
 using TomLonghurst.PullRequestScanner.Models;
 using TeamMember = Microsoft.VisualStudio.Services.WebApi.TeamMember;
 
@@ -15,7 +15,7 @@ internal class AzureDevOpsTeamMembersProvider(AzureDevOpsOptions azureDevOpsOpti
 
     public async Task<IEnumerable<ITeamMember>> GetTeamMembers()
     {
-        if (!this.azureDevOpsOptions.IsEnabled)
+        if (!azureDevOpsOptions.IsEnabled)
         {
             return [];
         }
@@ -25,8 +25,8 @@ internal class AzureDevOpsTeamMembersProvider(AzureDevOpsOptions azureDevOpsOpti
         var iteration = 0;
         do
         {
-            var teamsInIteration = await this.vssConnection.GetClient<TeamHttpClient>().GetTeamsAsync(
-                projectId: this.azureDevOpsOptions.ProjectGuid.ToString(),
+            var teamsInIteration = await vssConnection.GetClient<TeamHttpClient>().GetTeamsAsync(
+                projectId: azureDevOpsOptions.ProjectGuid.ToString(),
                 top: 100,
                 skip: 100 * iteration);
 
@@ -38,7 +38,7 @@ internal class AzureDevOpsTeamMembersProvider(AzureDevOpsOptions azureDevOpsOpti
 
         var membersResponsesArrays = await teams
             .ToAsyncProcessorBuilder()
-            .SelectAsync(this.GetTeamMembers)
+            .SelectAsync(GetTeamMembers)
             .ProcessInParallel(50, TimeSpan.FromSeconds(5));
 
         var membersResponses = membersResponsesArrays
@@ -65,8 +65,8 @@ internal class AzureDevOpsTeamMembersProvider(AzureDevOpsOptions azureDevOpsOpti
         var iteration = 0;
         do
         {
-            var membersInIteration = await this.vssConnection.GetClient<TeamHttpClient>().GetTeamMembersWithExtendedPropertiesAsync(
-                projectId: this.azureDevOpsOptions.ProjectGuid.ToString(),
+            var membersInIteration = await vssConnection.GetClient<TeamHttpClient>().GetTeamMembersWithExtendedPropertiesAsync(
+                projectId: azureDevOpsOptions.ProjectGuid.ToString(),
                 teamId: team.Id.ToString(),
                 top: 100,
                 skip: 100 * iteration);

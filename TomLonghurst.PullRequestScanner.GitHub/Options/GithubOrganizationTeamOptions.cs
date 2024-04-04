@@ -13,6 +13,6 @@ public class GithubOrganizationTeamOptions : GithubOptions
 
     internal override string CreateUriPathPrefix()
     {
-        return $"orgs/{this.OrganizationSlug}/teams/{this.TeamSlug}/";
+        return $"orgs/{OrganizationSlug}/teams/{TeamSlug}/";
     }
 }

@@ -8,7 +8,7 @@ using ModularPipelines.DotNet.Extensions;
 using ModularPipelines.DotNet.Options;
 using ModularPipelines.Models;
 using ModularPipelines.Modules;
-using TomLonghurst.PullRequestScanner.Pipeline.Settings;
+using Settings;
 
 [DependsOn<RunUnitTestsModule>]
 [DependsOn<PackagePathsParserModule>]
@@ -38,9 +38,9 @@ public class UploadPackagesToNugetModule : Module<CommandResult[]>
 
     protected override async Task<CommandResult[]?> ExecuteAsync(IPipelineContext context, CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(this.options.Value.ApiKey);
+        ArgumentNullException.ThrowIfNull(options.Value.ApiKey);
 
-        var packagePaths = await this.GetModule<PackagePathsParserModule>();
+        var packagePaths = await GetModule<PackagePathsParserModule>();
 
         return await packagePaths.Value!
             .SelectAsync(
@@ -49,7 +49,7 @@ public class UploadPackagesToNugetModule : Module<CommandResult[]>
             {
                 Path = nugetFile,
                 Source = "https://api.nuget.org/v3/index.json",
-                ApiKey = this.options.Value.ApiKey!,
+                ApiKey = options.Value.ApiKey!,
             }, cancellationToken), cancellationToken: cancellationToken)
             .ProcessOneAtATime();
     }

@@ -10,7 +10,7 @@ public class PackagePathsParserModule : Module<List<File>>
 {
     protected override async Task<List<File>?> ExecuteAsync(IPipelineContext context, CancellationToken cancellationToken)
     {
-        var packPackagesModuleResult = await this.GetModule<PackProjectsModule>();
+        var packPackagesModuleResult = await GetModule<PackProjectsModule>();
 
         return packPackagesModuleResult.Value!
             .Select(x => x.StandardOutput)

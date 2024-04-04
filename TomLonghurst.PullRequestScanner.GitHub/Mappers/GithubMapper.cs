@@ -2,8 +2,8 @@ namespace TomLonghurst.PullRequestScanner.GitHub.Mappers;
 
 using Octokit;
 using Octokit.GraphQL.Model;
-using TomLonghurst.PullRequestScanner.Enums;
-using TomLonghurst.PullRequestScanner.GitHub.Models;
+using Enums;
+using Models;
 using TomLonghurst.PullRequestScanner.Models;
 using TomLonghurst.PullRequestScanner.Services;
 using MergeableState = Octokit.MergeableState;
@@ -33,13 +33,13 @@ internal class GithubMapper : IGithubMapper
             IsDraft = githubPullRequest.IsDraft,
             IsActive = GetIsActive(githubPullRequest),
             PullRequestStatus = GetStatus(githubPullRequest),
-            Author = this.GetPerson(githubPullRequest.Author),
+            Author = GetPerson(githubPullRequest.Author),
             Approvers = githubPullRequest.Reviewers
                 .Where(x => x.Author != githubPullRequest.Author)
-                .Select(this.GetApprover)
+                .Select(GetApprover)
                 .ToList(),
             CommentThreads = githubPullRequest.Threads
-                .Select(this.GetCommentThreads)
+                .Select(GetCommentThreads)
                 .ToList(),
             Platform = "GitHub",
             Labels = githubPullRequest.Labels,
@@ -74,7 +74,7 @@ internal class GithubMapper : IGithubMapper
 
     private TeamMember GetPerson(string author)
     {
-        var foundTeamMember = this.teamMembersService.FindTeamMember(author, author);
+        var foundTeamMember = teamMembersService.FindTeamMember(author, author);
 
         if (foundTeamMember == null)
         {
@@ -92,7 +92,7 @@ internal class GithubMapper : IGithubMapper
         return new CommentThread
         {
             Status = GetThreadStatus(githubThread),
-            Comments = githubThread.Comments.Select(this.GetComment).ToList(),
+            Comments = githubThread.Comments.Select(GetComment).ToList(),
         };
     }
 
@@ -101,7 +101,7 @@ internal class GithubMapper : IGithubMapper
         return new Comment
         {
             LastUpdated = githubComment.LastUpdated,
-            Author = this.GetPerson(githubComment.Author),
+            Author = GetPerson(githubComment.Author),
         };
     }
 
@@ -121,7 +121,7 @@ internal class GithubMapper : IGithubMapper
         {
             Vote = GetVote(reviewer.State),
             IsRequired = false,
-            TeamMember = this.GetPerson(reviewer.Author),
+            TeamMember = GetPerson(reviewer.Author),
             Time = reviewer.LastUpdated,
         };
     }

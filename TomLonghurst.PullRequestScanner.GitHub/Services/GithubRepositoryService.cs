@@ -1,8 +1,8 @@
 namespace TomLonghurst.PullRequestScanner.GitHub.Services;
 
-using TomLonghurst.PullRequestScanner.GitHub.Http;
-using TomLonghurst.PullRequestScanner.GitHub.Models;
-using TomLonghurst.PullRequestScanner.GitHub.Options;
+using Http;
+using Models;
+using Options;
 
 internal class GithubRepositoryService : BaseGitHubApiService, IGithubRepositoryService
 {
@@ -16,12 +16,12 @@ internal class GithubRepositoryService : BaseGitHubApiService, IGithubRepository
 
     public async Task<List<GithubRepository>> GetGitRepositories()
     {
-        var gitRepositoryResponse = await this.Get<GithubRepository>(this.githubOptions.CreateUriPathPrefix() + "repos");
+        var gitRepositoryResponse = await Get<GithubRepository>(githubOptions.CreateUriPathPrefix() + "repos");
 
         return gitRepositoryResponse
             .Where(x => !x.Disabled)
             .Where(x => !x.Archived)
-            .Where(x => this.githubOptions.RepositoriesToScan.Invoke(x))
+            .Where(x => githubOptions.RepositoriesToScan.Invoke(x))
             .ToList();
     }
 }

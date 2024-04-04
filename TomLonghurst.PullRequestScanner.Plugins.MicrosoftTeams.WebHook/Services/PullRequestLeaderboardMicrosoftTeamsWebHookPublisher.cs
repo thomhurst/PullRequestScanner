@@ -1,9 +1,9 @@
 namespace TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Services;
 
-using TomLonghurst.PullRequestScanner.Contracts;
+using Contracts;
 using TomLonghurst.PullRequestScanner.Models;
-using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Http;
-using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Mappers;
+using Http;
+using Mappers;
 
 public class PullRequestLeaderboardMicrosoftTeamsWebHookPublisher : MicrosoftTeamsWebHookPublisherBase, IPullRequestPlugin
 {
@@ -17,6 +17,6 @@ public class PullRequestLeaderboardMicrosoftTeamsWebHookPublisher : MicrosoftTea
 
     public override Task ExecuteAsync(IReadOnlyList<PullRequest> pullRequests)
     {
-        return this.Publish(() => this.pullRequestLeaderboardCardMapper.Map(pullRequests));
+        return Publish(() => pullRequestLeaderboardCardMapper.Map(pullRequests));
     }
 }
