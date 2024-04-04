@@ -20,6 +20,7 @@ var host = Host.CreateDefaultBuilder(args)
             .AddGithub(new GithubOrganizationTeamOptions()
             {
                 OrganizationSlug = "",
+                TeamSlug = "",
                 PersonalAccessToken = "",
                 RepositoriesToScan = repository => true
             })

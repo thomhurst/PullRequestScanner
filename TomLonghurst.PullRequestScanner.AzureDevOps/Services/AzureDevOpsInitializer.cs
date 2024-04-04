@@ -1,6 +1,6 @@
-﻿using Microsoft.TeamFoundation.Core.WebApi;
+﻿using Initialization.Microsoft.Extensions.DependencyInjection;
+using Microsoft.TeamFoundation.Core.WebApi;
 using Microsoft.VisualStudio.Services.WebApi;
-using TomLonghurst.Microsoft.Extensions.DependencyInjection.ServiceInitialization;
 using TomLonghurst.PullRequestScanner.AzureDevOps.Options;
 
 namespace TomLonghurst.PullRequestScanner.AzureDevOps.Services;
@@ -15,7 +15,7 @@ public class AzureDevOpsInitializer : IInitializer
         _azureDevOpsOptions = azureDevOpsOptions;
         _vssConnection = vssConnection;
     }
-    
+
     public async Task InitializeAsync()
     {
         if (_azureDevOpsOptions.ProjectGuid != default)
@@ -31,7 +31,7 @@ public class AzureDevOpsInitializer : IInitializer
         {
             throw new ArgumentException($"Unique project with name '{_azureDevOpsOptions.ProjectName}' not found");
         }
-        
+
         _azureDevOpsOptions.ProjectGuid = foundProject.Id;
     }
 
@@ -43,9 +43,9 @@ public class AzureDevOpsInitializer : IInitializer
         do
         {
             var projectsInIteration = await _vssConnection.GetClient<ProjectHttpClient>().GetProjects();
-            
+
             projects.AddRange(projectsInIteration);
-            
+
             continuationToken = projectsInIteration.ContinuationToken;
         } while (!string.IsNullOrEmpty(continuationToken));
 

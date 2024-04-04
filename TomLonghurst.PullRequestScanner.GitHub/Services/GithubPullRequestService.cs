@@ -1,6 +1,6 @@
+using EnumerableAsyncProcessor.Extensions;
 using Octokit.GraphQL;
 using Octokit.GraphQL.Model;
-using TomLonghurst.EnumerableAsyncProcessor.Extensions;
 using TomLonghurst.PullRequestScanner.GitHub.Http;
 using TomLonghurst.PullRequestScanner.GitHub.Models;
 
@@ -40,10 +40,10 @@ internal class GithubPullRequestService : BaseGitHubApiService, IGithubPullReque
                 RepositoryId = x.Repository.Id.Value,
                 RepositoryName = x.Repository.Name,
                 RepositoryUrl = x.Repository.Url,
-                ChecksStatus = x.Commits(null,null, 1, null)
+                ChecksStatus = x.Commits(null, null, 1, null)
                     .Nodes
-                    .Select(x => 
-                    x.Commit == null ? StatusState.Expected : 
+                    .Select(x =>
+                    x.Commit == null ? StatusState.Expected :
                         x.Commit.StatusCheckRollup == null ? StatusState.Expected : x.Commit.StatusCheckRollup.State
                     )
                     .ToList()
@@ -100,7 +100,7 @@ internal class GithubPullRequestService : BaseGitHubApiService, IGithubPullReque
 
         return pullRequests;
     }
-    
+
     private bool IsActiveOrRecentlyClosed(GithubPullRequest githubPullRequest)
     {
         if (githubPullRequest.State == PullRequestState.Open)

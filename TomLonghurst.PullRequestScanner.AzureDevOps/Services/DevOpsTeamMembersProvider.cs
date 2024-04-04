@@ -1,8 +1,6 @@
-﻿using Microsoft.TeamFoundation.Core.WebApi;
-using Microsoft.VisualStudio.Services.Identity.Client;
-using Microsoft.VisualStudio.Services.Profile.Client;
+﻿using EnumerableAsyncProcessor.Extensions;
+using Microsoft.TeamFoundation.Core.WebApi;
 using Microsoft.VisualStudio.Services.WebApi;
-using TomLonghurst.EnumerableAsyncProcessor.Extensions;
 using TomLonghurst.PullRequestScanner.AzureDevOps.Options;
 using TomLonghurst.PullRequestScanner.Contracts;
 using TomLonghurst.PullRequestScanner.Models;
@@ -27,7 +25,7 @@ internal class AzureDevOpsTeamMembersProvider : ITeamMembersProvider
         {
             return Array.Empty<ITeamMember>();
         }
-        
+
         var teams = new List<WebApiTeam>();
 
         var iteration = 0;
@@ -51,7 +49,7 @@ internal class AzureDevOpsTeamMembersProvider : ITeamMembersProvider
         var membersResponses = membersResponsesArrays
             .SelectMany(x => x)
             .ToList();
-        
+
         return membersResponses
             .Where(x => x.Identity.DisplayName != Constants.VstsDisplayName)
             .Where(x => !x.Identity.UniqueName.StartsWith(Constants.VstfsUniqueNamePrefix))

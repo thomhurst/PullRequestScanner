@@ -1,4 +1,4 @@
-﻿using TomLonghurst.Microsoft.Extensions.DependencyInjection.ServiceInitialization;
+﻿using Initialization.Microsoft.Extensions.DependencyInjection;
 using TomLonghurst.PullRequestScanner.Contracts;
 using TomLonghurst.PullRequestScanner.Models;
 
@@ -18,7 +18,7 @@ internal class TeamMembersService : ITeamMembersService, IInitializer
 
     public async Task InitializeAsync()
     {
-        if(_isInitialized)
+        if (_isInitialized)
         {
             return;
         }
@@ -29,13 +29,13 @@ internal class TeamMembersService : ITeamMembersService, IInitializer
         foreach (var teamMember in teamMembers)
         {
             var foundUser = FindTeamMember(teamMember);
-            
+
             if (foundUser == null)
             {
                 _teamMembers.Add(new TeamMember
                 {
                     Email = teamMember.Email,
-                    Ids = { teamMember.Id }, 
+                    Ids = { teamMember.Id },
                     UniqueNames = { teamMember.UniqueName },
                     DisplayName = teamMember.DisplayName,
                     ImageUrls = { teamMember.ImageUrl }
@@ -68,7 +68,7 @@ internal class TeamMembersService : ITeamMembersService, IInitializer
         {
             return !string.IsNullOrEmpty(value1) && !string.IsNullOrEmpty(value2) && string.Equals(value1, value2, StringComparison.InvariantCultureIgnoreCase);
         }
-        
+
         bool NotEmptyAndInList(IList<string> list, string value)
         {
             return !string.IsNullOrEmpty(value) && list.Contains(value, StringComparer.InvariantCultureIgnoreCase);
@@ -81,22 +81,22 @@ internal class TeamMembersService : ITeamMembersService, IInitializer
         {
             foundUser.Email = newUserDetails.Email;
         }
-        
+
         if (!string.IsNullOrEmpty(newUserDetails.Id))
         {
             foundUser.Ids.Add(newUserDetails.Id);
         }
-        
+
         if (!string.IsNullOrEmpty(newUserDetails.UniqueName))
         {
             foundUser.UniqueNames.Add(newUserDetails.UniqueName);
         }
-        
+
         if (string.IsNullOrEmpty(foundUser.DisplayName) && !string.IsNullOrEmpty(newUserDetails.DisplayName))
         {
             foundUser.DisplayName = newUserDetails.DisplayName;
         }
-        
+
         if (!string.IsNullOrEmpty(newUserDetails.ImageUrl))
         {
             foundUser.ImageUrls.Add(newUserDetails.ImageUrl);

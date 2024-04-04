@@ -1,5 +1,5 @@
-﻿using System.Collections.Immutable;
-using TomLonghurst.EnumerableAsyncProcessor.Extensions;
+﻿using EnumerableAsyncProcessor.Extensions;
+using System.Collections.Immutable;
 using TomLonghurst.PullRequestScanner.AzureDevOps.Mappers;
 using TomLonghurst.PullRequestScanner.AzureDevOps.Options;
 using TomLonghurst.PullRequestScanner.Contracts;
@@ -47,23 +47,23 @@ internal class AzureDevOpsPullRequestProvider : IPullRequestProvider
 
         return mappedPullRequests;
     }
-    
+
     private void ValidateOptions()
     {
         if (_azureDevOpsOptions.IsEnabled != true)
         {
             return;
         }
-        
+
         ValidatePopulated(_azureDevOpsOptions.Organization, nameof(_azureDevOpsOptions.Organization));
-        
+
         if (_azureDevOpsOptions.ProjectGuid == default)
         {
             ValidatePopulated(_azureDevOpsOptions.ProjectName, nameof(_azureDevOpsOptions.ProjectName));
         }
 
         ValidatePopulated(_azureDevOpsOptions.PersonalAccessToken, nameof(_azureDevOpsOptions.PersonalAccessToken));
-        
+
         void ValidatePopulated(string value, string propertyName)
         {
             if (string.IsNullOrEmpty(value))

@@ -1,5 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using TomLonghurst.Microsoft.Extensions.DependencyInjection.ServiceInitialization.Extensions;
+﻿using Initialization.Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 using TomLonghurst.PullRequestScanner.Contracts;
 using TomLonghurst.PullRequestScanner.Services;
 
@@ -31,19 +31,19 @@ public class PullRequestScannerBuilder
         Services.AddTransient(pullRequestProviderFactory);
         return this;
     }
-    
+
     public PullRequestScannerBuilder AddPullRequestProvider<TPullRequestProvider>() where TPullRequestProvider : class, IPullRequestProvider
     {
         Services.AddTransient<IPullRequestProvider, TPullRequestProvider>();
         return this;
     }
-    
+
     public PullRequestScannerBuilder AddPlugin(Func<IServiceProvider, IPullRequestPlugin> pullRequestPluginFactory)
     {
         Services.AddTransient(pullRequestPluginFactory);
         return this;
     }
-    
+
     public PullRequestScannerBuilder AddPlugin<TPullRequestPlugin>() where TPullRequestPlugin : class, IPullRequestPlugin
     {
         Services.AddTransient<IPullRequestPlugin, TPullRequestPlugin>();

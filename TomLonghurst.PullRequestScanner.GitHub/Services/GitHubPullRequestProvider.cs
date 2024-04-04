@@ -1,5 +1,5 @@
-﻿using System.Collections.Immutable;
-using TomLonghurst.EnumerableAsyncProcessor.Extensions;
+﻿using EnumerableAsyncProcessor.Extensions;
+using System.Collections.Immutable;
 using TomLonghurst.PullRequestScanner.Contracts;
 using TomLonghurst.PullRequestScanner.GitHub.Mappers;
 using TomLonghurst.PullRequestScanner.GitHub.Options;
@@ -26,7 +26,7 @@ internal class GitHubPullRequestProvider : IPullRequestProvider
 
         ValidateOptions();
     }
-    
+
     public async Task<IReadOnlyList<PullRequest>> GetPullRequests()
     {
         if (_githubOptions?.IsEnabled != true)
@@ -48,14 +48,14 @@ internal class GitHubPullRequestProvider : IPullRequestProvider
 
         return mappedPullRequests;
     }
-    
+
     private void ValidateOptions()
     {
         if (_githubOptions.IsEnabled != true)
         {
             return;
         }
-        
+
         if (_githubOptions is GithubOrganizationTeamOptions githubOrganizationTeamOptions)
         {
             ValidatePopulated(githubOrganizationTeamOptions.OrganizationSlug, nameof(githubOrganizationTeamOptions.OrganizationSlug));
@@ -68,7 +68,7 @@ internal class GitHubPullRequestProvider : IPullRequestProvider
         }
 
         ValidatePopulated(_githubOptions.PersonalAccessToken, nameof(_githubOptions.PersonalAccessToken));
-        
+
         void ValidatePopulated(string value, string propertyName)
         {
             if (string.IsNullOrEmpty(value))
