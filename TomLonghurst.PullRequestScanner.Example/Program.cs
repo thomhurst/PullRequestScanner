@@ -57,9 +57,7 @@ var host = Host.CreateDefaultBuilder(args)
 var pullRequestScanner = host.Services.GetRequiredService<IPullRequestScanner>();
 await pullRequestScanner.ExecutePluginsAsync();
 
-
 // More Granular Control
 var pullRequests = await pullRequestScanner.GetPullRequests();
 var statusPublisherPlugin = pullRequestScanner.GetPlugin<PullRequestStatusMicrosoftTeamsWebHookPublisher>();
 await statusPublisherPlugin.ExecuteAsync(pullRequests, PullRequestStatus.NeedsReviewing);
- 
