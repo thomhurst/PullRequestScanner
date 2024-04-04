@@ -12,11 +12,11 @@ using Repository = TomLonghurst.PullRequestScanner.Models.Repository;
 
 internal class GithubMapper : IGithubMapper
 {
-    private readonly ITeamMembersService teamMembersService;
+    private readonly ITeamMembersService _teamMembersService;
 
     public GithubMapper(ITeamMembersService teamMembersService)
     {
-        this.teamMembersService = teamMembersService;
+        this._teamMembersService = teamMembersService;
     }
 
     public PullRequest ToPullRequestModel(GithubPullRequest githubPullRequest)
@@ -74,7 +74,7 @@ internal class GithubMapper : IGithubMapper
 
     private TeamMember GetPerson(string author)
     {
-        var foundTeamMember = teamMembersService.FindTeamMember(author, author);
+        var foundTeamMember = _teamMembersService.FindTeamMember(author, author);
 
         if (foundTeamMember == null)
         {

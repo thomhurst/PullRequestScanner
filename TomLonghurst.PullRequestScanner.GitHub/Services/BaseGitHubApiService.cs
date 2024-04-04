@@ -4,11 +4,11 @@ using TomLonghurst.PullRequestScanner.GitHub.Http;
 
 internal abstract class BaseGitHubApiService
 {
-    private readonly GithubHttpClient githubHttpClient;
+    private readonly GithubHttpClient _githubHttpClient;
 
     protected BaseGitHubApiService(GithubHttpClient githubHttpClient)
     {
-        this.githubHttpClient = githubHttpClient;
+        this._githubHttpClient = githubHttpClient;
     }
 
     protected async Task<List<T>> Get<T>(string path)
@@ -19,7 +19,7 @@ internal abstract class BaseGitHubApiService
         var list = new List<T>();
         do
         {
-            var arrayResponse = await githubHttpClient.Get<List<T>>($"{path}?per_page=100&page={iteration}");
+            var arrayResponse = await _githubHttpClient.Get<List<T>>($"{path}?per_page=100&page={iteration}");
 
             if (arrayResponse?.Count is null or 0)
             {

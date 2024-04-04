@@ -9,10 +9,10 @@ using TomLonghurst.PullRequestScanner.Models;
 
 internal class GitHubPullRequestProvider : IPullRequestProvider
 {
-    private readonly GithubOptions githubOptions;
-    private readonly IGithubRepositoryService githubRepositoryService;
-    private readonly IGithubPullRequestService githubPullRequestService;
-    private readonly IGithubMapper githubMapper;
+    private readonly GithubOptions _githubOptions;
+    private readonly IGithubRepositoryService _githubRepositoryService;
+    private readonly IGithubPullRequestService _githubPullRequestService;
+    private readonly IGithubMapper _githubMapper;
 
     public GitHubPullRequestProvider(
         GithubOptions githubOptions,
@@ -20,31 +20,31 @@ internal class GitHubPullRequestProvider : IPullRequestProvider
         IGithubPullRequestService githubPullRequestService,
         IGithubMapper githubMapper)
     {
-        this.githubOptions = githubOptions;
-        this.githubRepositoryService = githubRepositoryService;
-        this.githubPullRequestService = githubPullRequestService;
-        this.githubMapper = githubMapper;
+        this._githubOptions = githubOptions;
+        this._githubRepositoryService = githubRepositoryService;
+        this._githubPullRequestService = githubPullRequestService;
+        this._githubMapper = githubMapper;
 
         ValidateOptions();
     }
 
     public async Task<IReadOnlyList<PullRequest>> GetPullRequests()
     {
-        if (githubOptions?.IsEnabled != true)
+        if (_githubOptions?.IsEnabled != true)
         {
             return Array.Empty<PullRequest>();
         }
 
-        var repositories = await githubRepositoryService.GetGitRepositories();
+        var repositories = await _githubRepositoryService.GetGitRepositories();
 
         var pullRequestsEnumerable = await repositories.ToAsyncProcessorBuilder()
-            .SelectAsync(repo => githubPullRequestService.GetPullRequests(repo))
+            .SelectAsync(repo => _githubPullRequestService.GetPullRequests(repo))
             .ProcessInParallel(50, TimeSpan.FromSeconds(5));
 
         var pullRequests = pullRequestsEnumerable.SelectMany(x => x).ToImmutableList();
 
         var mappedPullRequests = pullRequests
-            .Select(pr => githubMapper.ToPullRequestModel(pr))
+            .Select(pr => _githubMapper.ToPullRequestModel(pr))
             .ToImmutableList();
 
         return mappedPullRequests;
@@ -52,23 +52,23 @@ internal class GitHubPullRequestProvider : IPullRequestProvider
 
     private void ValidateOptions()
     {
-        if (githubOptions.IsEnabled != true)
+        if (_githubOptions.IsEnabled != true)
         {
             return;
         }
 
-        if (githubOptions is GithubOrganizationTeamOptions githubOrganizationTeamOptions)
+        if (_githubOptions is GithubOrganizationTeamOptions githubOrganizationTeamOptions)
         {
             ValidatePopulated(githubOrganizationTeamOptions.OrganizationSlug, nameof(githubOrganizationTeamOptions.OrganizationSlug));
             ValidatePopulated(githubOrganizationTeamOptions.TeamSlug, nameof(githubOrganizationTeamOptions.TeamSlug));
         }
 
-        if (githubOptions is GithubUserOptions githubUserOptions)
+        if (_githubOptions is GithubUserOptions githubUserOptions)
         {
             ValidatePopulated(githubUserOptions.Username, nameof(githubUserOptions.Username));
         }
 
-        ValidatePopulated(githubOptions.PersonalAccessToken, nameof(githubOptions.PersonalAccessToken));
+        ValidatePopulated(_githubOptions.PersonalAccessToken, nameof(_githubOptions.PersonalAccessToken));
 
         static void ValidatePopulated(string value, string propertyName)
         {

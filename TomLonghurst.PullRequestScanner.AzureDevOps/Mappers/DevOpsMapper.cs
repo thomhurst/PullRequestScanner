@@ -20,7 +20,7 @@ internal class AzureDevOpsMapper(ITeamMembersService teamMembersService) : IAzur
             Title = pullRequest.Title,
             Created = pullRequest.CreationDate,
             Description = pullRequest.Description,
-            Url = GetPullRequestUIUrl(pullRequest.Url),
+            Url = GetPullRequestUiUrl(pullRequest.Url),
             Id = pullRequest.PullRequestId.ToString(),
             Number = pullRequest.PullRequestId.ToString(),
             Repository = GetRepository(pullRequest.Repository),
@@ -212,7 +212,7 @@ internal class AzureDevOpsMapper(ITeamMembersService teamMembersService) : IAzur
         };
     }
 
-    private static string GetPullRequestUIUrl(string pullRequestUrl)
+    private static string GetPullRequestUiUrl(string pullRequestUrl)
     {
         return pullRequestUrl
             .Replace("pullRequests", "pullrequest")

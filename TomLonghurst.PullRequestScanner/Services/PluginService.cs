@@ -9,7 +9,7 @@ internal class PluginService : IPluginService
 {
     public IEnumerable<IPullRequestPlugin> Plugins { get; }
 
-    private readonly Func<IPullRequestPlugin, bool> defaultPredicate = _ => true;
+    private readonly Func<IPullRequestPlugin, bool> _defaultPredicate = _ => true;
 
     public PluginService(IEnumerable<IPullRequestPlugin> plugins)
     {
@@ -24,7 +24,7 @@ internal class PluginService : IPluginService
         }
 
         await Plugins
-            .Where(predicate ?? defaultPredicate)
+            .Where(predicate ?? _defaultPredicate)
             .ToAsyncProcessorBuilder()
             .ForEachAsync(plugin => plugin.ExecuteAsync(pullRequests))
             .ProcessInParallel();

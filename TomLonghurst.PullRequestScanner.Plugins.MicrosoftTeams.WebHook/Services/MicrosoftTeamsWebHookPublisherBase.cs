@@ -7,12 +7,12 @@ using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Models;
 
 public abstract class MicrosoftTeamsWebHookPublisherBase : IPullRequestPlugin
 {
-    private readonly MicrosoftTeamsWebhookClient microsoftTeamsWebhookClient;
+    private readonly MicrosoftTeamsWebhookClient _microsoftTeamsWebhookClient;
 
     internal MicrosoftTeamsWebHookPublisherBase(
         MicrosoftTeamsWebhookClient microsoftTeamsWebhookClient)
     {
-        this.microsoftTeamsWebhookClient = microsoftTeamsWebhookClient;
+        this._microsoftTeamsWebhookClient = microsoftTeamsWebhookClient;
     }
 
     internal async Task Publish(Func<IEnumerable<MicrosoftTeamsAdaptiveCard>> cardGenerator)
@@ -21,7 +21,7 @@ public abstract class MicrosoftTeamsWebHookPublisherBase : IPullRequestPlugin
 
         foreach (var microsoftTeamsAdaptiveCard in cards)
         {
-            await microsoftTeamsWebhookClient.CreateTeamsNotification(microsoftTeamsAdaptiveCard);
+            await _microsoftTeamsWebhookClient.CreateTeamsNotification(microsoftTeamsAdaptiveCard);
         }
     }
 

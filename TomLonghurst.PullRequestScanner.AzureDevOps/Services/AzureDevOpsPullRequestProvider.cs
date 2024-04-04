@@ -9,10 +9,10 @@ using TomLonghurst.PullRequestScanner.Models;
 
 internal class AzureDevOpsPullRequestProvider : IPullRequestProvider
 {
-    private readonly AzureDevOpsOptions azureDevOpsOptions;
-    private readonly IAzureDevOpsGitRepositoryService devOpsGitRepositoryService;
-    private readonly IAzureDevOpsPullRequestService devOpsPullRequestService;
-    private readonly IAzureDevOpsMapper devOpsMapper;
+    private readonly AzureDevOpsOptions _azureDevOpsOptions;
+    private readonly IAzureDevOpsGitRepositoryService _devOpsGitRepositoryService;
+    private readonly IAzureDevOpsPullRequestService _devOpsPullRequestService;
+    private readonly IAzureDevOpsMapper _devOpsMapper;
 
     public AzureDevOpsPullRequestProvider(
         AzureDevOpsOptions azureDevOpsOptions,
@@ -20,31 +20,31 @@ internal class AzureDevOpsPullRequestProvider : IPullRequestProvider
         IAzureDevOpsPullRequestService azureDevOpsPullRequestService,
         IAzureDevOpsMapper azureDevOpsMapper)
     {
-        this.azureDevOpsOptions = azureDevOpsOptions;
-        devOpsGitRepositoryService = azureDevOpsGitRepositoryService;
-        devOpsPullRequestService = azureDevOpsPullRequestService;
-        devOpsMapper = azureDevOpsMapper;
+        this._azureDevOpsOptions = azureDevOpsOptions;
+        _devOpsGitRepositoryService = azureDevOpsGitRepositoryService;
+        _devOpsPullRequestService = azureDevOpsPullRequestService;
+        _devOpsMapper = azureDevOpsMapper;
 
         ValidateOptions();
     }
 
     public async Task<IReadOnlyList<PullRequest>> GetPullRequests()
     {
-        if (azureDevOpsOptions?.IsEnabled != true)
+        if (_azureDevOpsOptions?.IsEnabled != true)
         {
             return [];
         }
 
-        var repositories = await devOpsGitRepositoryService.GetGitRepositories();
+        var repositories = await _devOpsGitRepositoryService.GetGitRepositories();
 
         var pullRequestsEnumerable = await repositories.ToAsyncProcessorBuilder()
-            .SelectAsync(repo => devOpsPullRequestService.GetPullRequestsForRepository(repo))
+            .SelectAsync(repo => _devOpsPullRequestService.GetPullRequestsForRepository(repo))
             .ProcessInParallel(50, TimeSpan.FromSeconds(1));
 
         var azureDevOpsPullRequestContexts = pullRequestsEnumerable.SelectMany(x => x).ToImmutableList();
 
         var mappedPullRequests = azureDevOpsPullRequestContexts
-            .Select(pr => devOpsMapper.ToPullRequestModel(pr))
+            .Select(pr => _devOpsMapper.ToPullRequestModel(pr))
             .ToImmutableList();
 
         return mappedPullRequests;
@@ -52,19 +52,19 @@ internal class AzureDevOpsPullRequestProvider : IPullRequestProvider
 
     private void ValidateOptions()
     {
-        if (azureDevOpsOptions.IsEnabled != true)
+        if (_azureDevOpsOptions.IsEnabled != true)
         {
             return;
         }
 
-        ValidatePopulated(azureDevOpsOptions.Organization, nameof(azureDevOpsOptions.Organization));
+        ValidatePopulated(_azureDevOpsOptions.Organization, nameof(_azureDevOpsOptions.Organization));
 
-        if (azureDevOpsOptions.ProjectGuid == default)
+        if (_azureDevOpsOptions.ProjectGuid == default)
         {
-            ValidatePopulated(azureDevOpsOptions.ProjectName, nameof(azureDevOpsOptions.ProjectName));
+            ValidatePopulated(_azureDevOpsOptions.ProjectName, nameof(_azureDevOpsOptions.ProjectName));
         }
 
-        ValidatePopulated(azureDevOpsOptions.PersonalAccessToken, nameof(azureDevOpsOptions.PersonalAccessToken));
+        ValidatePopulated(_azureDevOpsOptions.PersonalAccessToken, nameof(_azureDevOpsOptions.PersonalAccessToken));
 
         static void ValidatePopulated(string value, string propertyName)
         {

@@ -7,16 +7,16 @@ using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Mappers;
 
 public class PullRequestLeaderboardMicrosoftTeamsWebHookPublisher : MicrosoftTeamsWebHookPublisherBase, IPullRequestPlugin
 {
-    private readonly IPullRequestLeaderboardCardMapper pullRequestLeaderboardCardMapper;
+    private readonly IPullRequestLeaderboardCardMapper _pullRequestLeaderboardCardMapper;
 
     internal PullRequestLeaderboardMicrosoftTeamsWebHookPublisher(MicrosoftTeamsWebhookClient microsoftTeamsWebhookClient, IPullRequestLeaderboardCardMapper pullRequestLeaderboardCardMapper)
         : base(microsoftTeamsWebhookClient)
     {
-        this.pullRequestLeaderboardCardMapper = pullRequestLeaderboardCardMapper;
+        this._pullRequestLeaderboardCardMapper = pullRequestLeaderboardCardMapper;
     }
 
     public override Task ExecuteAsync(IReadOnlyList<PullRequest> pullRequests)
     {
-        return Publish(() => pullRequestLeaderboardCardMapper.Map(pullRequests));
+        return Publish(() => _pullRequestLeaderboardCardMapper.Map(pullRequests));
     }
 }

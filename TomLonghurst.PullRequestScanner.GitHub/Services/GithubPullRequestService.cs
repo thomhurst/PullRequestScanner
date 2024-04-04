@@ -11,19 +11,19 @@ using PullRequest = Octokit.PullRequest;
 
 internal class GithubPullRequestService : BaseGitHubApiService, IGithubPullRequestService
 {
-    private readonly IGitHubClient gitHubClient;
-    private readonly IGithubQueryRunner githubQueryRunner;
+    private readonly IGitHubClient _gitHubClient;
+    private readonly IGithubQueryRunner _githubQueryRunner;
 
     public GithubPullRequestService(GithubHttpClient githubHttpClient, IGitHubClient gitHubClient, IGithubQueryRunner githubQueryRunner)
         : base(githubHttpClient)
     {
-        this.gitHubClient = gitHubClient;
-        this.githubQueryRunner = githubQueryRunner;
+        this._gitHubClient = gitHubClient;
+        this._githubQueryRunner = githubQueryRunner;
     }
 
     public async Task<IEnumerable<GithubPullRequest>> GetPullRequests(GithubRepository repository)
     {
-        var pullRequests = await gitHubClient.PullRequest
+        var pullRequests = await _gitHubClient.PullRequest
             .GetAllForRepository(owner: repository.Owner.Login, name: repository.Name);
 
         var mapped = await pullRequests
@@ -75,7 +75,7 @@ internal class GithubPullRequestService : BaseGitHubApiService, IGithubPullReque
             })
             .Compile();
 
-        var reviewers = await githubQueryRunner.RunQuery(query);
+        var reviewers = await _githubQueryRunner.RunQuery(query);
 
         return reviewers.ToList();
     }
@@ -103,7 +103,7 @@ internal class GithubPullRequestService : BaseGitHubApiService, IGithubPullReque
                         }).ToList(),
             }).Compile();
 
-        var threads = await githubQueryRunner.RunQuery(threadQuery);
+        var threads = await _githubQueryRunner.RunQuery(threadQuery);
 
         return threads.ToList();
     }
@@ -119,7 +119,7 @@ internal class GithubPullRequestService : BaseGitHubApiService, IGithubPullReque
                 x.Commit == null ? StatusState.Expected :
                 x.Commit.StatusCheckRollup == null ? StatusState.Expected : x.Commit.StatusCheckRollup.State).Compile();
 
-        var statuses = await githubQueryRunner.RunQuery(query);
+        var statuses = await _githubQueryRunner.RunQuery(query);
 
         return statuses.LastOrDefault();
     }
@@ -132,7 +132,7 @@ internal class GithubPullRequestService : BaseGitHubApiService, IGithubPullReque
             .Select(x => x.ReviewDecision)
             .Compile();
 
-        var reviewDecision = await githubQueryRunner.RunQuery(query);
+        var reviewDecision = await _githubQueryRunner.RunQuery(query);
 
         return reviewDecision;
     }

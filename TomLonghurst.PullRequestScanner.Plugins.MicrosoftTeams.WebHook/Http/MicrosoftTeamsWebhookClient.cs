@@ -10,25 +10,25 @@ using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Options;
 
 internal class MicrosoftTeamsWebhookClient
 {
-    private readonly HttpClient httpClient;
-    private readonly MicrosoftTeamsOptions microsoftTeamsOptions;
-    private readonly ILogger<MicrosoftTeamsWebhookClient> logger;
+    private readonly HttpClient _httpClient;
+    private readonly MicrosoftTeamsOptions _microsoftTeamsOptions;
+    private readonly ILogger<MicrosoftTeamsWebhookClient> _logger;
 
     public MicrosoftTeamsWebhookClient(HttpClient httpClient, MicrosoftTeamsOptions microsoftTeamsOptions,
         ILogger<MicrosoftTeamsWebhookClient> logger)
     {
-        this.httpClient = httpClient;
-        this.microsoftTeamsOptions = microsoftTeamsOptions;
-        this.logger = logger;
+        this._httpClient = httpClient;
+        this._microsoftTeamsOptions = microsoftTeamsOptions;
+        this._logger = logger;
     }
 
     public async Task CreateTeamsNotification(MicrosoftTeamsAdaptiveCard adaptiveCard)
     {
-        ArgumentNullException.ThrowIfNull(microsoftTeamsOptions.WebHookUri);
+        ArgumentNullException.ThrowIfNull(_microsoftTeamsOptions.WebHookUri);
 
         var adaptiveTeamsCardJsonString = JsonConvert.SerializeObject(TeamsNotificationCardWrapper.Wrap(adaptiveCard), Formatting.None);
 
-        logger.LogTrace("Microsoft Teams Webhook Request Payload: {Payload}", adaptiveTeamsCardJsonString);
+        _logger.LogTrace("Microsoft Teams Webhook Request Payload: {Payload}", adaptiveTeamsCardJsonString);
 
         try
         {
@@ -40,13 +40,13 @@ internal class MicrosoftTeamsWebhookClient
                     {
                         Method = HttpMethod.Post,
                         Content = new StringContent(adaptiveTeamsCardJsonString),
-                        RequestUri = microsoftTeamsOptions.WebHookUri,
+                        RequestUri = _microsoftTeamsOptions.WebHookUri,
                     };
 
-                    return httpClient.SendAsync(cardsRequest);
+                    return _httpClient.SendAsync(cardsRequest);
                 });
 
-            logger.LogTrace("Microsoft Teams Webhook Response: {Response}", await teamsNotificationResponse.Content.ReadAsStringAsync());
+            _logger.LogTrace("Microsoft Teams Webhook Response: {Response}", await teamsNotificationResponse.Content.ReadAsStringAsync());
 
             teamsNotificationResponse.EnsureSuccessStatusCode();
         }

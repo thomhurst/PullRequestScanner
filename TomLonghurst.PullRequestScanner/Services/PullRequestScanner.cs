@@ -5,24 +5,24 @@ using TomLonghurst.PullRequestScanner.Models;
 
 internal class PullRequestScanner : IPullRequestScanner
 {
-    private readonly IPullRequestService pullRequestService;
-    private readonly IPluginService pluginService;
+    private readonly IPullRequestService _pullRequestService;
+    private readonly IPluginService _pluginService;
 
-    public IEnumerable<IPullRequestPlugin> Plugins => pluginService.Plugins;
+    public IEnumerable<IPullRequestPlugin> Plugins => _pluginService.Plugins;
 
     public TPlugin GetPlugin<TPlugin>()
         where TPlugin : IPullRequestPlugin
-        => pluginService.GetPlugin<TPlugin>();
+        => _pluginService.GetPlugin<TPlugin>();
 
     public PullRequestScanner(IPullRequestService pullRequestService, IPluginService pluginService)
     {
-        this.pullRequestService = pullRequestService;
-        this.pluginService = pluginService;
+        this._pullRequestService = pullRequestService;
+        this._pluginService = pluginService;
     }
 
     public Task<IReadOnlyList<PullRequest>> GetPullRequests()
     {
-        return pullRequestService.GetPullRequests();
+        return _pullRequestService.GetPullRequests();
     }
 
     public async Task ExecutePluginsAsync(Func<IPullRequestPlugin, bool>? predicate)
@@ -39,6 +39,6 @@ internal class PullRequestScanner : IPullRequestScanner
             throw new ArgumentNullException(nameof(pullRequests));
         }
 
-        return pluginService.ExecuteAsync(pullRequests, predicate);
+        return _pluginService.ExecuteAsync(pullRequests, predicate);
     }
 }

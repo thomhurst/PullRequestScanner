@@ -11,58 +11,58 @@ internal class PullRequestService : IPullRequestService
 {
     private const string PullRequestsCacheKey = "PullRequests";
 
-    private readonly IEnumerable<IPullRequestProvider> pullRequestProviders;
-    private readonly IServiceProvider serviceProvider;
-    private readonly IMemoryCache memoryCache;
-    private readonly SemaphoreSlim @lock = new(1, 1);
+    private readonly IEnumerable<IPullRequestProvider> _pullRequestProviders;
+    private readonly IServiceProvider _serviceProvider;
+    private readonly IMemoryCache _memoryCache;
+    private readonly SemaphoreSlim _lock = new(1, 1);
 
     public PullRequestService(
         IEnumerable<IPullRequestProvider> pullRequestProviders,
         IServiceProvider serviceProvider,
         IMemoryCache memoryCache)
     {
-        this.pullRequestProviders = pullRequestProviders;
-        this.serviceProvider = serviceProvider;
-        this.memoryCache = memoryCache;
+        this._pullRequestProviders = pullRequestProviders;
+        this._serviceProvider = serviceProvider;
+        this._memoryCache = memoryCache;
     }
 
     public async Task<IReadOnlyList<PullRequest>> GetPullRequests()
     {
-        if (!pullRequestProviders.Any())
+        if (!_pullRequestProviders.Any())
         {
             throw new NoPullRequestProvidersRegisteredException();
         }
 
-        await @lock.WaitAsync();
+        await _lock.WaitAsync();
 
         try
         {
             await Initialize();
 
-            if (memoryCache.TryGetValue(PullRequestsCacheKey, out ImmutableList<PullRequest> prs))
+            if (_memoryCache.TryGetValue(PullRequestsCacheKey, out ImmutableList<PullRequest> prs))
             {
                 return prs;
             }
 
-            var pullRequests = await Task.WhenAll(pullRequestProviders.Select(x => x.GetPullRequests()));
+            var pullRequests = await Task.WhenAll(_pullRequestProviders.Select(x => x.GetPullRequests()));
 
             var pullRequestsImmutableList = pullRequests
                 .SelectMany(x => x)
                 .Where(x => x.Labels?.Contains(Constants.PullRequestScannerIgnoreTag, StringComparer.CurrentCultureIgnoreCase) != true)
                 .ToImmutableList();
 
-            memoryCache.Set(PullRequestsCacheKey, pullRequestsImmutableList, TimeSpan.FromMinutes(5));
+            _memoryCache.Set(PullRequestsCacheKey, pullRequestsImmutableList, TimeSpan.FromMinutes(5));
 
             return pullRequestsImmutableList;
         }
         finally
         {
-            @lock.Release();
+            _lock.Release();
         }
     }
 
     private async Task Initialize()
     {
-        await serviceProvider.InitializeAsync();
+        await _serviceProvider.InitializeAsync();
     }
 }

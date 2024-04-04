@@ -9,19 +9,19 @@ using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Options;
 
 public class PullRequestStatusMicrosoftTeamsWebHookPublisher : MicrosoftTeamsWebHookPublisherBase, IPullRequestPlugin
 {
-    private readonly IPullRequestStatusCardMapper pullRequestStatusCardMapper;
-    private readonly MicrosoftTeamsStatusPublishOptions options;
+    private readonly IPullRequestStatusCardMapper _pullRequestStatusCardMapper;
+    private readonly MicrosoftTeamsStatusPublishOptions _options;
 
     internal PullRequestStatusMicrosoftTeamsWebHookPublisher(MicrosoftTeamsWebhookClient microsoftTeamsWebhookClient, IPullRequestStatusCardMapper pullRequestStatusCardMapper, MicrosoftTeamsStatusPublishOptions options)
         : base(microsoftTeamsWebhookClient)
     {
-        this.pullRequestStatusCardMapper = pullRequestStatusCardMapper;
-        this.options = options;
+        this._pullRequestStatusCardMapper = pullRequestStatusCardMapper;
+        this._options = options;
     }
 
     public override async Task ExecuteAsync(IReadOnlyList<PullRequest> pullRequests)
     {
-        foreach (var pullRequestStatus in options.StatusesToPublish)
+        foreach (var pullRequestStatus in _options.StatusesToPublish)
         {
             await ExecuteAsync(pullRequests, pullRequestStatus);
         }
@@ -29,6 +29,6 @@ public class PullRequestStatusMicrosoftTeamsWebHookPublisher : MicrosoftTeamsWeb
 
     public Task ExecuteAsync(IReadOnlyList<PullRequest> pullRequests, PullRequestStatus pullRequestStatus)
     {
-        return Publish(() => pullRequestStatusCardMapper.Map(pullRequests, pullRequestStatus));
+        return Publish(() => _pullRequestStatusCardMapper.Map(pullRequests, pullRequestStatus));
     }
 }

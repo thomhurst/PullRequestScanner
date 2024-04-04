@@ -8,18 +8,18 @@ using TomLonghurst.PullRequestScanner.Models;
 
 internal class GithubTeamMembersProvider : ITeamMembersProvider
 {
-    private readonly IGitHubClient gitHubClient;
-    private readonly GithubOptions githubOptions;
+    private readonly IGitHubClient _gitHubClient;
+    private readonly GithubOptions _githubOptions;
 
     public GithubTeamMembersProvider(IGitHubClient gitHubClient, GithubOptions githubOptions)
     {
-        this.gitHubClient = gitHubClient;
-        this.githubOptions = githubOptions;
+        this._gitHubClient = gitHubClient;
+        this._githubOptions = githubOptions;
     }
 
     private async Task<GithubTeam> GetUser(GithubUserOptions githubUserOptions)
     {
-        var user = await gitHubClient.User.Get(githubUserOptions.Username);
+        var user = await _gitHubClient.User.Get(githubUserOptions.Username);
 
         return new GithubTeam
         {
@@ -42,11 +42,11 @@ internal class GithubTeamMembersProvider : ITeamMembersProvider
 
     private async Task<GithubTeam> GetOrganisationTeam(GithubOrganizationTeamOptions githubOrganizationTeamOptions)
     {
-        var team = await gitHubClient.Organization.Team.GetByName(
+        var team = await _gitHubClient.Organization.Team.GetByName(
             githubOrganizationTeamOptions.OrganizationSlug,
             githubOrganizationTeamOptions.TeamSlug);
 
-        var members = await gitHubClient
+        var members = await _gitHubClient
             .Organization
             .Team
             .GetAllMembers(team.Id);
@@ -71,18 +71,18 @@ internal class GithubTeamMembersProvider : ITeamMembersProvider
 
     public async Task<IEnumerable<ITeamMember>> GetTeamMembers()
     {
-        if (!githubOptions.IsEnabled)
+        if (!_githubOptions.IsEnabled)
         {
             return Array.Empty<ITeamMember>();
         }
 
-        if (githubOptions is GithubOrganizationTeamOptions githubOrganizationTeamOptions)
+        if (_githubOptions is GithubOrganizationTeamOptions githubOrganizationTeamOptions)
         {
             var team = await GetOrganisationTeam(githubOrganizationTeamOptions);
             return team.Members;
         }
 
-        if (githubOptions is GithubUserOptions githubUserOptions)
+        if (_githubOptions is GithubUserOptions githubUserOptions)
         {
             var team = await GetUser(githubUserOptions);
             return team.Members;

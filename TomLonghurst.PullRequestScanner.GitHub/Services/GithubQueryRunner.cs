@@ -6,11 +6,11 @@ using Polly;
 
 internal class GithubQueryRunner : IGithubQueryRunner
 {
-    private readonly IGithubGraphQlClientProvider githubGraphQlClientProvider;
+    private readonly IGithubGraphQlClientProvider _githubGraphQlClientProvider;
 
     public GithubQueryRunner(IGithubGraphQlClientProvider githubGraphQlClientProvider)
     {
-        this.githubGraphQlClientProvider = githubGraphQlClientProvider;
+        this._githubGraphQlClientProvider = githubGraphQlClientProvider;
     }
 
     public async Task<T> RunQuery<T>(ICompiledQuery<T> query)
@@ -18,7 +18,7 @@ internal class GithubQueryRunner : IGithubQueryRunner
         return await Policy.Handle<HttpRequestException>(ShouldHandleException)
             .Or<OperationCanceledException>()
             .WaitAndRetryAsync(5, i => TimeSpan.FromSeconds(i * 2))
-            .ExecuteAsync(() => githubGraphQlClientProvider.GithubGraphQlClient.Run(query));
+            .ExecuteAsync(() => _githubGraphQlClientProvider.GithubGraphQlClient.Run(query));
     }
 
     private bool ShouldHandleException(HttpRequestException httpRequestException)

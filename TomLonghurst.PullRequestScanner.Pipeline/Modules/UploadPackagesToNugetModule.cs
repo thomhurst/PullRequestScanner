@@ -14,11 +14,11 @@ using TomLonghurst.PullRequestScanner.Pipeline.Settings;
 [DependsOn<PackagePathsParserModule>]
 public class UploadPackagesToNugetModule : Module<CommandResult[]>
 {
-    private readonly IOptions<NuGetSettings> options;
+    private readonly IOptions<NuGetSettings> _options;
 
     public UploadPackagesToNugetModule(IOptions<NuGetSettings> options)
     {
-        this.options = options;
+        this._options = options;
     }
 
     protected override async Task<SkipDecision> ShouldSkip(IPipelineContext context)
@@ -38,7 +38,7 @@ public class UploadPackagesToNugetModule : Module<CommandResult[]>
 
     protected override async Task<CommandResult[]?> ExecuteAsync(IPipelineContext context, CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(options.Value.ApiKey);
+        ArgumentNullException.ThrowIfNull(_options.Value.ApiKey);
 
         var packagePaths = await GetModule<PackagePathsParserModule>();
 
@@ -49,7 +49,7 @@ public class UploadPackagesToNugetModule : Module<CommandResult[]>
                 {
                     Path = nugetFile,
                     Source = "https://api.nuget.org/v3/index.json",
-                    ApiKey = options.Value.ApiKey!,
+                    ApiKey = _options.Value.ApiKey!,
                 }, cancellationToken), cancellationToken: cancellationToken)
             .ProcessOneAtATime();
     }
