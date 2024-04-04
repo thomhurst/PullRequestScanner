@@ -1,9 +1,13 @@
+// <copyright file="PullRequestScannerBuilder.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
+namespace TomLonghurst.PullRequestScanner.Extensions;
+
 using Initialization.Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using TomLonghurst.PullRequestScanner.Contracts;
 using TomLonghurst.PullRequestScanner.Services;
-
-namespace TomLonghurst.PullRequestScanner.Extensions;
 
 public class PullRequestScannerBuilder
 {
@@ -11,42 +15,44 @@ public class PullRequestScannerBuilder
 
     internal PullRequestScannerBuilder(IServiceCollection services)
     {
-        Services = services;
+        this.Services = services;
 
-        Services
+        this.Services
             .AddTransient<IPullRequestService, PullRequestService>()
             .AddTransient<IPluginService, PluginService>()
             .AddSingleton<ITeamMembersService, TeamMembersService>()
             .AddTransient<IPullRequestScanner, Services.PullRequestScanner>();
 
-        Services.AddLogging();
+        this.Services.AddLogging();
 
-        Services.AddInitializers();
+        this.Services.AddInitializers();
 
-        Services.AddMemoryCache();
+        this.Services.AddMemoryCache();
     }
 
     public PullRequestScannerBuilder AddPullRequestProvider(Func<IServiceProvider, IPullRequestProvider> pullRequestProviderFactory)
     {
-        Services.AddTransient(pullRequestProviderFactory);
+        this.Services.AddTransient(pullRequestProviderFactory);
         return this;
     }
 
-    public PullRequestScannerBuilder AddPullRequestProvider<TPullRequestProvider>() where TPullRequestProvider : class, IPullRequestProvider
+    public PullRequestScannerBuilder AddPullRequestProvider<TPullRequestProvider>()
+        where TPullRequestProvider : class, IPullRequestProvider
     {
-        Services.AddTransient<IPullRequestProvider, TPullRequestProvider>();
+        this.Services.AddTransient<IPullRequestProvider, TPullRequestProvider>();
         return this;
     }
 
     public PullRequestScannerBuilder AddPlugin(Func<IServiceProvider, IPullRequestPlugin> pullRequestPluginFactory)
     {
-        Services.AddTransient(pullRequestPluginFactory);
+        this.Services.AddTransient(pullRequestPluginFactory);
         return this;
     }
 
-    public PullRequestScannerBuilder AddPlugin<TPullRequestPlugin>() where TPullRequestPlugin : class, IPullRequestPlugin
+    public PullRequestScannerBuilder AddPlugin<TPullRequestPlugin>()
+        where TPullRequestPlugin : class, IPullRequestPlugin
     {
-        Services.AddTransient<IPullRequestPlugin, TPullRequestPlugin>();
+        this.Services.AddTransient<IPullRequestPlugin, TPullRequestPlugin>();
         return this;
     }
 }

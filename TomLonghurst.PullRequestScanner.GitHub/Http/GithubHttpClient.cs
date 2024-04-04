@@ -1,20 +1,25 @@
+// <copyright file="GithubHttpClient.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
+namespace TomLonghurst.PullRequestScanner.GitHub.Http;
+
 using System.Net.Http.Json;
 using Microsoft.Extensions.Logging;
 using Polly;
 using Polly.Extensions.Http;
 
-namespace TomLonghurst.PullRequestScanner.GitHub.Http;
-
 internal class GithubHttpClient
 {
-    private readonly HttpClient _client;
-    private readonly ILogger<GithubHttpClient> _logger;
+    private readonly HttpClient client;
+    private readonly ILogger<GithubHttpClient> logger;
 
-    public GithubHttpClient(HttpClient httpClient,
+    public GithubHttpClient(
+        HttpClient httpClient,
         ILogger<GithubHttpClient> logger)
     {
-        _client = httpClient;
-        _logger = logger;
+        this.client = httpClient;
+        this.logger = logger;
     }
 
     public async Task<T?> Get<T>(string path)
@@ -22,11 +27,11 @@ internal class GithubHttpClient
         var response = await
             HttpPolicyExtensions.HandleTransientHttpError()
                 .WaitAndRetryAsync(5, i => TimeSpan.FromSeconds(i * 2))
-                .ExecuteAsync(() => _client.GetAsync(path));
+                .ExecuteAsync(() => this.client.GetAsync(path));
 
         if (!response.IsSuccessStatusCode)
         {
-            _logger.LogError("Error calling {Path}: {Response}", path, await response.Content.ReadAsStringAsync());
+            this.logger.LogError("Error calling {Path}: {Response}", path, await response.Content.ReadAsStringAsync());
         }
 
         return await response.EnsureSuccessStatusCode().Content.ReadFromJsonAsync<T>();

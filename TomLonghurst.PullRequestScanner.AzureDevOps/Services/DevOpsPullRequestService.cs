@@ -1,14 +1,18 @@
+// <copyright file="DevOpsPullRequestService.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
+namespace TomLonghurst.PullRequestScanner.AzureDevOps.Services;
+
 using Microsoft.TeamFoundation.SourceControl.WebApi;
 using Microsoft.VisualStudio.Services.WebApi;
 using TomLonghurst.PullRequestScanner.AzureDevOps.Models;
 using TomLonghurst.PullRequestScanner.AzureDevOps.Options;
 
-namespace TomLonghurst.PullRequestScanner.AzureDevOps.Services;
-
 internal class AzureDevOpsPullRequestService(VssConnection vssConnection, AzureDevOpsOptions azureDevOpsOptions) : IAzureDevOpsPullRequestService
 {
-    private readonly VssConnection _vssConnection = vssConnection;
-    private readonly AzureDevOpsOptions _azureDevOpsOptions = azureDevOpsOptions;
+    private readonly VssConnection vssConnection = vssConnection;
+    private readonly AzureDevOpsOptions azureDevOpsOptions = azureDevOpsOptions;
 
     public async Task<IReadOnlyList<AzureDevOpsPullRequestContext>> GetPullRequestsForRepository(
         GitRepository repository)
@@ -18,8 +22,8 @@ internal class AzureDevOpsPullRequestService(VssConnection vssConnection, AzureD
         var iteration = 0;
         do
         {
-            var pullRequestsThisIteration = await _vssConnection.GetClient<GitHttpClient>().GetPullRequestsAsync(
-                project: _azureDevOpsOptions.ProjectGuid,
+            var pullRequestsThisIteration = await this.vssConnection.GetClient<GitHttpClient>().GetPullRequestsAsync(
+                project: this.azureDevOpsOptions.ProjectGuid,
                 repositoryId: repository.Id,
                 top: 100,
                 skip: 100 * iteration,
@@ -28,24 +32,24 @@ internal class AzureDevOpsPullRequestService(VssConnection vssConnection, AzureD
             pullRequests.AddRange(pullRequestsThisIteration);
 
             iteration++;
-        } while (pullRequests.Count == 100 * iteration);
+        }
+        while (pullRequests.Count == 100 * iteration);
 
-
-        var nonDraftedPullRequests = pullRequests.Where(IsActiveOrRecentlyClosed);
+        var nonDraftedPullRequests = pullRequests.Where(this.IsActiveOrRecentlyClosed);
 
         var pullRequestsWithThreads = new List<AzureDevOpsPullRequestContext>();
 
         foreach (var pullRequest in nonDraftedPullRequests)
         {
-            var threads = await GetThreads(pullRequest);
+            var threads = await this.GetThreads(pullRequest);
 
-            var iterations = await GetStatuses(pullRequest);
+            var iterations = await this.GetStatuses(pullRequest);
 
             pullRequestsWithThreads.Add(new AzureDevOpsPullRequestContext
             {
                 AzureDevOpsPullRequest = pullRequest,
                 PullRequestThreads = threads,
-                Iterations = iterations
+                Iterations = iterations,
             });
         }
 
@@ -69,20 +73,18 @@ internal class AzureDevOpsPullRequestService(VssConnection vssConnection, AzureD
 
     private async Task<List<GitPullRequestCommentThread>> GetThreads(GitPullRequest pullRequest)
     {
-        return await _vssConnection.GetClient<GitHttpClient>().GetThreadsAsync(
-            project: _azureDevOpsOptions.ProjectGuid,
+        return await this.vssConnection.GetClient<GitHttpClient>().GetThreadsAsync(
+            project: this.azureDevOpsOptions.ProjectGuid,
             repositoryId: pullRequest.Repository.Id,
-            pullRequestId: pullRequest.PullRequestId
-        );
+            pullRequestId: pullRequest.PullRequestId);
     }
 
     private async Task<List<GitPullRequestStatus>> GetStatuses(GitPullRequest pullRequest)
     {
-        return await _vssConnection.GetClient<GitHttpClient>().GetPullRequestStatusesAsync(
+        return await this.vssConnection.GetClient<GitHttpClient>().GetPullRequestStatusesAsync(
 
-            project: _azureDevOpsOptions.ProjectGuid,
+            project: this.azureDevOpsOptions.ProjectGuid,
             repositoryId: pullRequest.Repository.Id,
-            pullRequestId: pullRequest.PullRequestId
-        );
+            pullRequestId: pullRequest.PullRequestId);
     }
 }

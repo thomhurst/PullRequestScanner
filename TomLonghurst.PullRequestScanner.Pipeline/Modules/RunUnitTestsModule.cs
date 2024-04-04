@@ -1,13 +1,17 @@
+// <copyright file="RunUnitTestsModule.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
+namespace TomLonghurst.PullRequestScanner.Pipeline.Modules;
+
 using ModularPipelines.Context;
 using ModularPipelines.DotNet;
 using ModularPipelines.DotNet.Extensions;
 using ModularPipelines.DotNet.Options;
-using ModularPipelines.Git.Extensions;
 using ModularPipelines.Enums;
+using ModularPipelines.Git.Extensions;
 using ModularPipelines.Models;
 using ModularPipelines.Modules;
-
-namespace TomLonghurst.PullRequestScanner.Pipeline.Modules;
 
 public class RunUnitTestsModule : Module<List<CommandResult>>
 {
@@ -20,7 +24,8 @@ public class RunUnitTestsModule : Module<List<CommandResult>>
                      .GetFiles(file => file.Path.EndsWith(".csproj", StringComparison.OrdinalIgnoreCase)
                                        && file.Path.Contains("UnitTests", StringComparison.OrdinalIgnoreCase)))
         {
-            results.Add(await context.DotNet().Test(new DotNetTestOptions
+            results.Add(await context.DotNet().Test(
+                new DotNetTestOptions
             {
                 ProjectSolutionDirectoryDllExe = unitTestProjectFile.Path,
                 CommandLogging = CommandLogging.Input | CommandLogging.Error,

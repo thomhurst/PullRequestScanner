@@ -1,4 +1,6 @@
-// See https://aka.ms/new-console-template for more information
+// <copyright file="Program.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -19,20 +21,21 @@ var host = Host.CreateDefaultBuilder(args)
         services.AddPullRequestScanner()
             .AddGithub(new GithubOrganizationTeamOptions
             {
-                OrganizationSlug = "",
-                PersonalAccessToken = "",
-                RepositoriesToScan = repository => true
+                OrganizationSlug = string.Empty,
+                PersonalAccessToken = string.Empty,
+                RepositoriesToScan = repository => true,
             })
             .AddAzureDevOps(new AzureDevOpsOptions
             {
-                Organization = "",
-                ProjectName = "",
-                PersonalAccessToken = "",
-                RepositoriesToScan = repository => true
+                Organization = string.Empty,
+                ProjectName = string.Empty,
+                PersonalAccessToken = string.Empty,
+                RepositoriesToScan = repository => true,
             })
-            .AddMicrosoftTeamsWebHookPublisher(new MicrosoftTeamsOptions
+            .AddMicrosoftTeamsWebHookPublisher(
+                new MicrosoftTeamsOptions
             {
-                WebHookUri = new Uri("")
+                WebHookUri = new Uri(string.Empty),
             },
                 microsoftTeamsWebHookPublisherBuilder =>
                 {
@@ -47,7 +50,7 @@ var host = Host.CreateDefaultBuilder(args)
                             PullRequestStatus.FailingChecks,
                             PullRequestStatus.NeedsReviewing,
                             PullRequestStatus.Rejected
-                        }
+                        },
                     });
                 });
     })
@@ -55,7 +58,6 @@ var host = Host.CreateDefaultBuilder(args)
 
 var pullRequestScanner = host.Services.GetRequiredService<IPullRequestScanner>();
 await pullRequestScanner.ExecutePluginsAsync();
-
 
 // More Granular Control
 var pullRequests = await pullRequestScanner.GetPullRequests();

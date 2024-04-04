@@ -1,20 +1,24 @@
+// <copyright file="DevOpsGitRepositoryService.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
+namespace TomLonghurst.PullRequestScanner.AzureDevOps.Services;
+
 using Microsoft.TeamFoundation.SourceControl.WebApi;
 using Microsoft.VisualStudio.Services.WebApi;
 using TomLonghurst.PullRequestScanner.AzureDevOps.Options;
 
-namespace TomLonghurst.PullRequestScanner.AzureDevOps.Services;
-
 internal class AzureDevOpsGitRepositoryService(VssConnection vssConnection, AzureDevOpsOptions azureDevOpsOptions) : IAzureDevOpsGitRepositoryService
 {
-    private readonly VssConnection _vssConnection = vssConnection;
-    private readonly AzureDevOpsOptions _azureDevOpsOptions = azureDevOpsOptions;
+    private readonly VssConnection vssConnection = vssConnection;
+    private readonly AzureDevOpsOptions azureDevOpsOptions = azureDevOpsOptions;
 
     public async Task<List<GitRepository>> GetGitRepositories()
     {
-        var repositories = await _vssConnection.GetClient<GitHttpClient>().GetRepositoriesAsync(_azureDevOpsOptions.ProjectGuid);
+        var repositories = await this.vssConnection.GetClient<GitHttpClient>().GetRepositoriesAsync(this.azureDevOpsOptions.ProjectGuid);
 
         return repositories.Where(x => x.IsDisabled != true)
-            .Where(x => _azureDevOpsOptions.RepositoriesToScan.Invoke(x))
+            .Where(x => this.azureDevOpsOptions.RepositoriesToScan.Invoke(x))
             .ToList();
     }
 }

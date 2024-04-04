@@ -1,44 +1,48 @@
+// <copyright file="TeamMembersService.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
+namespace TomLonghurst.PullRequestScanner.Services;
+
 using Initialization.Microsoft.Extensions.DependencyInjection;
 using TomLonghurst.PullRequestScanner.Contracts;
 using TomLonghurst.PullRequestScanner.Models;
 
-namespace TomLonghurst.PullRequestScanner.Services;
-
 internal class TeamMembersService : ITeamMembersService, IInitializer
 {
-    private readonly IEnumerable<ITeamMembersProvider> _teamMembersProviders;
+    private readonly IEnumerable<ITeamMembersProvider> teamMembersProviders;
 
-    private readonly List<TeamMember> _teamMembers = new();
-    private bool _isInitialized;
+    private readonly List<TeamMember> teamMembers = new();
+    private bool isInitialized;
 
     public TeamMembersService(IEnumerable<ITeamMembersProvider> teamMembersProviders)
     {
-        _teamMembersProviders = teamMembersProviders;
+        this.teamMembersProviders = teamMembersProviders;
     }
 
     public async Task InitializeAsync()
     {
-        if (_isInitialized)
+        if (this.isInitialized)
         {
             return;
         }
 
-        var teamMembersEnumerable = await Task.WhenAll(_teamMembersProviders.Select(x => x.GetTeamMembers()));
+        var teamMembersEnumerable = await Task.WhenAll(this.teamMembersProviders.Select(x => x.GetTeamMembers()));
         var teamMembers = teamMembersEnumerable.SelectMany(x => x).ToList();
 
         foreach (var teamMember in teamMembers)
         {
-            var foundUser = FindTeamMember(teamMember);
+            var foundUser = this.FindTeamMember(teamMember);
 
             if (foundUser == null)
             {
-                _teamMembers.Add(new TeamMember
+                this.teamMembers.Add(new TeamMember
                 {
                     Email = teamMember.Email,
                     Ids = { teamMember.Id },
                     UniqueNames = { teamMember.UniqueName },
                     DisplayName = teamMember.DisplayName,
-                    ImageUrls = { teamMember.ImageUrl }
+                    ImageUrls = { teamMember.ImageUrl },
                 });
             }
             else
@@ -47,22 +51,22 @@ internal class TeamMembersService : ITeamMembersService, IInitializer
             }
         }
 
-        _isInitialized = true;
+        this.isInitialized = true;
     }
 
     public TeamMember? FindTeamMember(string uniqueName, string id)
     {
-        return _teamMembers.FirstOrDefault(x => x.UniqueNames.Contains(uniqueName, StringComparer.InvariantCultureIgnoreCase))
-        ?? _teamMembers.FirstOrDefault(x => x.Ids.Contains(id, StringComparer.InvariantCultureIgnoreCase));
+        return this.teamMembers.FirstOrDefault(x => x.UniqueNames.Contains(uniqueName, StringComparer.InvariantCultureIgnoreCase))
+        ?? this.teamMembers.FirstOrDefault(x => x.Ids.Contains(id, StringComparer.InvariantCultureIgnoreCase));
     }
 
     private TeamMember? FindTeamMember(ITeamMember teamMember)
     {
         return
-            _teamMembers.FirstOrDefault(tm => NotEmptyAndEquals(tm.Email, teamMember.Email))
-            ?? _teamMembers.FirstOrDefault(tm => NotEmptyAndInList(tm.Ids, teamMember.Id))
-            ?? _teamMembers.FirstOrDefault(tm => NotEmptyAndInList(tm.UniqueNames, teamMember.UniqueName))
-            ?? _teamMembers.FirstOrDefault(tm => NotEmptyAndEquals(tm.DisplayName, teamMember.DisplayName));
+            this.teamMembers.FirstOrDefault(tm => NotEmptyAndEquals(tm.Email, teamMember.Email))
+            ?? this.teamMembers.FirstOrDefault(tm => NotEmptyAndInList(tm.Ids, teamMember.Id))
+            ?? this.teamMembers.FirstOrDefault(tm => NotEmptyAndInList(tm.UniqueNames, teamMember.UniqueName))
+            ?? this.teamMembers.FirstOrDefault(tm => NotEmptyAndEquals(tm.DisplayName, teamMember.DisplayName));
 
         bool NotEmptyAndEquals(string value1, string value2)
         {

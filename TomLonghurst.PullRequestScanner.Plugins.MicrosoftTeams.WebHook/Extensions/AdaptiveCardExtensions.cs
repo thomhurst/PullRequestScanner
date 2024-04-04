@@ -1,7 +1,11 @@
-using TomLonghurst.PullRequestScanner.Models;
-using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Models;
+// <copyright file="AdaptiveCardExtensions.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
 
 namespace TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Extensions;
+
+using TomLonghurst.PullRequestScanner.Models;
+using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Models;
 
 internal static class AdaptiveCardExtensions
 {
@@ -12,8 +16,7 @@ internal static class AdaptiveCardExtensions
             .Select(x => new AdaptiveCardMentionedEntity(
                 Type: "mention",
                 Text: x.ToAtMarkupTag(),
-                Mentioned: new Mentioned(Id: x.Email!, Name: x.DisplayOrUniqueName)
-            ))
+                Mentioned: new Mentioned(Id: x.Email!, Name: x.DisplayOrUniqueName)))
             .ToArray();
     }
 

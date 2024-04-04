@@ -1,14 +1,18 @@
-using TomLonghurst.PullRequestScanner.GitHub.Http;
+// <copyright file="BaseGitHubApiService.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
 
 namespace TomLonghurst.PullRequestScanner.GitHub.Services;
 
+using TomLonghurst.PullRequestScanner.GitHub.Http;
+
 internal abstract class BaseGitHubApiService
 {
-    private readonly GithubHttpClient _githubHttpClient;
+    private readonly GithubHttpClient githubHttpClient;
 
     protected BaseGitHubApiService(GithubHttpClient githubHttpClient)
     {
-        _githubHttpClient = githubHttpClient;
+        this.githubHttpClient = githubHttpClient;
     }
 
     protected async Task<List<T>> Get<T>(string path)
@@ -19,7 +23,7 @@ internal abstract class BaseGitHubApiService
         var list = new List<T>();
         do
         {
-            var arrayResponse = await _githubHttpClient.Get<List<T>>($"{path}?per_page=100&page={iteration}");
+            var arrayResponse = await this.githubHttpClient.Get<List<T>>($"{path}?per_page=100&page={iteration}");
 
             if (arrayResponse?.Count is null or 0)
             {
@@ -29,7 +33,8 @@ internal abstract class BaseGitHubApiService
             arrayCount = arrayResponse.Count;
             iteration++;
             list.AddRange(arrayResponse);
-        } while (arrayCount >= 100);
+        }
+        while (arrayCount >= 100);
 
         return list;
     }

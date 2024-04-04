@@ -1,6 +1,10 @@
-using System.Text.Json.Serialization;
+// <copyright file="GithubRepository.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
 
 namespace TomLonghurst.PullRequestScanner.GitHub.Models;
+
+using System.Text.Json.Serialization;
 
 public record GithubRepository(
         [property: JsonPropertyName("id")] int Id,
@@ -21,6 +25,4 @@ public record GithubRepository(
         [property: JsonPropertyName("visibility")] string Visibility,
         [property: JsonPropertyName("pushed_at")] DateTime PushedAt,
         [property: JsonPropertyName("created_at")] DateTime CreatedAt,
-        [property: JsonPropertyName("updated_at")] DateTime UpdatedAt
-);
-
+        [property: JsonPropertyName("updated_at")] DateTime UpdatedAt);

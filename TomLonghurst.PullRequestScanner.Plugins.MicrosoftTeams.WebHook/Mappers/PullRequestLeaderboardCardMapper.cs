@@ -1,11 +1,15 @@
+// <copyright file="PullRequestLeaderboardCardMapper.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
+namespace TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Mappers;
+
 using System.Collections.Concurrent;
 using AdaptiveCards;
 using TomLonghurst.PullRequestScanner.Extensions;
 using TomLonghurst.PullRequestScanner.Models;
 using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Extensions;
 using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Models;
-
-namespace TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Mappers;
 
 internal class PullRequestLeaderboardCardMapper : IPullRequestLeaderboardCardMapper
 {
@@ -26,7 +30,7 @@ internal class PullRequestLeaderboardCardMapper : IPullRequestLeaderboardCardMap
         {
             MsTeams = new MicrosoftTeamsProperties
             {
-                Width = "full"
+                Width = "full",
             },
             Body = new List<AdaptiveElement>
             {
@@ -87,7 +91,7 @@ internal class PullRequestLeaderboardCardMapper : IPullRequestLeaderboardCardMap
                         }
                     }
                 }
-            }
+            },
         };
 
         var personsCommentsAndReviews = new ConcurrentDictionary<TeamMember, PullRequestReviewLeaderboardModel>();
@@ -109,6 +113,7 @@ internal class PullRequestLeaderboardCardMapper : IPullRequestLeaderboardCardMap
                 }
             });
         }
+
         foreach (var personsCommentsAndReview in personsCommentsAndReviews
                      .Where(x => x.Value.CommentsCount != 0 || x.Value.ReviewedCount != 0)
                      .OrderByDescending(x => x.Value.CommentsCount)
@@ -131,8 +136,7 @@ internal class PullRequestLeaderboardCardMapper : IPullRequestLeaderboardCardMap
                                     Url =
                                         new Uri(
                                             personsCommentsAndReview.Key.ImageUrls.FirstOrDefault()
-                                            ?? "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
-                                        )
+                                            ?? "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png")
                                 }
                             },
                             Width = "50px"
@@ -167,7 +171,7 @@ internal class PullRequestLeaderboardCardMapper : IPullRequestLeaderboardCardMap
                                 }
                             }
                         }
-                    }
+                    },
                 });
         }
 

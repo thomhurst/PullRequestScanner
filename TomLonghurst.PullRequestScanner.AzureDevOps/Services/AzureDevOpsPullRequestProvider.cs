@@ -1,48 +1,54 @@
-﻿using System.Collections.Immutable;
+﻿// <copyright file="AzureDevOpsPullRequestProvider.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
+namespace TomLonghurst.PullRequestScanner.AzureDevOps.Services;
+
+using System.Collections.Immutable;
 using EnumerableAsyncProcessor.Extensions;
 using TomLonghurst.PullRequestScanner.AzureDevOps.Mappers;
 using TomLonghurst.PullRequestScanner.AzureDevOps.Options;
 using TomLonghurst.PullRequestScanner.Contracts;
 using TomLonghurst.PullRequestScanner.Models;
 
-namespace TomLonghurst.PullRequestScanner.AzureDevOps.Services;
-
 internal class AzureDevOpsPullRequestProvider : IPullRequestProvider
 {
-    private readonly AzureDevOpsOptions _azureDevOpsOptions;
-    private readonly IAzureDevOpsGitRepositoryService _devOpsGitRepositoryService;
-    private readonly IAzureDevOpsPullRequestService _devOpsPullRequestService;
-    private readonly IAzureDevOpsMapper _devOpsMapper;
+    private readonly AzureDevOpsOptions azureDevOpsOptions;
+    private readonly IAzureDevOpsGitRepositoryService devOpsGitRepositoryService;
+    private readonly IAzureDevOpsPullRequestService devOpsPullRequestService;
+    private readonly IAzureDevOpsMapper devOpsMapper;
 
-    public AzureDevOpsPullRequestProvider(AzureDevOpsOptions azureDevOpsOptions,
+    public AzureDevOpsPullRequestProvider(
+        AzureDevOpsOptions azureDevOpsOptions,
         IAzureDevOpsGitRepositoryService azureDevOpsGitRepositoryService,
         IAzureDevOpsPullRequestService azureDevOpsPullRequestService,
         IAzureDevOpsMapper azureDevOpsMapper)
     {
-        _azureDevOpsOptions = azureDevOpsOptions;
-        _devOpsGitRepositoryService = azureDevOpsGitRepositoryService;
-        _devOpsPullRequestService = azureDevOpsPullRequestService;
-        _devOpsMapper = azureDevOpsMapper;
+        this.azureDevOpsOptions = azureDevOpsOptions;
+        this.devOpsGitRepositoryService = azureDevOpsGitRepositoryService;
+        this.devOpsPullRequestService = azureDevOpsPullRequestService;
+        this.devOpsMapper = azureDevOpsMapper;
 
-        ValidateOptions();
+        this.ValidateOptions();
     }
+
     public async Task<IReadOnlyList<PullRequest>> GetPullRequests()
     {
-        if (_azureDevOpsOptions?.IsEnabled != true)
+        if (this.azureDevOpsOptions?.IsEnabled != true)
         {
             return [];
         }
 
-        var repositories = await _devOpsGitRepositoryService.GetGitRepositories();
+        var repositories = await this.devOpsGitRepositoryService.GetGitRepositories();
 
         var pullRequestsEnumerable = await repositories.ToAsyncProcessorBuilder()
-            .SelectAsync(repo => _devOpsPullRequestService.GetPullRequestsForRepository(repo))
+            .SelectAsync(repo => this.devOpsPullRequestService.GetPullRequestsForRepository(repo))
             .ProcessInParallel(50, TimeSpan.FromSeconds(1));
 
         var azureDevOpsPullRequestContexts = pullRequestsEnumerable.SelectMany(x => x).ToImmutableList();
 
         var mappedPullRequests = azureDevOpsPullRequestContexts
-            .Select(pr => _devOpsMapper.ToPullRequestModel(pr))
+            .Select(pr => this.devOpsMapper.ToPullRequestModel(pr))
             .ToImmutableList();
 
         return mappedPullRequests;
@@ -50,19 +56,19 @@ internal class AzureDevOpsPullRequestProvider : IPullRequestProvider
 
     private void ValidateOptions()
     {
-        if (_azureDevOpsOptions.IsEnabled != true)
+        if (this.azureDevOpsOptions.IsEnabled != true)
         {
             return;
         }
 
-        ValidatePopulated(_azureDevOpsOptions.Organization, nameof(_azureDevOpsOptions.Organization));
+        ValidatePopulated(this.azureDevOpsOptions.Organization, nameof(this.azureDevOpsOptions.Organization));
 
-        if (_azureDevOpsOptions.ProjectGuid == default)
+        if (this.azureDevOpsOptions.ProjectGuid == default)
         {
-            ValidatePopulated(_azureDevOpsOptions.ProjectName, nameof(_azureDevOpsOptions.ProjectName));
+            ValidatePopulated(this.azureDevOpsOptions.ProjectName, nameof(this.azureDevOpsOptions.ProjectName));
         }
 
-        ValidatePopulated(_azureDevOpsOptions.PersonalAccessToken, nameof(_azureDevOpsOptions.PersonalAccessToken));
+        ValidatePopulated(this.azureDevOpsOptions.PersonalAccessToken, nameof(this.azureDevOpsOptions.PersonalAccessToken));
 
         static void ValidatePopulated(string value, string propertyName)
         {

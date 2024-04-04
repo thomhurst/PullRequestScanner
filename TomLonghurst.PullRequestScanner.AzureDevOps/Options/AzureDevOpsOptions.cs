@@ -1,24 +1,28 @@
-using Microsoft.TeamFoundation.SourceControl.WebApi;
+// <copyright file="AzureDevOpsOptions.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
 
 namespace TomLonghurst.PullRequestScanner.AzureDevOps.Options;
+
+using Microsoft.TeamFoundation.SourceControl.WebApi;
 
 public class AzureDevOpsOptions
 {
     public bool IsEnabled { get; set; } = true;
     /**
-     * <summary>The organization name</summary>
+     * <summary>Gets or sets the organization name.</summary>
      */
     public string Organization { get; set; }
     /**
-     * <summary>The project name</summary>
+     * <summary>Gets or sets the project name.</summary>
      */
     public string ProjectName { get; set; }
     /**
-     * <summary>The project GUID</summary>
+     * <summary>Gets or sets the project GUID.</summary>
      */
     public Guid ProjectGuid { get; set; }
     /**
-     * <summary>An Azure DevOps Personal Access Token</summary>
+     * <summary>Gets or sets an Azure DevOps Personal Access Token.</summary>
      */
     public string PersonalAccessToken { get; set; }
 

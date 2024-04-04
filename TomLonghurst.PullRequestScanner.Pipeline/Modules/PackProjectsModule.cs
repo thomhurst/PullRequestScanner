@@ -1,3 +1,9 @@
+// <copyright file="PackProjectsModule.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
+namespace TomLonghurst.PullRequestScanner.Pipeline.Modules;
+
 using Microsoft.Extensions.Logging;
 using ModularPipelines.Attributes;
 using ModularPipelines.Context;
@@ -8,8 +14,6 @@ using ModularPipelines.Models;
 using ModularPipelines.Modules;
 using File = ModularPipelines.FileSystem.File;
 
-namespace TomLonghurst.PullRequestScanner.Pipeline.Modules;
-
 [DependsOn<PackageFilesRemovalModule>]
 [DependsOn<NugetVersionGeneratorModule>]
 [DependsOn<RunUnitTestsModule>]
@@ -18,11 +22,12 @@ public class PackProjectsModule : Module<List<CommandResult>>
     protected override async Task<List<CommandResult>?> ExecuteAsync(IPipelineContext context, CancellationToken cancellationToken)
     {
         var results = new List<CommandResult>();
-        var packageVersion = await GetModule<NugetVersionGeneratorModule>();
+        var packageVersion = await this.GetModule<NugetVersionGeneratorModule>();
         var projectFiles = context.Git().RootDirectory!.GetFiles(f => GetProjectsPredicate(f, context));
         foreach (var projectFile in projectFiles)
         {
-            results.Add(await context.DotNet().Pack(new DotNetPackOptions
+            results.Add(await context.DotNet().Pack(
+                new DotNetPackOptions
             {
                 ProjectSolution = projectFile.Path,
                 Configuration = Configuration.Release,

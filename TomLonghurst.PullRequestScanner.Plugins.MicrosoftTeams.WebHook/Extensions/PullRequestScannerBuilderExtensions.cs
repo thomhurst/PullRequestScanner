@@ -1,3 +1,9 @@
+// <copyright file="PullRequestScannerBuilderExtensions.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
+namespace TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Extensions;
+
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using TomLonghurst.PullRequestScanner.Extensions;
@@ -5,8 +11,6 @@ using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Http;
 using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Mappers;
 using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Options;
 using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Services;
-
-namespace TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Extensions;
 
 public static class PullRequestScannerBuilderExtensions
 {
@@ -33,8 +37,7 @@ public static class PullRequestScannerBuilderExtensions
         pullRequestScannerBuilder.Services.AddSingleton(microsoftTeamsOptions);
 
         microsoftTeamsWebHookPublisherBuilder(
-            new MicrosoftTeamsWebHookPublisherBuilder(pullRequestScannerBuilder)
-        );
+            new MicrosoftTeamsWebHookPublisherBuilder(pullRequestScannerBuilder));
 
         return pullRequestScannerBuilder;
     }
@@ -46,8 +49,7 @@ public static class PullRequestScannerBuilderExtensions
         pullRequestScannerBuilder.Services.AddSingleton(microsoftTeamsOptionsFactory);
 
         microsoftTeamsWebHookPublisherBuilder(
-            new MicrosoftTeamsWebHookPublisherBuilder(pullRequestScannerBuilder)
-        );
+            new MicrosoftTeamsWebHookPublisherBuilder(pullRequestScannerBuilder));
 
         return pullRequestScannerBuilder;
     }

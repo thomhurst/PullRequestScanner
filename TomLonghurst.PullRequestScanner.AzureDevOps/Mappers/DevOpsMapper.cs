@@ -1,3 +1,9 @@
+// <copyright file="DevOpsMapper.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
+namespace TomLonghurst.PullRequestScanner.AzureDevOps.Mappers;
+
 using Microsoft.TeamFoundation.SourceControl.WebApi;
 using TomLonghurst.PullRequestScanner.AzureDevOps.Models;
 using TomLonghurst.PullRequestScanner.Models;
@@ -8,11 +14,9 @@ using PullRequestStatus = TomLonghurst.PullRequestScanner.Enums.PullRequestStatu
 using Repository = TomLonghurst.PullRequestScanner.Models.Repository;
 using TeamFoundation = Microsoft.TeamFoundation;
 
-namespace TomLonghurst.PullRequestScanner.AzureDevOps.Mappers;
-
 internal class AzureDevOpsMapper(ITeamMembersService teamMembersService) : IAzureDevOpsMapper
 {
-    private readonly ITeamMembersService _teamMembersService = teamMembersService;
+    private readonly ITeamMembersService teamMembersService = teamMembersService;
 
     public PullRequest ToPullRequestModel(AzureDevOpsPullRequestContext pullRequestContext)
     {
@@ -29,19 +33,19 @@ internal class AzureDevOpsMapper(ITeamMembersService teamMembersService) : IAzur
             IsDraft = pullRequest.IsDraft ?? false,
             IsActive = pullRequest.Status == TeamFoundation.SourceControl.WebApi.PullRequestStatus.Active,
             PullRequestStatus = GetStatus(pullRequestContext),
-            Author = GetPerson(pullRequest.CreatedBy.UniqueName, pullRequest.CreatedBy.DisplayName, pullRequest.CreatedBy.Id),
+            Author = this.GetPerson(pullRequest.CreatedBy.UniqueName, pullRequest.CreatedBy.DisplayName, pullRequest.CreatedBy.Id),
             Approvers = pullRequest.Reviewers
                 .Where(x => x.Vote != 0)
                 .Where(x => x.UniqueName != pullRequest.CreatedBy.UniqueName)
                 .Where(x => !x.UniqueName.StartsWith(Constants.VstfsUniqueNamePrefix))
                 .Where(x => x.DisplayName != Constants.VstsDisplayName)
-                .Select(r => GetApprover(r, pullRequestContext.PullRequestThreads))
+                .Select(r => this.GetApprover(r, pullRequestContext.PullRequestThreads))
                 .ToList(),
             CommentThreads = pullRequestContext.PullRequestThreads
-                .Select(GetCommentThread)
+                .Select(this.GetCommentThread)
                 .ToList(),
             Platform = "AzureDevOps",
-            Labels = pullRequest.Labels?.Where(x => x.Active != false).Select(x => x.Name).ToList() ?? []
+            Labels = pullRequest.Labels?.Where(x => x.Active != false).Select(x => x.Name).ToList() ?? [],
         };
 
         foreach (var thread in pullRequestModel.CommentThreads)
@@ -70,8 +74,8 @@ internal class AzureDevOpsMapper(ITeamMembersService teamMembersService) : IAzur
                 .Comments
                 .Where(x => !x.Author.UniqueName.StartsWith(Constants.VstfsUniqueNamePrefix))
                 .Where(x => x.Author.DisplayName != Constants.VstsDisplayName)
-                .Select(GetComment)
-                .ToList()
+                .Select(this.GetComment)
+                .ToList(),
         };
     }
 
@@ -80,20 +84,20 @@ internal class AzureDevOpsMapper(ITeamMembersService teamMembersService) : IAzur
         return new Comment
         {
             LastUpdated = azureDevOpsComment.LastUpdatedDate,
-            Author = GetPerson(azureDevOpsComment.Author.UniqueName, azureDevOpsComment.Author.DisplayName, azureDevOpsComment.Author.Id)
+            Author = this.GetPerson(azureDevOpsComment.Author.UniqueName, azureDevOpsComment.Author.DisplayName, azureDevOpsComment.Author.Id),
         };
     }
 
     private TeamMember GetPerson(string uniqueName, string displayName, string id)
     {
-        var foundTeamMember = _teamMembersService.FindTeamMember(uniqueName, id);
+        var foundTeamMember = this.teamMembersService.FindTeamMember(uniqueName, id);
 
         if (foundTeamMember == null)
         {
             return new TeamMember
             {
                 UniqueNames = { uniqueName },
-                DisplayName = displayName
+                DisplayName = displayName,
             };
         }
 
@@ -112,16 +116,15 @@ internal class AzureDevOpsMapper(ITeamMembersService teamMembersService) : IAzur
 
     private Approver GetApprover(IdentityRefWithVote reviewer, List<GitPullRequestCommentThread> azureDevOpsPullRequestThreads)
     {
-
         return new Approver
         {
             Vote = GetVote(reviewer.Vote),
             IsRequired = reviewer.IsRequired,
-            TeamMember = GetPerson(reviewer.UniqueName, reviewer.DisplayName, reviewer.Id),
+            TeamMember = this.GetPerson(reviewer.UniqueName, reviewer.DisplayName, reviewer.Id),
             Time = azureDevOpsPullRequestThreads
                 .Where(x => x.Properties.GetValue("codeReviewThreadType", string.Empty) == "VoteUpdate")
                 .LastOrDefault(x => x.Comments?.SingleOrDefault(c => c.Author.UniqueName == reviewer.UniqueName) != null)
-                ?.LastUpdatedDate
+                ?.LastUpdatedDate,
         };
     }
 
@@ -205,13 +208,13 @@ internal class AzureDevOpsMapper(ITeamMembersService teamMembersService) : IAzur
         return PullRequestStatus.NeedsReviewing;
     }
 
-    private Repository GetRepository(GitRepository azureDevOpsRepository)
+    private static Repository GetRepository(GitRepository azureDevOpsRepository)
     {
         return new Repository
         {
             Name = azureDevOpsRepository.Name,
             Id = azureDevOpsRepository.Id.ToString(),
-            Url = GetRepositoryUiUrl(azureDevOpsRepository.Url)
+            Url = GetRepositoryUiUrl(azureDevOpsRepository.Url),
         };
     }
 

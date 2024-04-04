@@ -1,3 +1,9 @@
+// <copyright file="PullRequestScannerBuilderExtensions.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
+namespace TomLonghurst.PullRequestScanner.GitHub.Extensions;
+
 using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
@@ -13,18 +19,18 @@ using TomLonghurst.PullRequestScanner.GitHub.Services;
 using TomLonghurst.PullRequestScanner.Services;
 using ProductHeaderValue = Octokit.ProductHeaderValue;
 
-namespace TomLonghurst.PullRequestScanner.GitHub.Extensions;
-
 public static class PullRequestScannerBuilderExtensions
 {
-    public static PullRequestScannerBuilder AddGithub(this PullRequestScannerBuilder pullRequestScannerBuilder,
+    public static PullRequestScannerBuilder AddGithub(
+        this PullRequestScannerBuilder pullRequestScannerBuilder,
         GithubOptions githubOptions)
     {
         pullRequestScannerBuilder.Services.AddSingleton(githubOptions);
         return AddGithub(pullRequestScannerBuilder);
     }
 
-    public static PullRequestScannerBuilder AddGithub(this PullRequestScannerBuilder pullRequestScannerBuilder,
+    public static PullRequestScannerBuilder AddGithub(
+        this PullRequestScannerBuilder pullRequestScannerBuilder,
         Func<IServiceProvider, GithubOptions> githubOptionsFactory)
     {
         pullRequestScannerBuilder.Services.AddSingleton(githubOptionsFactory);
@@ -39,7 +45,8 @@ public static class PullRequestScannerBuilderExtensions
                 var githubOptions = provider.GetRequiredService<GithubOptions>();
                 client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("TomLonghurst.PullRequestScanner", Assembly.GetAssembly(typeof(IPullRequestScanner)).GetName().Version.ToString()));
 
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+                    "Basic",
                     Convert.ToBase64String(Encoding.ASCII.GetBytes(githubOptions.PersonalAccessToken)));
                 client.BaseAddress = new Uri("https://api.github.com/");
             });

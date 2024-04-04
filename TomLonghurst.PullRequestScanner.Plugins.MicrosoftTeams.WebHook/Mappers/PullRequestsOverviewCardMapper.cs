@@ -1,3 +1,9 @@
+// <copyright file="PullRequestsOverviewCardMapper.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
+namespace TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Mappers;
+
 using System.Text;
 using AdaptiveCards;
 using Newtonsoft.Json;
@@ -8,8 +14,6 @@ using TomLonghurst.PullRequestScanner.Models;
 using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Extensions;
 using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Models;
 
-namespace TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Mappers;
-
 internal class PullRequestsOverviewCardMapper : IPullRequestsOverviewCardMapper
 {
     public IEnumerable<MicrosoftTeamsAdaptiveCard> Map(IReadOnlyList<PullRequest> pullRequests)
@@ -17,7 +21,7 @@ internal class PullRequestsOverviewCardMapper : IPullRequestsOverviewCardMapper
         return Map(pullRequests, 1);
     }
 
-    private IEnumerable<MicrosoftTeamsAdaptiveCard> Map(IReadOnlyList<PullRequest> pullRequests, int cardCount)
+    private static IEnumerable<MicrosoftTeamsAdaptiveCard> Map(IReadOnlyList<PullRequest> pullRequests, int cardCount)
     {
         var repos = pullRequests
             .Where(x => x.IsActive)
@@ -29,7 +33,7 @@ internal class PullRequestsOverviewCardMapper : IPullRequestsOverviewCardMapper
         {
             MsTeams = new MicrosoftTeamsProperties
             {
-                Width = "full"
+                Width = "full",
             },
             Body = new List<AdaptiveElement>
             {
@@ -39,7 +43,7 @@ internal class PullRequestsOverviewCardMapper : IPullRequestsOverviewCardMapper
                     Size = AdaptiveTextSize.Large,
                     Text = $"Pull Request Statuses {GetCardNumberString(cardCount)}"
                 },
-            }
+            },
         };
 
         var mentionedUsers = new List<TeamMember>();
@@ -109,7 +113,7 @@ internal class PullRequestsOverviewCardMapper : IPullRequestsOverviewCardMapper
                             }
                         }
                     }
-                }
+                },
             };
 
             teamsNotificationCard.Body.Add(adaptiveContainer);
@@ -170,7 +174,7 @@ internal class PullRequestsOverviewCardMapper : IPullRequestsOverviewCardMapper
                             },
                             Width = "50px"
                         }
-                    }
+                    },
                 });
 
                 teamsNotificationCard.MsTeams.Entitities = mentionedUsers.ToAdaptiveCardMentionEntities();

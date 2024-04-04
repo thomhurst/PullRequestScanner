@@ -1,3 +1,9 @@
+// <copyright file="PullRequestStatusCardMapper.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
+namespace TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Mappers;
+
 using System.Text;
 using AdaptiveCards;
 using Newtonsoft.Json;
@@ -6,8 +12,6 @@ using TomLonghurst.PullRequestScanner.Mappers;
 using TomLonghurst.PullRequestScanner.Models;
 using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Extensions;
 using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Models;
-
-namespace TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Mappers;
 
 internal class PullRequestStatusCardMapper : IPullRequestStatusCardMapper
 {
@@ -31,7 +35,7 @@ internal class PullRequestStatusCardMapper : IPullRequestStatusCardMapper
         {
             MsTeams = new MicrosoftTeamsProperties
             {
-                Width = "full"
+                Width = "full",
             },
             Body = new List<AdaptiveElement>
             {
@@ -41,7 +45,7 @@ internal class PullRequestStatusCardMapper : IPullRequestStatusCardMapper
                     Size = AdaptiveTextSize.ExtraLarge,
                     Text = pullRequestStatus.GetMessage()
                 }
-            }
+            },
         };
 
         var mentionedUsers = new List<TeamMember>();
@@ -88,7 +92,7 @@ internal class PullRequestStatusCardMapper : IPullRequestStatusCardMapper
                             }
                         }
                     }
-                }
+                },
             };
 
             teamsNotificationCard.Body.Add(adaptiveContainer);
@@ -125,7 +129,7 @@ internal class PullRequestStatusCardMapper : IPullRequestStatusCardMapper
                             },
                             Width = "auto"
                         }
-                    }
+                    },
                 });
 
                 var jsonString = JsonConvert.SerializeObject(teamsNotificationCard, Formatting.None);

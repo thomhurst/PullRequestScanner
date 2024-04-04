@@ -1,8 +1,12 @@
+// <copyright file="GithubGraphQlClientProvider.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
+namespace TomLonghurst.PullRequestScanner.GitHub.Services;
+
 using System.Reflection;
 using Octokit.GraphQL;
 using TomLonghurst.PullRequestScanner.GitHub.Options;
-
-namespace TomLonghurst.PullRequestScanner.GitHub.Services;
 
 internal class GithubGraphQlClientProvider : IGithubGraphQlClientProvider
 {
@@ -19,6 +23,6 @@ internal class GithubGraphQlClientProvider : IGithubGraphQlClientProvider
             accessToken = accessToken.Split(':').Last();
         }
 
-        GithubGraphQlClient = new Connection(new ProductHeaderValue("pr-scanner", version), accessToken);
+        this.GithubGraphQlClient = new Connection(new ProductHeaderValue("pr-scanner", version), accessToken);
     }
 }

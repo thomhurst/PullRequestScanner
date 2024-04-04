@@ -1,19 +1,22 @@
+// <copyright file="MicrosoftTeamsWebHookPublisherBase.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
+namespace TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Services;
+
 using TomLonghurst.PullRequestScanner.Contracts;
 using TomLonghurst.PullRequestScanner.Models;
 using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Http;
 using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Models;
 
-namespace TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Services;
-
 public abstract class MicrosoftTeamsWebHookPublisherBase : IPullRequestPlugin
 {
-    private readonly MicrosoftTeamsWebhookClient _microsoftTeamsWebhookClient;
+    private readonly MicrosoftTeamsWebhookClient microsoftTeamsWebhookClient;
 
     internal MicrosoftTeamsWebHookPublisherBase(
-        MicrosoftTeamsWebhookClient microsoftTeamsWebhookClient
-    )
+        MicrosoftTeamsWebhookClient microsoftTeamsWebhookClient)
     {
-        _microsoftTeamsWebhookClient = microsoftTeamsWebhookClient;
+        this.microsoftTeamsWebhookClient = microsoftTeamsWebhookClient;
     }
 
     internal async Task Publish(Func<IEnumerable<MicrosoftTeamsAdaptiveCard>> cardGenerator)
@@ -22,7 +25,7 @@ public abstract class MicrosoftTeamsWebHookPublisherBase : IPullRequestPlugin
 
         foreach (var microsoftTeamsAdaptiveCard in cards)
         {
-            await _microsoftTeamsWebhookClient.CreateTeamsNotification(microsoftTeamsAdaptiveCard);
+            await this.microsoftTeamsWebhookClient.CreateTeamsNotification(microsoftTeamsAdaptiveCard);
         }
     }
 

@@ -1,16 +1,20 @@
+// <copyright file="PackagePathsParserModule.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
+namespace TomLonghurst.PullRequestScanner.Pipeline.Modules;
+
 using ModularPipelines.Attributes;
 using ModularPipelines.Context;
 using ModularPipelines.Modules;
 using File = ModularPipelines.FileSystem.File;
-
-namespace TomLonghurst.PullRequestScanner.Pipeline.Modules;
 
 [DependsOn<PackProjectsModule>]
 public class PackagePathsParserModule : Module<List<File>>
 {
     protected override async Task<List<File>?> ExecuteAsync(IPipelineContext context, CancellationToken cancellationToken)
     {
-        var packPackagesModuleResult = await GetModule<PackProjectsModule>();
+        var packPackagesModuleResult = await this.GetModule<PackProjectsModule>();
 
         return packPackagesModuleResult.Value!
             .Select(x => x.StandardOutput)

@@ -1,30 +1,38 @@
+// <copyright file="TeamMember.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
 namespace TomLonghurst.PullRequestScanner.Models;
 
 public class TeamMember : IEquatable<TeamMember>
 {
     public string? DisplayName { get; set; }
+
     public List<string> UniqueNames { get; } = new();
+
     public string? Email { get; set; }
+
     public List<string> Ids { get; } = new();
+
     public List<string> ImageUrls { get; } = new();
 
     public string DisplayOrUniqueName
     {
         get
         {
-            if (!string.IsNullOrWhiteSpace(DisplayName))
+            if (!string.IsNullOrWhiteSpace(this.DisplayName))
             {
-                return DisplayName;
+                return this.DisplayName;
             }
 
-            var userName = UniqueNames.FirstOrDefault(u => !string.IsNullOrWhiteSpace(u));
+            var userName = this.UniqueNames.FirstOrDefault(u => !string.IsNullOrWhiteSpace(u));
 
             if (userName != null)
             {
                 return userName;
             }
 
-            return Email;
+            return this.Email;
         }
     }
 
@@ -32,26 +40,26 @@ public class TeamMember : IEquatable<TeamMember>
     {
         get
         {
-            var uniqueName = UniqueNames?.FirstOrDefault(x => !string.IsNullOrWhiteSpace(x));
+            var uniqueName = this.UniqueNames?.FirstOrDefault(x => !string.IsNullOrWhiteSpace(x));
 
             if (!string.IsNullOrWhiteSpace(uniqueName))
             {
                 return uniqueName;
             }
 
-            if (!string.IsNullOrWhiteSpace(Email))
+            if (!string.IsNullOrWhiteSpace(this.Email))
             {
-                return Email;
+                return this.Email;
             }
 
-            var id = Ids?.FirstOrDefault(x => !string.IsNullOrWhiteSpace(x));
+            var id = this.Ids?.FirstOrDefault(x => !string.IsNullOrWhiteSpace(x));
 
             if (!string.IsNullOrWhiteSpace(id))
             {
                 return id;
             }
 
-            return DisplayName;
+            return this.DisplayName;
         }
     }
 
@@ -62,16 +70,16 @@ public class TeamMember : IEquatable<TeamMember>
             return false;
         }
 
-        return UniqueIdentifier == other.UniqueIdentifier;
+        return this.UniqueIdentifier == other.UniqueIdentifier;
     }
 
     public override bool Equals(object? obj)
     {
-        return Equals(obj as TeamMember);
+        return this.Equals(obj as TeamMember);
     }
 
     public override int GetHashCode()
     {
-        return UniqueIdentifier.GetHashCode();
+        return this.UniqueIdentifier.GetHashCode();
     }
 }

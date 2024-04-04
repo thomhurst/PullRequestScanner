@@ -1,3 +1,9 @@
+// <copyright file="GithubMapper.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
+namespace TomLonghurst.PullRequestScanner.GitHub.Mappers;
+
 using Octokit;
 using Octokit.GraphQL.Model;
 using TomLonghurst.PullRequestScanner.Enums;
@@ -8,15 +14,13 @@ using MergeableState = Octokit.MergeableState;
 using PullRequest = TomLonghurst.PullRequestScanner.Models.PullRequest;
 using Repository = TomLonghurst.PullRequestScanner.Models.Repository;
 
-namespace TomLonghurst.PullRequestScanner.GitHub.Mappers;
-
 internal class GithubMapper : IGithubMapper
 {
-    private readonly ITeamMembersService _teamMembersService;
+    private readonly ITeamMembersService teamMembersService;
 
     public GithubMapper(ITeamMembersService teamMembersService)
     {
-        _teamMembersService = teamMembersService;
+        this.teamMembersService = teamMembersService;
     }
 
     public PullRequest ToPullRequestModel(GithubPullRequest githubPullRequest)
@@ -33,16 +37,16 @@ internal class GithubMapper : IGithubMapper
             IsDraft = githubPullRequest.IsDraft,
             IsActive = GetIsActive(githubPullRequest),
             PullRequestStatus = GetStatus(githubPullRequest),
-            Author = GetPerson(githubPullRequest.Author),
+            Author = this.GetPerson(githubPullRequest.Author),
             Approvers = githubPullRequest.Reviewers
                 .Where(x => x.Author != githubPullRequest.Author)
-                .Select(GetApprover)
+                .Select(this.GetApprover)
                 .ToList(),
             CommentThreads = githubPullRequest.Threads
-                .Select(GetCommentThreads)
+                .Select(this.GetCommentThreads)
                 .ToList(),
             Platform = "GitHub",
-            Labels = githubPullRequest.Labels
+            Labels = githubPullRequest.Labels,
         };
 
         foreach (var thread in pullRequestModel.CommentThreads)
@@ -74,13 +78,13 @@ internal class GithubMapper : IGithubMapper
 
     private TeamMember GetPerson(string author)
     {
-        var foundTeamMember = _teamMembersService.FindTeamMember(author, author);
+        var foundTeamMember = this.teamMembersService.FindTeamMember(author, author);
 
         if (foundTeamMember == null)
         {
             return new TeamMember
             {
-                UniqueNames = { author }
+                UniqueNames = { author },
             };
         }
 
@@ -91,9 +95,8 @@ internal class GithubMapper : IGithubMapper
     {
         return new CommentThread
         {
-
             Status = GetThreadStatus(githubThread),
-            Comments = githubThread.Comments.Select(GetComment).ToList()
+            Comments = githubThread.Comments.Select(this.GetComment).ToList(),
         };
     }
 
@@ -102,7 +105,7 @@ internal class GithubMapper : IGithubMapper
         return new Comment
         {
             LastUpdated = githubComment.LastUpdated,
-            Author = GetPerson(githubComment.Author)
+            Author = this.GetPerson(githubComment.Author),
         };
     }
 
@@ -122,8 +125,8 @@ internal class GithubMapper : IGithubMapper
         {
             Vote = GetVote(reviewer.State),
             IsRequired = false,
-            TeamMember = GetPerson(reviewer.Author),
-            Time = reviewer.LastUpdated
+            TeamMember = this.GetPerson(reviewer.Author),
+            Time = reviewer.LastUpdated,
         };
     }
 
@@ -183,7 +186,7 @@ internal class GithubMapper : IGithubMapper
         {
             Name = pullRequest.RepositoryName,
             Id = pullRequest.RepositoryId,
-            Url = pullRequest.RepositoryUrl
+            Url = pullRequest.RepositoryUrl,
         };
     }
 }

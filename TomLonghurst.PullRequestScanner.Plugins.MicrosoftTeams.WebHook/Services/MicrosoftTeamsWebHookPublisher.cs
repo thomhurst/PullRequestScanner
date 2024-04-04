@@ -1,3 +1,9 @@
+// <copyright file="MicrosoftTeamsWebHookPublisher.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
+namespace TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Services;
+
 using TomLonghurst.PullRequestScanner.Enums;
 using TomLonghurst.PullRequestScanner.Models;
 using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Http;
@@ -5,67 +11,64 @@ using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Mappers;
 using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Models;
 using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Options;
 
-namespace TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Services;
-
 internal class MicrosoftTeamsWebHookPublisher : IMicrosoftTeamsWebHookPublisher
 {
-    private readonly IPullRequestsOverviewCardMapper _pullRequestsOverviewCardMapper;
-    private readonly IPullRequestStatusCardMapper _pullRequestStatusCardMapper;
-    private readonly IPullRequestLeaderboardCardMapper _pullRequestLeaderboardCardMapper;
-    private readonly MicrosoftTeamsOptions _microsoftTeamsOptions;
-    private readonly MicrosoftTeamsWebhookClient _microsoftTeamsWebhookClient;
+    private readonly IPullRequestsOverviewCardMapper pullRequestsOverviewCardMapper;
+    private readonly IPullRequestStatusCardMapper pullRequestStatusCardMapper;
+    private readonly IPullRequestLeaderboardCardMapper pullRequestLeaderboardCardMapper;
+    private readonly MicrosoftTeamsOptions microsoftTeamsOptions;
+    private readonly MicrosoftTeamsWebhookClient microsoftTeamsWebhookClient;
 
     public MicrosoftTeamsWebHookPublisher(
         MicrosoftTeamsOptions microsoftTeamsOptions,
         MicrosoftTeamsWebhookClient microsoftTeamsWebhookClient,
         IPullRequestsOverviewCardMapper pullRequestsOverviewCardMapper,
         IPullRequestStatusCardMapper pullRequestStatusCardMapper,
-        IPullRequestLeaderboardCardMapper pullRequestLeaderboardCardMapper
-    )
+        IPullRequestLeaderboardCardMapper pullRequestLeaderboardCardMapper)
     {
-        _microsoftTeamsOptions = microsoftTeamsOptions;
-        _microsoftTeamsWebhookClient = microsoftTeamsWebhookClient;
-        _pullRequestsOverviewCardMapper = pullRequestsOverviewCardMapper;
-        _pullRequestStatusCardMapper = pullRequestStatusCardMapper;
-        _pullRequestLeaderboardCardMapper = pullRequestLeaderboardCardMapper;
+        this.microsoftTeamsOptions = microsoftTeamsOptions;
+        this.microsoftTeamsWebhookClient = microsoftTeamsWebhookClient;
+        this.pullRequestsOverviewCardMapper = pullRequestsOverviewCardMapper;
+        this.pullRequestStatusCardMapper = pullRequestStatusCardMapper;
+        this.pullRequestLeaderboardCardMapper = pullRequestLeaderboardCardMapper;
     }
 
     public Task ExecuteAsync(IReadOnlyList<PullRequest> pullRequests)
     {
-        return ExecuteAsync(pullRequests, _microsoftTeamsOptions.PublishOptions);
+        return this.ExecuteAsync(pullRequests, this.microsoftTeamsOptions.PublishOptions);
     }
 
     public async Task ExecuteAsync(IReadOnlyList<PullRequest> pullRequests, MicrosoftTeamsPublishOptions microsoftTeamsPublishOptions)
     {
         if (microsoftTeamsPublishOptions.PublishPullRequestOverviewCard)
         {
-            await PublishPullRequestsOverview(pullRequests);
+            await this.PublishPullRequestsOverview(pullRequests);
         }
 
         foreach (var pullRequestStatus in microsoftTeamsPublishOptions.CardStatusesToPublish?.ToArray() ?? Array.Empty<PullRequestStatus>())
         {
-            await PublishStatusCard(pullRequests, pullRequestStatus);
+            await this.PublishStatusCard(pullRequests, pullRequestStatus);
         }
 
         if (microsoftTeamsPublishOptions.PublishPullRequestReviewerLeaderboardCard)
         {
-            await PublishReviewerLeaderboard(pullRequests);
+            await this.PublishReviewerLeaderboard(pullRequests);
         }
     }
 
     public async Task PublishPullRequestsOverview(IReadOnlyList<PullRequest> pullRequests)
     {
-        await Publish(() => _pullRequestsOverviewCardMapper.Map(pullRequests));
+        await this.Publish(() => this.pullRequestsOverviewCardMapper.Map(pullRequests));
     }
 
     public async Task PublishReviewerLeaderboard(IReadOnlyList<PullRequest> pullRequests)
     {
-        await Publish(() => _pullRequestLeaderboardCardMapper.Map(pullRequests));
+        await this.Publish(() => this.pullRequestLeaderboardCardMapper.Map(pullRequests));
     }
 
     public async Task PublishStatusCard(IReadOnlyList<PullRequest> pullRequests, PullRequestStatus pullRequestStatus)
     {
-        await Publish(() => _pullRequestStatusCardMapper.Map(pullRequests, pullRequestStatus));
+        await this.Publish(() => this.pullRequestStatusCardMapper.Map(pullRequests, pullRequestStatus));
     }
 
     private async Task Publish(Func<IEnumerable<MicrosoftTeamsAdaptiveCard>> cardGenerator)
@@ -74,7 +77,7 @@ internal class MicrosoftTeamsWebHookPublisher : IMicrosoftTeamsWebHookPublisher
 
         foreach (var microsoftTeamsAdaptiveCard in cards)
         {
-            await _microsoftTeamsWebhookClient.CreateTeamsNotification(microsoftTeamsAdaptiveCard);
+            await this.microsoftTeamsWebhookClient.CreateTeamsNotification(microsoftTeamsAdaptiveCard);
         }
     }
 }

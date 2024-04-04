@@ -1,25 +1,29 @@
+// <copyright file="GithubTeamMembersProvider.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
+namespace TomLonghurst.PullRequestScanner.GitHub.Services;
+
 using Octokit;
 using TomLonghurst.PullRequestScanner.Contracts;
 using TomLonghurst.PullRequestScanner.GitHub.Models;
 using TomLonghurst.PullRequestScanner.GitHub.Options;
 using TomLonghurst.PullRequestScanner.Models;
 
-namespace TomLonghurst.PullRequestScanner.GitHub.Services;
-
 internal class GithubTeamMembersProvider : ITeamMembersProvider
 {
-    private readonly IGitHubClient _gitHubClient;
-    private readonly GithubOptions _githubOptions;
+    private readonly IGitHubClient gitHubClient;
+    private readonly GithubOptions githubOptions;
 
     public GithubTeamMembersProvider(IGitHubClient gitHubClient, GithubOptions githubOptions)
     {
-        _gitHubClient = gitHubClient;
-        _githubOptions = githubOptions;
+        this.gitHubClient = gitHubClient;
+        this.githubOptions = githubOptions;
     }
 
     private async Task<GithubTeam> GetUser(GithubUserOptions githubUserOptions)
     {
-        var user = await _gitHubClient.User.Get(githubUserOptions.Username);
+        var user = await this.gitHubClient.User.Get(githubUserOptions.Username);
 
         return new GithubTeam
         {
@@ -34,18 +38,19 @@ internal class GithubTeamMembersProvider : ITeamMembersProvider
                     UniqueName = user.Login,
                     Email = user.Email,
                     ImageUrl = user.AvatarUrl
-                }
+                },
             },
-            Slug = user.Login
+            Slug = user.Login,
         };
     }
 
     private async Task<GithubTeam> GetOrganisationTeam(GithubOrganizationTeamOptions githubOrganizationTeamOptions)
     {
-        var team = await _gitHubClient.Organization.Team.GetByName(githubOrganizationTeamOptions.OrganizationSlug,
+        var team = await this.gitHubClient.Organization.Team.GetByName(
+            githubOrganizationTeamOptions.OrganizationSlug,
             githubOrganizationTeamOptions.TeamSlug);
 
-        var members = await _gitHubClient
+        var members = await this.gitHubClient
             .Organization
             .Team
             .GetAllMembers(team.Id);
@@ -64,26 +69,26 @@ internal class GithubTeamMembersProvider : ITeamMembersProvider
                         Id = m.Id.ToString(),
                         Email = m.Email,
                         ImageUrl = m.AvatarUrl
-                    }).ToList()
+                    }).ToList(),
         };
     }
 
     public async Task<IEnumerable<ITeamMember>> GetTeamMembers()
     {
-        if (!_githubOptions.IsEnabled)
+        if (!this.githubOptions.IsEnabled)
         {
             return Array.Empty<ITeamMember>();
         }
 
-        if (_githubOptions is GithubOrganizationTeamOptions githubOrganizationTeamOptions)
+        if (this.githubOptions is GithubOrganizationTeamOptions githubOrganizationTeamOptions)
         {
-            var team = await GetOrganisationTeam(githubOrganizationTeamOptions);
+            var team = await this.GetOrganisationTeam(githubOrganizationTeamOptions);
             return team.Members;
         }
 
-        if (_githubOptions is GithubUserOptions githubUserOptions)
+        if (this.githubOptions is GithubUserOptions githubUserOptions)
         {
-            var team = await GetUser(githubUserOptions);
+            var team = await this.GetUser(githubUserOptions);
             return team.Members;
         }
 

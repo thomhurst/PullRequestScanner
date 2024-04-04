@@ -1,26 +1,30 @@
+// <copyright file="AzureDevOpsInitializer.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
+namespace TomLonghurst.PullRequestScanner.AzureDevOps.Services;
+
 using Initialization.Microsoft.Extensions.DependencyInjection;
 using Microsoft.TeamFoundation.Core.WebApi;
 using Microsoft.VisualStudio.Services.WebApi;
 using TomLonghurst.PullRequestScanner.AzureDevOps.Options;
 
-namespace TomLonghurst.PullRequestScanner.AzureDevOps.Services;
-
 public class AzureDevOpsInitializer(AzureDevOpsOptions azureDevOpsOptions, VssConnection vssConnection) : IInitializer
 {
-    private readonly AzureDevOpsOptions _azureDevOpsOptions = azureDevOpsOptions;
-    private readonly VssConnection _vssConnection = vssConnection;
+    private readonly AzureDevOpsOptions azureDevOpsOptions = azureDevOpsOptions;
+    private readonly VssConnection vssConnection = vssConnection;
 
     public async Task InitializeAsync()
     {
-        if (_azureDevOpsOptions.ProjectGuid != default)
+        if (this.azureDevOpsOptions.ProjectGuid != default)
         {
             return;
         }
 
-        var projects = await GetProjects();
+        var projects = await this.GetProjects();
 
-        var foundProject = projects.SingleOrDefault(x => string.Equals(x.Name, _azureDevOpsOptions.ProjectName, StringComparison.OrdinalIgnoreCase)) ?? throw new ArgumentException($"Unique project with name '{_azureDevOpsOptions.ProjectName}' not found");
-        _azureDevOpsOptions.ProjectGuid = foundProject.Id;
+        var foundProject = projects.SingleOrDefault(x => string.Equals(x.Name, this.azureDevOpsOptions.ProjectName, StringComparison.OrdinalIgnoreCase)) ?? throw new ArgumentException($"Unique project with name '{this.azureDevOpsOptions.ProjectName}' not found");
+        this.azureDevOpsOptions.ProjectGuid = foundProject.Id;
     }
 
     private async Task<List<TeamProjectReference>> GetProjects()
@@ -30,12 +34,13 @@ public class AzureDevOpsInitializer(AzureDevOpsOptions azureDevOpsOptions, VssCo
         string continuationToken;
         do
         {
-            var projectsInIteration = await _vssConnection.GetClient<ProjectHttpClient>().GetProjects();
+            var projectsInIteration = await this.vssConnection.GetClient<ProjectHttpClient>().GetProjects();
 
             projects.AddRange(projectsInIteration);
 
             continuationToken = projectsInIteration.ContinuationToken;
-        } while (!string.IsNullOrEmpty(continuationToken));
+        }
+        while (!string.IsNullOrEmpty(continuationToken));
 
         return projects;
     }

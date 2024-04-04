@@ -1,3 +1,9 @@
+// <copyright file="PullRequestService.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
+namespace TomLonghurst.PullRequestScanner.Services;
+
 using System.Collections.Immutable;
 using Initialization.Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Caching.Memory;
@@ -5,63 +11,62 @@ using TomLonghurst.PullRequestScanner.Contracts;
 using TomLonghurst.PullRequestScanner.Exceptions;
 using TomLonghurst.PullRequestScanner.Models;
 
-namespace TomLonghurst.PullRequestScanner.Services;
-
 internal class PullRequestService : IPullRequestService
 {
     private const string PullRequestsCacheKey = "PullRequests";
 
-    private readonly IEnumerable<IPullRequestProvider> _pullRequestProviders;
-    private readonly IServiceProvider _serviceProvider;
-    private readonly IMemoryCache _memoryCache;
-    private readonly SemaphoreSlim _lock = new(1, 1);
+    private readonly IEnumerable<IPullRequestProvider> pullRequestProviders;
+    private readonly IServiceProvider serviceProvider;
+    private readonly IMemoryCache memoryCache;
+    private readonly SemaphoreSlim @lock = new(1, 1);
 
-    public PullRequestService(IEnumerable<IPullRequestProvider> pullRequestProviders,
+    public PullRequestService(
+        IEnumerable<IPullRequestProvider> pullRequestProviders,
         IServiceProvider serviceProvider,
         IMemoryCache memoryCache)
     {
-        _pullRequestProviders = pullRequestProviders;
-        _serviceProvider = serviceProvider;
-        _memoryCache = memoryCache;
+        this.pullRequestProviders = pullRequestProviders;
+        this.serviceProvider = serviceProvider;
+        this.memoryCache = memoryCache;
     }
 
     public async Task<IReadOnlyList<PullRequest>> GetPullRequests()
     {
-        if (!_pullRequestProviders.Any())
+        if (!this.pullRequestProviders.Any())
         {
             throw new NoPullRequestProvidersRegisteredException();
         }
 
-        await _lock.WaitAsync();
+        await this.@lock.WaitAsync();
 
         try
         {
-            await Initialize();
+            await this.Initialize();
 
-            if (_memoryCache.TryGetValue(PullRequestsCacheKey, out ImmutableList<PullRequest> prs))
+            if (this.memoryCache.TryGetValue(PullRequestsCacheKey, out ImmutableList<PullRequest> prs))
             {
                 return prs;
             }
 
-            var pullRequests = await Task.WhenAll(_pullRequestProviders.Select(x => x.GetPullRequests()));
+            var pullRequests = await Task.WhenAll(this.pullRequestProviders.Select(x => x.GetPullRequests()));
 
             var pullRequestsImmutableList = pullRequests
                 .SelectMany(x => x)
                 .Where(x => x.Labels?.Contains(Constants.PullRequestScannerIgnoreTag, StringComparer.CurrentCultureIgnoreCase) != true)
                 .ToImmutableList();
 
-            _memoryCache.Set(PullRequestsCacheKey, pullRequestsImmutableList, TimeSpan.FromMinutes(5));
+            this.memoryCache.Set(PullRequestsCacheKey, pullRequestsImmutableList, TimeSpan.FromMinutes(5));
 
             return pullRequestsImmutableList;
         }
         finally
         {
-            _lock.Release();
+            this.@lock.Release();
         }
     }
 
     private async Task Initialize()
     {
-        await _serviceProvider.InitializeAsync();
+        await this.serviceProvider.InitializeAsync();
     }
 }

@@ -1,3 +1,9 @@
+// <copyright file="MicrosoftTeamsWebhookClient.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
+namespace TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Http;
+
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -6,29 +12,27 @@ using Polly.Extensions.Http;
 using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Models;
 using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Options;
 
-namespace TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Http;
-
 internal class MicrosoftTeamsWebhookClient
 {
-    private readonly HttpClient _httpClient;
-    private readonly MicrosoftTeamsOptions _microsoftTeamsOptions;
-    private readonly ILogger<MicrosoftTeamsWebhookClient> _logger;
+    private readonly HttpClient httpClient;
+    private readonly MicrosoftTeamsOptions microsoftTeamsOptions;
+    private readonly ILogger<MicrosoftTeamsWebhookClient> logger;
 
     public MicrosoftTeamsWebhookClient(HttpClient httpClient, MicrosoftTeamsOptions microsoftTeamsOptions,
         ILogger<MicrosoftTeamsWebhookClient> logger)
     {
-        _httpClient = httpClient;
-        _microsoftTeamsOptions = microsoftTeamsOptions;
-        _logger = logger;
+        this.httpClient = httpClient;
+        this.microsoftTeamsOptions = microsoftTeamsOptions;
+        this.logger = logger;
     }
 
     public async Task CreateTeamsNotification(MicrosoftTeamsAdaptiveCard adaptiveCard)
     {
-        ArgumentNullException.ThrowIfNull(_microsoftTeamsOptions.WebHookUri);
+        ArgumentNullException.ThrowIfNull(this.microsoftTeamsOptions.WebHookUri);
 
         var adaptiveTeamsCardJsonString = JsonConvert.SerializeObject(TeamsNotificationCardWrapper.Wrap(adaptiveCard), Formatting.None);
 
-        _logger.LogTrace("Microsoft Teams Webhook Request Payload: {Payload}", adaptiveTeamsCardJsonString);
+        this.logger.LogTrace("Microsoft Teams Webhook Request Payload: {Payload}", adaptiveTeamsCardJsonString);
 
         try
         {
@@ -40,13 +44,13 @@ internal class MicrosoftTeamsWebhookClient
                     {
                         Method = HttpMethod.Post,
                         Content = new StringContent(adaptiveTeamsCardJsonString),
-                        RequestUri = _microsoftTeamsOptions.WebHookUri
+                        RequestUri = this.microsoftTeamsOptions.WebHookUri,
                     };
 
-                    return _httpClient.SendAsync(cardsRequest);
+                    return this.httpClient.SendAsync(cardsRequest);
                 });
 
-            _logger.LogTrace("Microsoft Teams Webhook Response: {Response}", await teamsNotificationResponse.Content.ReadAsStringAsync());
+            this.logger.LogTrace("Microsoft Teams Webhook Response: {Response}", await teamsNotificationResponse.Content.ReadAsStringAsync());
 
             teamsNotificationResponse.EnsureSuccessStatusCode();
         }

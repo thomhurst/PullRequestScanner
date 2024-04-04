@@ -1,6 +1,10 @@
-using System.Web;
+// <copyright file="UriExtensions.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
 
 namespace TomLonghurst.PullRequestScanner.Extensions;
+
+using System.Web;
 
 public static class UriExtensions
 {

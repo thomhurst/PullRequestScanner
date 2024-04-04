@@ -1,12 +1,15 @@
+// <copyright file="NugetVersionGeneratorModule.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
+#pragma warning disable CS0162
+
+namespace TomLonghurst.PullRequestScanner.Pipeline.Modules;
+
 using Microsoft.Extensions.Logging;
 using ModularPipelines.Context;
 using ModularPipelines.Git.Extensions;
 using ModularPipelines.Modules;
-
-// ReSharper disable HeuristicUnreachableCode
-#pragma warning disable CS0162
-
-namespace TomLonghurst.PullRequestScanner.Pipeline.Modules;
 
 public class NugetVersionGeneratorModule : Module<string>
 {

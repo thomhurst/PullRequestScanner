@@ -1,6 +1,10 @@
-using Newtonsoft.Json;
+// <copyright file="TeamsNotificationCardWrapper.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
 
 namespace TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Models;
+
+using Newtonsoft.Json;
 
 internal class TeamsNotificationCardWrapper
 {
@@ -22,7 +26,7 @@ internal class TeamsNotificationCardWrapper
                     ContentType = "application/vnd.microsoft.card.adaptive",
                     Content = adaptiveCard
                 }
-            }
+            },
         };
     }
 }

@@ -1,12 +1,16 @@
-using TomLonghurst.PullRequestScanner.GitHub.Models;
+// <copyright file="GithubOptions.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
 
 namespace TomLonghurst.PullRequestScanner.GitHub.Options;
+
+using TomLonghurst.PullRequestScanner.GitHub.Models;
 
 public abstract class GithubOptions
 {
     public bool IsEnabled { get; set; } = true;
     /**
-     * <summary>Personal Access Token, usually in the format of "{username}:{PAT}"</summary>
+     * <summary>Gets or sets personal Access Token, usually in the format of "{username}:{PAT}".</summary>
      */
     public string PersonalAccessToken { get; set; }
 

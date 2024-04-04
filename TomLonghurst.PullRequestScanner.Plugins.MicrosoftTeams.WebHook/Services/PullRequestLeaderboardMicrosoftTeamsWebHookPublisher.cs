@@ -1,21 +1,26 @@
+// <copyright file="PullRequestLeaderboardMicrosoftTeamsWebHookPublisher.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
+namespace TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Services;
+
 using TomLonghurst.PullRequestScanner.Contracts;
 using TomLonghurst.PullRequestScanner.Models;
 using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Http;
 using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Mappers;
 
-namespace TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Services;
-
 public class PullRequestLeaderboardMicrosoftTeamsWebHookPublisher : MicrosoftTeamsWebHookPublisherBase, IPullRequestPlugin
 {
-    private readonly IPullRequestLeaderboardCardMapper _pullRequestLeaderboardCardMapper;
+    private readonly IPullRequestLeaderboardCardMapper pullRequestLeaderboardCardMapper;
 
-    internal PullRequestLeaderboardMicrosoftTeamsWebHookPublisher(MicrosoftTeamsWebhookClient microsoftTeamsWebhookClient, IPullRequestLeaderboardCardMapper pullRequestLeaderboardCardMapper) : base(microsoftTeamsWebhookClient)
+    internal PullRequestLeaderboardMicrosoftTeamsWebHookPublisher(MicrosoftTeamsWebhookClient microsoftTeamsWebhookClient, IPullRequestLeaderboardCardMapper pullRequestLeaderboardCardMapper)
+        : base(microsoftTeamsWebhookClient)
     {
-        _pullRequestLeaderboardCardMapper = pullRequestLeaderboardCardMapper;
+        this.pullRequestLeaderboardCardMapper = pullRequestLeaderboardCardMapper;
     }
 
     public override Task ExecuteAsync(IReadOnlyList<PullRequest> pullRequests)
     {
-        return Publish(() => _pullRequestLeaderboardCardMapper.Map(pullRequests));
+        return this.Publish(() => this.pullRequestLeaderboardCardMapper.Map(pullRequests));
     }
 }
