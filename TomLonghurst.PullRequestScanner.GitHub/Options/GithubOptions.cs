@@ -1,6 +1,6 @@
 namespace TomLonghurst.PullRequestScanner.GitHub.Options;
 
-using Models;
+using TomLonghurst.PullRequestScanner.GitHub.Models;
 
 public abstract class GithubOptions
 {

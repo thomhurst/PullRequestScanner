@@ -1,6 +1,6 @@
 namespace TomLonghurst.PullRequestScanner.GitHub.Services;
 
-using Http;
+using TomLonghurst.PullRequestScanner.GitHub.Http;
 
 internal abstract class BaseGitHubApiService
 {

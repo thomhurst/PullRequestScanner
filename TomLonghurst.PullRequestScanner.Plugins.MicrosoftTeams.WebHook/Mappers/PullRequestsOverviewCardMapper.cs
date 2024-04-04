@@ -3,12 +3,12 @@ namespace TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Mappers
 using System.Text;
 using AdaptiveCards;
 using Newtonsoft.Json;
-using Enums;
+using TomLonghurst.PullRequestScanner.Enums;
 using TomLonghurst.PullRequestScanner.Extensions;
 using TomLonghurst.PullRequestScanner.Mappers;
 using TomLonghurst.PullRequestScanner.Models;
-using Extensions;
-using Models;
+using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Extensions;
+using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Models;
 
 internal class PullRequestsOverviewCardMapper : IPullRequestsOverviewCardMapper
 {

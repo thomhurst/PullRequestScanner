@@ -1,11 +1,11 @@
 namespace TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Services;
 
-using Contracts;
-using Enums;
+using TomLonghurst.PullRequestScanner.Contracts;
+using TomLonghurst.PullRequestScanner.Enums;
 using TomLonghurst.PullRequestScanner.Models;
-using Http;
-using Mappers;
-using Options;
+using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Http;
+using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Mappers;
+using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Options;
 
 public class PullRequestStatusMicrosoftTeamsWebHookPublisher : MicrosoftTeamsWebHookPublisherBase, IPullRequestPlugin
 {

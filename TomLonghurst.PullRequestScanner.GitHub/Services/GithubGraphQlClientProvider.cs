@@ -2,7 +2,7 @@ namespace TomLonghurst.PullRequestScanner.GitHub.Services;
 
 using System.Reflection;
 using Octokit.GraphQL;
-using Options;
+using TomLonghurst.PullRequestScanner.GitHub.Options;
 
 internal class GithubGraphQlClientProvider : IGithubGraphQlClientProvider
 {

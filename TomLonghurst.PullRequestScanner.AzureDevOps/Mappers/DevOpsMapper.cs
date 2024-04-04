@@ -1,12 +1,12 @@
 namespace TomLonghurst.PullRequestScanner.AzureDevOps.Mappers;
 
 using Microsoft.TeamFoundation.SourceControl.WebApi;
-using Models;
+using TomLonghurst.PullRequestScanner.AzureDevOps.Models;
 using TomLonghurst.PullRequestScanner.Models;
 using TomLonghurst.PullRequestScanner.Services;
 using Comment = TomLonghurst.PullRequestScanner.Models.Comment;
 using CommentThread = TomLonghurst.PullRequestScanner.Models.CommentThread;
-using PullRequestStatus = Enums.PullRequestStatus;
+using PullRequestStatus = TomLonghurst.PullRequestScanner.Enums.PullRequestStatus;
 using Repository = TomLonghurst.PullRequestScanner.Models.Repository;
 using TeamFoundation = Microsoft.TeamFoundation;
 

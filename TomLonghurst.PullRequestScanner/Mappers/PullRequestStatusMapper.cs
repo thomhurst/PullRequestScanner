@@ -1,6 +1,6 @@
 namespace TomLonghurst.PullRequestScanner.Mappers;
 
-using Enums;
+using TomLonghurst.PullRequestScanner.Enums;
 
 public static class PullRequestStatusMapper
 {

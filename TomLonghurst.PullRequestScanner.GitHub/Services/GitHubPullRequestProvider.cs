@@ -2,9 +2,9 @@
 
 using System.Collections.Immutable;
 using EnumerableAsyncProcessor.Extensions;
-using Contracts;
-using Mappers;
-using Options;
+using TomLonghurst.PullRequestScanner.Contracts;
+using TomLonghurst.PullRequestScanner.GitHub.Mappers;
+using TomLonghurst.PullRequestScanner.GitHub.Options;
 using TomLonghurst.PullRequestScanner.Models;
 
 internal class GitHubPullRequestProvider : IPullRequestProvider

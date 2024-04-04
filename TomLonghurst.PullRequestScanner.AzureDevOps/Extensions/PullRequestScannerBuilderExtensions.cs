@@ -3,10 +3,10 @@ namespace TomLonghurst.PullRequestScanner.AzureDevOps.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.Services.Common;
 using Microsoft.VisualStudio.Services.WebApi;
-using Mappers;
-using Options;
-using Services;
-using Contracts;
+using TomLonghurst.PullRequestScanner.AzureDevOps.Mappers;
+using TomLonghurst.PullRequestScanner.AzureDevOps.Options;
+using TomLonghurst.PullRequestScanner.AzureDevOps.Services;
+using TomLonghurst.PullRequestScanner.Contracts;
 using TomLonghurst.PullRequestScanner.Extensions;
 
 public static class PullRequestScannerBuilderExtensions

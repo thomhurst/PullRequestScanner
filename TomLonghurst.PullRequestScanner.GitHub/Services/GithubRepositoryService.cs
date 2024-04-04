@@ -1,8 +1,8 @@
 namespace TomLonghurst.PullRequestScanner.GitHub.Services;
 
-using Http;
-using Models;
-using Options;
+using TomLonghurst.PullRequestScanner.GitHub.Http;
+using TomLonghurst.PullRequestScanner.GitHub.Models;
+using TomLonghurst.PullRequestScanner.GitHub.Options;
 
 internal class GithubRepositoryService : BaseGitHubApiService, IGithubRepositoryService
 {

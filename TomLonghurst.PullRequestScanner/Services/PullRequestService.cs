@@ -3,9 +3,9 @@ namespace TomLonghurst.PullRequestScanner.Services;
 using System.Collections.Immutable;
 using Initialization.Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Caching.Memory;
-using Contracts;
-using Exceptions;
-using Models;
+using TomLonghurst.PullRequestScanner.Contracts;
+using TomLonghurst.PullRequestScanner.Exceptions;
+using TomLonghurst.PullRequestScanner.Models;
 
 internal class PullRequestService : IPullRequestService
 {

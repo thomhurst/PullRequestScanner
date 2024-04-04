@@ -1,7 +1,7 @@
 namespace TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Extensions;
 
 using TomLonghurst.PullRequestScanner.Models;
-using Models;
+using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Models;
 
 internal static class AdaptiveCardExtensions
 {

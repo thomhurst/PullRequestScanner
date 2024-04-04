@@ -8,7 +8,7 @@ using ModularPipelines.DotNet.Extensions;
 using ModularPipelines.DotNet.Options;
 using ModularPipelines.Models;
 using ModularPipelines.Modules;
-using Settings;
+using TomLonghurst.PullRequestScanner.Pipeline.Settings;
 
 [DependsOn<RunUnitTestsModule>]
 [DependsOn<PackagePathsParserModule>]
@@ -46,11 +46,11 @@ public class UploadPackagesToNugetModule : Module<CommandResult[]>
             .SelectAsync(
                 async nugetFile => await context.DotNet().Nuget.Push(
                 new DotNetNugetPushOptions
-            {
-                Path = nugetFile,
-                Source = "https://api.nuget.org/v3/index.json",
-                ApiKey = options.Value.ApiKey!,
-            }, cancellationToken), cancellationToken: cancellationToken)
+                {
+                    Path = nugetFile,
+                    Source = "https://api.nuget.org/v3/index.json",
+                    ApiKey = options.Value.ApiKey!,
+                }, cancellationToken), cancellationToken: cancellationToken)
             .ProcessOneAtATime();
     }
 }

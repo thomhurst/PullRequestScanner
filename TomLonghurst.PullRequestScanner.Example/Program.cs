@@ -30,9 +30,9 @@ var host = Host.CreateDefaultBuilder(args)
             })
             .AddMicrosoftTeamsWebHookPublisher(
                 new MicrosoftTeamsOptions
-            {
-                WebHookUri = new Uri(string.Empty),
-            },
+                {
+                    WebHookUri = new Uri(string.Empty),
+                },
                 microsoftTeamsWebHookPublisherBuilder =>
                 {
                     microsoftTeamsWebHookPublisherBuilder.AddOverviewCardPublisher();

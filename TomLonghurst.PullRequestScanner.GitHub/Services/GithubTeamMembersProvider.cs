@@ -1,9 +1,9 @@
 namespace TomLonghurst.PullRequestScanner.GitHub.Services;
 
 using Octokit;
-using Contracts;
-using Models;
-using Options;
+using TomLonghurst.PullRequestScanner.Contracts;
+using TomLonghurst.PullRequestScanner.GitHub.Models;
+using TomLonghurst.PullRequestScanner.GitHub.Options;
 using TomLonghurst.PullRequestScanner.Models;
 
 internal class GithubTeamMembersProvider : ITeamMembersProvider

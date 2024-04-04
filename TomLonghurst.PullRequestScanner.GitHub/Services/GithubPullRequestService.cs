@@ -4,8 +4,8 @@ using EnumerableAsyncProcessor.Extensions;
 using Octokit;
 using Octokit.GraphQL;
 using Octokit.GraphQL.Model;
-using Http;
-using Models;
+using TomLonghurst.PullRequestScanner.GitHub.Http;
+using TomLonghurst.PullRequestScanner.GitHub.Models;
 using MergeableState = Octokit.MergeableState;
 using PullRequest = Octokit.PullRequest;
 

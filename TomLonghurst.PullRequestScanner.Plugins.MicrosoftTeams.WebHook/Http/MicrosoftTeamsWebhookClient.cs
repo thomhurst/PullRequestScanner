@@ -5,8 +5,8 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Polly;
 using Polly.Extensions.Http;
-using Models;
-using Options;
+using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Models;
+using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Options;
 
 internal class MicrosoftTeamsWebhookClient
 {

@@ -1,6 +1,6 @@
 namespace TomLonghurst.PullRequestScanner.Contracts;
 
-using Models;
+using TomLonghurst.PullRequestScanner.Models;
 
 public interface ITeamMembersProvider
 {

@@ -3,7 +3,7 @@ namespace TomLonghurst.PullRequestScanner.AzureDevOps.Services;
 using Initialization.Microsoft.Extensions.DependencyInjection;
 using Microsoft.TeamFoundation.Core.WebApi;
 using Microsoft.VisualStudio.Services.WebApi;
-using Options;
+using TomLonghurst.PullRequestScanner.AzureDevOps.Options;
 
 public class AzureDevOpsInitializer(AzureDevOpsOptions azureDevOpsOptions, VssConnection vssConnection) : IInitializer
 {

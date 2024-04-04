@@ -3,10 +3,10 @@ namespace TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using TomLonghurst.PullRequestScanner.Extensions;
-using Http;
-using Mappers;
-using Options;
-using Services;
+using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Http;
+using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Mappers;
+using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Options;
+using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Services;
 
 public class MicrosoftTeamsWebHookPublisherBuilder
 {

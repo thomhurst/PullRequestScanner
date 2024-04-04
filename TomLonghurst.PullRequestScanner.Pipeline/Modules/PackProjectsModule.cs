@@ -24,16 +24,16 @@ public class PackProjectsModule : Module<List<CommandResult>>
         {
             results.Add(await context.DotNet().Pack(
                 new DotNetPackOptions
-            {
-                ProjectSolution = projectFile.Path,
-                Configuration = Configuration.Release,
-                IncludeSource = !projectFile.Path.Contains("Analyzer"),
-                Properties = new List<KeyValue>
+                {
+                    ProjectSolution = projectFile.Path,
+                    Configuration = Configuration.Release,
+                    IncludeSource = !projectFile.Path.Contains("Analyzer"),
+                    Properties = new List<KeyValue>
                 {
                     ("PackageVersion", packageVersion.Value!),
                     ("Version", packageVersion.Value!),
                 },
-            }, cancellationToken));
+                }, cancellationToken));
         }
 
         return results;

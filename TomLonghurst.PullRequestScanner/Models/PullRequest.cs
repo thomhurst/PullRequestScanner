@@ -1,6 +1,6 @@
 namespace TomLonghurst.PullRequestScanner.Models;
 
-using Enums;
+using TomLonghurst.PullRequestScanner.Enums;
 
 public record PullRequest
 {

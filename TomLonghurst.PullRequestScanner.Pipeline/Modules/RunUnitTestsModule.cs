@@ -22,10 +22,10 @@ public class RunUnitTestsModule : Module<List<CommandResult>>
         {
             results.Add(await context.DotNet().Test(
                 new DotNetTestOptions
-            {
-                ProjectSolutionDirectoryDllExe = unitTestProjectFile.Path,
-                CommandLogging = CommandLogging.Input | CommandLogging.Error,
-            }, cancellationToken));
+                {
+                    ProjectSolutionDirectoryDllExe = unitTestProjectFile.Path,
+                    CommandLogging = CommandLogging.Input | CommandLogging.Error,
+                }, cancellationToken));
         }
 
         return results;

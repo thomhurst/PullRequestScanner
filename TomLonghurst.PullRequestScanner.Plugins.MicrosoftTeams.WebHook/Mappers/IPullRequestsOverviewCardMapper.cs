@@ -1,7 +1,7 @@
 namespace TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Mappers;
 
 using TomLonghurst.PullRequestScanner.Models;
-using Models;
+using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Models;
 
 internal interface IPullRequestsOverviewCardMapper
 {

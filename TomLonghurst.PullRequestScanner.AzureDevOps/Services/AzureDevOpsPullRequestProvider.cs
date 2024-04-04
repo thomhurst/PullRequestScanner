@@ -2,9 +2,9 @@
 
 using System.Collections.Immutable;
 using EnumerableAsyncProcessor.Extensions;
-using Mappers;
-using Options;
-using Contracts;
+using TomLonghurst.PullRequestScanner.AzureDevOps.Mappers;
+using TomLonghurst.PullRequestScanner.AzureDevOps.Options;
+using TomLonghurst.PullRequestScanner.Contracts;
 using TomLonghurst.PullRequestScanner.Models;
 
 internal class AzureDevOpsPullRequestProvider : IPullRequestProvider

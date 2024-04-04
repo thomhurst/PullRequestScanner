@@ -2,8 +2,8 @@ namespace TomLonghurst.PullRequestScanner.GitHub.Mappers;
 
 using Octokit;
 using Octokit.GraphQL.Model;
-using Enums;
-using Models;
+using TomLonghurst.PullRequestScanner.Enums;
+using TomLonghurst.PullRequestScanner.GitHub.Models;
 using TomLonghurst.PullRequestScanner.Models;
 using TomLonghurst.PullRequestScanner.Services;
 using MergeableState = Octokit.MergeableState;
