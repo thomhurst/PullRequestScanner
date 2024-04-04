@@ -11,7 +11,7 @@ public static class DateTimeExtensions
 
         return IsYesterday(dateTimeOffset.Value);
     }
-    
+
     public static bool IsYesterday(this DateTimeOffset dateTimeOffset)
     {
         var today = DateTimeOffset.UtcNow.Date;

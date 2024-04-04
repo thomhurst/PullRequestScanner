@@ -25,11 +25,11 @@ internal class MicrosoftTeamsWebhookClient
     public async Task CreateTeamsNotification(MicrosoftTeamsAdaptiveCard adaptiveCard)
     {
         ArgumentNullException.ThrowIfNull(_microsoftTeamsOptions.WebHookUri);
-            
+
         var adaptiveTeamsCardJsonString = JsonConvert.SerializeObject(TeamsNotificationCardWrapper.Wrap(adaptiveCard), Formatting.None);
 
         _logger.LogTrace("Microsoft Teams Webhook Request Payload: {Payload}", adaptiveTeamsCardJsonString);
-        
+
         try
         {
             var teamsNotificationResponse = await HttpPolicyExtensions.HandleTransientHttpError()
@@ -47,7 +47,7 @@ internal class MicrosoftTeamsWebhookClient
                 });
 
             _logger.LogTrace("Microsoft Teams Webhook Response: {Response}", await teamsNotificationResponse.Content.ReadAsStringAsync());
-            
+
             teamsNotificationResponse.EnsureSuccessStatusCode();
         }
         catch (HttpRequestException e)
@@ -57,7 +57,7 @@ internal class MicrosoftTeamsWebhookClient
                 var byteCount = Encoding.Unicode.GetByteCount(adaptiveTeamsCardJsonString);
                 throw new HttpRequestException($"Teams card payload is too big - {byteCount} bytes", e);
             }
-            
+
             throw;
         }
     }

@@ -5,17 +5,11 @@ using TomLonghurst.PullRequestScanner.AzureDevOps.Options;
 
 namespace TomLonghurst.PullRequestScanner.AzureDevOps.Services;
 
-public class AzureDevOpsInitializer : IInitializer
+public class AzureDevOpsInitializer(AzureDevOpsOptions azureDevOpsOptions, VssConnection vssConnection) : IInitializer
 {
-    private readonly AzureDevOpsOptions _azureDevOpsOptions;
-    private readonly VssConnection _vssConnection;
+    private readonly AzureDevOpsOptions _azureDevOpsOptions = azureDevOpsOptions;
+    private readonly VssConnection _vssConnection = vssConnection;
 
-    public AzureDevOpsInitializer(AzureDevOpsOptions azureDevOpsOptions, VssConnection vssConnection)
-    {
-        _azureDevOpsOptions = azureDevOpsOptions;
-        _vssConnection = vssConnection;
-    }
-    
     public async Task InitializeAsync()
     {
         if (_azureDevOpsOptions.ProjectGuid != default)
@@ -25,13 +19,7 @@ public class AzureDevOpsInitializer : IInitializer
 
         var projects = await GetProjects();
 
-        var foundProject = projects.SingleOrDefault(x => string.Equals(x.Name, _azureDevOpsOptions.ProjectName, StringComparison.OrdinalIgnoreCase));
-
-        if (foundProject == null)
-        {
-            throw new ArgumentException($"Unique project with name '{_azureDevOpsOptions.ProjectName}' not found");
-        }
-        
+        var foundProject = projects.SingleOrDefault(x => string.Equals(x.Name, _azureDevOpsOptions.ProjectName, StringComparison.OrdinalIgnoreCase)) ?? throw new ArgumentException($"Unique project with name '{_azureDevOpsOptions.ProjectName}' not found");
         _azureDevOpsOptions.ProjectGuid = foundProject.Id;
     }
 
@@ -43,9 +31,9 @@ public class AzureDevOpsInitializer : IInitializer
         do
         {
             var projectsInIteration = await _vssConnection.GetClient<ProjectHttpClient>().GetProjects();
-            
+
             projects.AddRange(projectsInIteration);
-            
+
             continuationToken = projectsInIteration.ContinuationToken;
         } while (!string.IsNullOrEmpty(continuationToken));
 

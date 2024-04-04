@@ -49,13 +49,13 @@ internal class GithubTeamMembersProvider : ITeamMembersProvider
             .Organization
             .Team
             .GetAllMembers(team.Id);
-        
+
         return new GithubTeam
-            {
-                Name = team.Name,
-                Id = team.Id.ToString(),
-                Slug = team.Slug,
-                Members = members
+        {
+            Name = team.Name,
+            Id = team.Id.ToString(),
+            Slug = team.Slug,
+            Members = members
                     .Select(m =>
                     new GithubMember
                     {
@@ -65,7 +65,7 @@ internal class GithubTeamMembersProvider : ITeamMembersProvider
                         Email = m.Email,
                         ImageUrl = m.AvatarUrl
                     }).ToList()
-            };
+        };
     }
 
     public async Task<IEnumerable<ITeamMember>> GetTeamMembers()
@@ -80,13 +80,13 @@ internal class GithubTeamMembersProvider : ITeamMembersProvider
             var team = await GetOrganisationTeam(githubOrganizationTeamOptions);
             return team.Members;
         }
-        
+
         if (_githubOptions is GithubUserOptions githubUserOptions)
         {
             var team = await GetUser(githubUserOptions);
             return team.Members;
         }
-        
+
         return new List<GithubMember>();
     }
 }

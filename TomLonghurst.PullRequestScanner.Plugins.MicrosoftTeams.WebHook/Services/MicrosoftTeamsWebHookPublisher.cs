@@ -34,14 +34,14 @@ internal class MicrosoftTeamsWebHookPublisher : IMicrosoftTeamsWebHookPublisher
     {
         return ExecuteAsync(pullRequests, _microsoftTeamsOptions.PublishOptions);
     }
-    
+
     public async Task ExecuteAsync(IReadOnlyList<PullRequest> pullRequests, MicrosoftTeamsPublishOptions microsoftTeamsPublishOptions)
     {
         if (microsoftTeamsPublishOptions.PublishPullRequestOverviewCard)
         {
             await PublishPullRequestsOverview(pullRequests);
         }
-        
+
         foreach (var pullRequestStatus in microsoftTeamsPublishOptions.CardStatusesToPublish?.ToArray() ?? Array.Empty<PullRequestStatus>())
         {
             await PublishStatusCard(pullRequests, pullRequestStatus);
@@ -71,7 +71,7 @@ internal class MicrosoftTeamsWebHookPublisher : IMicrosoftTeamsWebHookPublisher
     private async Task Publish(Func<IEnumerable<MicrosoftTeamsAdaptiveCard>> cardGenerator)
     {
         var cards = cardGenerator();
-        
+
         foreach (var microsoftTeamsAdaptiveCard in cards)
         {
             await _microsoftTeamsWebhookClient.CreateTeamsNotification(microsoftTeamsAdaptiveCard);

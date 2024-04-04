@@ -16,10 +16,10 @@ internal class GithubHttpClient
         _client = httpClient;
         _logger = logger;
     }
-    
+
     public async Task<T?> Get<T>(string path)
     {
-        var response = await 
+        var response = await
             HttpPolicyExtensions.HandleTransientHttpError()
                 .WaitAndRetryAsync(5, i => TimeSpan.FromSeconds(i * 2))
                 .ExecuteAsync(() => _client.GetAsync(path));

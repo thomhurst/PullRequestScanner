@@ -18,7 +18,7 @@ internal class GithubMapper : IGithubMapper
     {
         _teamMembersService = teamMembersService;
     }
-    
+
     public PullRequest ToPullRequestModel(GithubPullRequest githubPullRequest)
     {
         var pullRequestModel = new PullRequest
@@ -44,7 +44,7 @@ internal class GithubMapper : IGithubMapper
             Platform = "GitHub",
             Labels = githubPullRequest.Labels
         };
-        
+
         foreach (var thread in pullRequestModel.CommentThreads)
         {
             thread.ParentPullRequest = pullRequestModel;
@@ -53,12 +53,12 @@ internal class GithubMapper : IGithubMapper
                 comment.ParentCommentThread = thread;
             }
         }
-        
+
         foreach (var approver in pullRequestModel.Approvers)
         {
             approver.PullRequest = pullRequestModel;
         }
-        
+
         return pullRequestModel;
     }
 
@@ -68,7 +68,7 @@ internal class GithubMapper : IGithubMapper
         {
             return false;
         }
-        
+
         return githubPullRequest.State == ItemState.Open;
     }
 
@@ -91,12 +91,12 @@ internal class GithubMapper : IGithubMapper
     {
         return new CommentThread
         {
-            
+
             Status = GetThreadStatus(githubThread),
             Comments = githubThread.Comments.Select(GetComment).ToList()
         };
     }
-    
+
     private Comment GetComment(GithubComment githubComment)
     {
         return new Comment
@@ -105,17 +105,17 @@ internal class GithubMapper : IGithubMapper
             Author = GetPerson(githubComment.Author)
         };
     }
-    
-    private ThreadStatus GetThreadStatus(GithubThread githubThread)
+
+    private static ThreadStatus GetThreadStatus(GithubThread githubThread)
     {
         if (!githubThread.IsResolved)
         {
             return ThreadStatus.Active;
         }
-    
+
         return ThreadStatus.Closed;
     }
-    
+
     private Approver GetApprover(GithubReviewer reviewer)
     {
         return new Approver
@@ -126,58 +126,58 @@ internal class GithubMapper : IGithubMapper
             Time = reviewer.LastUpdated
         };
     }
-    
-    private Vote GetVote(Octokit.GraphQL.Model.PullRequestReviewState vote)
+
+    private static Vote GetVote(Octokit.GraphQL.Model.PullRequestReviewState vote)
     {
         if (vote == Octokit.GraphQL.Model.PullRequestReviewState.Approved)
         {
             return Vote.Approved;
         }
-    
+
         return Vote.NoVote;
     }
-    
-    private PullRequestStatus GetStatus(GithubPullRequest pullRequest)
+
+    private static PullRequestStatus GetStatus(GithubPullRequest pullRequest)
     {
         if (pullRequest.IsMerged)
         {
             return PullRequestStatus.Completed;
         }
-        
+
         if (pullRequest.State == ItemState.Closed)
         {
             return PullRequestStatus.Abandoned;
         }
-        
+
         if (pullRequest.Mergeable == MergeableState.Dirty)
         {
             return PullRequestStatus.MergeConflicts;
         }
-    
+
         if (pullRequest.IsDraft)
         {
             return PullRequestStatus.Draft;
         }
-        
+
         if (pullRequest.ChecksStatus is StatusState.Error or StatusState.Failure)
         {
             return PullRequestStatus.FailingChecks;
         }
-    
+
         if (pullRequest.Threads.Any(t => !t.IsResolved))
         {
             return PullRequestStatus.OutStandingComments;
         }
 
-        if(pullRequest.Reviewers.Any(r => r.State == Octokit.GraphQL.Model.PullRequestReviewState.Approved))
+        if (pullRequest.Reviewers.Any(r => r.State == Octokit.GraphQL.Model.PullRequestReviewState.Approved))
         {
             return PullRequestStatus.ReadyToMerge;
         }
-    
+
         return PullRequestStatus.NeedsReviewing;
     }
-    
-    private Repository GetRepository(GithubPullRequest pullRequest)
+
+    private static Repository GetRepository(GithubPullRequest pullRequest)
     {
         return new Repository
         {

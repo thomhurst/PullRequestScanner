@@ -27,7 +27,7 @@ public class UploadPackagesToNugetModule : Module<CommandResult[]>
         var publishPackages =
             context.Environment.EnvironmentVariables.GetEnvironmentVariable("PUBLISH_PACKAGES")!;
 
-        if (!bool.TryParse(publishPackages, out var shouldPublishPackages) 
+        if (!bool.TryParse(publishPackages, out var shouldPublishPackages)
             || !shouldPublishPackages)
         {
             return SkipDecision.Skip("User hasn't selected to publish");

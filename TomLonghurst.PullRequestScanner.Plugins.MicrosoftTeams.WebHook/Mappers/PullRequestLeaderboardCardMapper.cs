@@ -14,14 +14,14 @@ internal class PullRequestLeaderboardCardMapper : IPullRequestLeaderboardCardMap
         return Map(pullRequests.ToList());
     }
 
-    private IEnumerable<MicrosoftTeamsAdaptiveCard> Map(List<PullRequest> pullRequests)
+    private static IEnumerable<MicrosoftTeamsAdaptiveCard> Map(List<PullRequest> pullRequests)
     {
-       if(!pullRequests.Any(x => x.Approvers.Any(a => a.Time.IsYesterday()))
-           && !pullRequests.Any(x => x.AllComments.Any(c => c.LastUpdated.IsYesterday())))
+        if (!pullRequests.Any(x => x.Approvers.Any(a => a.Time.IsYesterday()))
+            && !pullRequests.Any(x => x.AllComments.Any(c => c.LastUpdated.IsYesterday())))
         {
             yield break;
         }
-        
+
         var teamsNotificationCard = new MicrosoftTeamsAdaptiveCard
         {
             MsTeams = new MicrosoftTeamsProperties
@@ -89,7 +89,7 @@ internal class PullRequestLeaderboardCardMapper : IPullRequestLeaderboardCardMap
                 }
             }
         };
-        
+
         var personsCommentsAndReviews = new ConcurrentDictionary<TeamMember, PullRequestReviewLeaderboardModel>();
         foreach (var pullRequest in pullRequests)
         {
@@ -98,11 +98,11 @@ internal class PullRequestLeaderboardCardMapper : IPullRequestLeaderboardCardMap
             {
                 var yesterdaysCommentCount = pullRequest.GetCommentCountWhere(uniqueReviewer, c => c.LastUpdated.IsYesterday());
                 var hasVoted = pullRequest.HasVotedWhere(uniqueReviewer, a => a.Vote != Vote.NoVote && a.Time.IsYesterday());
-                
+
                 var record = personsCommentsAndReviews.GetOrAdd(uniqueReviewer, new PullRequestReviewLeaderboardModel());
-                
+
                 record.CommentsCount += yesterdaysCommentCount;
-                
+
                 if (yesterdaysCommentCount != 0 || hasVoted)
                 {
                     record.ReviewedCount++;
@@ -128,7 +128,7 @@ internal class PullRequestLeaderboardCardMapper : IPullRequestLeaderboardCardMap
                                 {
                                     PixelWidth = 50,
                                     PixelHeight = 50,
-                                    Url = 
+                                    Url =
                                         new Uri(
                                             personsCommentsAndReview.Key.ImageUrls.FirstOrDefault()
                                             ?? "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
@@ -163,14 +163,14 @@ internal class PullRequestLeaderboardCardMapper : IPullRequestLeaderboardCardMap
                             {
                                 new AdaptiveTextBlock
                                 {
-                                    Text = personsCommentsAndReview.Value.ReviewedCount.ToString()                                
+                                    Text = personsCommentsAndReview.Value.ReviewedCount.ToString()
                                 }
                             }
                         }
                     }
                 });
         }
-        
+
         teamsNotificationCard.MsTeams.Entitities = personsCommentsAndReviews
             .Where(x => x.Value.CommentsCount != 0 || x.Value.ReviewedCount != 0)
             .Select(x => x.Key)
@@ -180,7 +180,7 @@ internal class PullRequestLeaderboardCardMapper : IPullRequestLeaderboardCardMap
         {
             yield break;
         }
-        
+
         yield return teamsNotificationCard;
     }
 }

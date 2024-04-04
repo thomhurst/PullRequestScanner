@@ -35,7 +35,7 @@ public static class PullRequestScannerBuilderExtensions
             {
                 Path = $"/{azureDevOpsOptions.Organization}"
             }.Uri;
-            
+
             return new VssConnection(uri, new VssBasicCredential(string.Empty, azureDevOpsOptions?.PersonalAccessToken));
         });
 

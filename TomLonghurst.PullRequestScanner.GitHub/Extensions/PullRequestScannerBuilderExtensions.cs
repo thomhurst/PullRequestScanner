@@ -48,16 +48,16 @@ public static class PullRequestScannerBuilderExtensions
             .AddSingleton<IGitHubClient>(serviceProvider =>
             {
                 var githubOptions = serviceProvider.GetRequiredService<GithubOptions>();
-                
+
                 var version = Assembly.GetAssembly(typeof(GithubRepositoryService))?.GetName()?.Version?.ToString() ?? "1.0";
-        
+
                 var accessToken = githubOptions.PersonalAccessToken;
 
                 if (accessToken.Contains(':'))
                 {
                     accessToken = accessToken.Split(':').Last();
                 }
-        
+
                 return new GitHubClient(new Connection(new ProductHeaderValue("pr-scanner", version), new InMemoryCredentialStore(new Credentials(accessToken))));
             })
             .AddSingleton<IGithubGraphQlClientProvider, GithubGraphQlClientProvider>()

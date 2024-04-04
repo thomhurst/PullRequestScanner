@@ -52,9 +52,9 @@ internal class GithubPullRequestService : BaseGitHubApiService, IGithubPullReque
                 Threads = await GetThreads(repository, x)
             })
             .ProcessInParallel();
-            
-            return mapped
-            .Where(IsActiveOrRecentlyClosed);
+
+        return mapped
+        .Where(IsActiveOrRecentlyClosed);
     }
 
     private async Task<List<GithubReviewer>> GetReviewers(GithubRepository repository, PullRequest pullRequest)
@@ -75,7 +75,7 @@ internal class GithubPullRequestService : BaseGitHubApiService, IGithubPullReque
             .Compile();
 
         var reviewers = await _githubQueryRunner.RunQuery(query);
-        
+
         return reviewers.ToList();
     }
 
@@ -103,7 +103,7 @@ internal class GithubPullRequestService : BaseGitHubApiService, IGithubPullReque
             }).Compile();
 
         var threads = await _githubQueryRunner.RunQuery(threadQuery);
-        
+
         return threads.ToList();
     }
 

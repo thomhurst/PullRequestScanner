@@ -7,9 +7,9 @@ namespace TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Models
     {
         public MicrosoftTeamsAdaptiveCard() : base(new AdaptiveSchemaVersion(1, 3))
         {
-            
+
         }
-        
+
         [JsonProperty("msTeams")]
         public MicrosoftTeamsProperties MsTeams { get; set; }
     }

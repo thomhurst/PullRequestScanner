@@ -18,7 +18,7 @@ public class TeamMember : IEquatable<TeamMember>
             }
 
             var userName = UniqueNames.FirstOrDefault(u => !string.IsNullOrWhiteSpace(u));
-            
+
             if (userName != null)
             {
                 return userName;
@@ -38,12 +38,12 @@ public class TeamMember : IEquatable<TeamMember>
             {
                 return uniqueName;
             }
-            
+
             if (!string.IsNullOrWhiteSpace(Email))
             {
                 return Email;
             }
-            
+
             var id = Ids?.FirstOrDefault(x => !string.IsNullOrWhiteSpace(x));
 
             if (!string.IsNullOrWhiteSpace(id))
@@ -61,7 +61,7 @@ public class TeamMember : IEquatable<TeamMember>
         {
             return false;
         }
-        
+
         return UniqueIdentifier == other.UniqueIdentifier;
     }
 

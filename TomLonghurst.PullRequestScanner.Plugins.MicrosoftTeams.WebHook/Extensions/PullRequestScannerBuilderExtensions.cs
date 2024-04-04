@@ -25,7 +25,7 @@ public static class PullRequestScannerBuilderExtensions
         pullRequestScannerBuilder.Services.AddSingleton(microsoftTeamsOptionsFactory);
         return AddMicrosoftTeamsWebHookPublisher(pullRequestScannerBuilder);
     }
-    
+
     public static PullRequestScannerBuilder AddMicrosoftTeamsWebHookPublisher(
         this PullRequestScannerBuilder pullRequestScannerBuilder, MicrosoftTeamsOptions microsoftTeamsOptions,
         Action<MicrosoftTeamsWebHookPublisherBuilder> microsoftTeamsWebHookPublisherBuilder)
@@ -44,21 +44,21 @@ public static class PullRequestScannerBuilderExtensions
         Action<MicrosoftTeamsWebHookPublisherBuilder> microsoftTeamsWebHookPublisherBuilder)
     {
         pullRequestScannerBuilder.Services.AddSingleton(microsoftTeamsOptionsFactory);
-        
+
         microsoftTeamsWebHookPublisherBuilder(
             new MicrosoftTeamsWebHookPublisherBuilder(pullRequestScannerBuilder)
         );
-        
+
         return pullRequestScannerBuilder;
     }
-    
+
     private static PullRequestScannerBuilder AddMicrosoftTeamsWebHookPublisher(this PullRequestScannerBuilder pullRequestScannerBuilder)
     {
         pullRequestScannerBuilder.Services.TryAddTransient<IPullRequestsOverviewCardMapper, PullRequestsOverviewCardMapper>();
         pullRequestScannerBuilder.Services.TryAddTransient<IPullRequestStatusCardMapper, PullRequestStatusCardMapper>();
         pullRequestScannerBuilder.Services.TryAddTransient<IPullRequestLeaderboardCardMapper, PullRequestLeaderboardCardMapper>();
         pullRequestScannerBuilder.Services.TryAddTransient<MicrosoftTeamsWebHookPublisher>();
-        
+
         pullRequestScannerBuilder.Services.AddHttpClient<MicrosoftTeamsWebhookClient>();
 
         return pullRequestScannerBuilder.AddPlugin(ActivatorUtilities.GetServiceOrCreateInstance<MicrosoftTeamsWebHookPublisher>);

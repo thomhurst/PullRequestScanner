@@ -10,7 +10,7 @@ internal abstract class BaseGitHubApiService
     {
         _githubHttpClient = githubHttpClient;
     }
-    
+
     protected async Task<List<T>> Get<T>(string path)
     {
         int arrayCount;
@@ -25,7 +25,7 @@ internal abstract class BaseGitHubApiService
             {
                 break;
             }
-            
+
             arrayCount = arrayResponse.Count;
             iteration++;
             list.AddRange(arrayResponse);

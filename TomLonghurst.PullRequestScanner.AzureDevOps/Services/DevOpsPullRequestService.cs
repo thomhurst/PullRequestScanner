@@ -5,17 +5,11 @@ using TomLonghurst.PullRequestScanner.AzureDevOps.Options;
 
 namespace TomLonghurst.PullRequestScanner.AzureDevOps.Services;
 
-internal class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestService
+internal class AzureDevOpsPullRequestService(VssConnection vssConnection, AzureDevOpsOptions azureDevOpsOptions) : IAzureDevOpsPullRequestService
 {
-    private readonly VssConnection _vssConnection;
-    private readonly AzureDevOpsOptions _azureDevOpsOptions;
+    private readonly VssConnection _vssConnection = vssConnection;
+    private readonly AzureDevOpsOptions _azureDevOpsOptions = azureDevOpsOptions;
 
-    public AzureDevOpsPullRequestService(VssConnection vssConnection, AzureDevOpsOptions azureDevOpsOptions)
-    {
-        _vssConnection = vssConnection;
-        _azureDevOpsOptions = azureDevOpsOptions;
-    }
-    
     public async Task<IReadOnlyList<AzureDevOpsPullRequestContext>> GetPullRequestsForRepository(
         GitRepository repository)
     {
@@ -35,8 +29,8 @@ internal class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestService
 
             iteration++;
         } while (pullRequests.Count == 100 * iteration);
-            
-        
+
+
         var nonDraftedPullRequests = pullRequests.Where(IsActiveOrRecentlyClosed);
 
         var pullRequestsWithThreads = new List<AzureDevOpsPullRequestContext>();
@@ -44,9 +38,9 @@ internal class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestService
         foreach (var pullRequest in nonDraftedPullRequests)
         {
             var threads = await GetThreads(pullRequest);
-            
+
             var iterations = await GetStatuses(pullRequest);
-            
+
             pullRequestsWithThreads.Add(new AzureDevOpsPullRequestContext
             {
                 AzureDevOpsPullRequest = pullRequest,
@@ -85,7 +79,7 @@ internal class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestService
     private async Task<List<GitPullRequestStatus>> GetStatuses(GitPullRequest pullRequest)
     {
         return await _vssConnection.GetClient<GitHttpClient>().GetPullRequestStatusesAsync(
-            
+
             project: _azureDevOpsOptions.ProjectGuid,
             repositoryId: pullRequest.Repository.Id,
             pullRequestId: pullRequest.PullRequestId

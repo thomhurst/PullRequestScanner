@@ -6,7 +6,7 @@ internal class Attachment
 {
     [JsonProperty("contentType")]
     public string ContentType { get; set; }
-        
+
     [JsonProperty("content")]
     public MicrosoftTeamsAdaptiveCard Content { get; set; }
 }

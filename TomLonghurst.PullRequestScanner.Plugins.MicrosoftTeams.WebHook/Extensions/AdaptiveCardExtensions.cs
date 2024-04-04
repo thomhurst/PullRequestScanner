@@ -31,7 +31,7 @@ internal static class AdaptiveCardExtensions
     {
         microsoftTeamsAdaptiveCard.AdditionalProperties["ShouldReturn"] = true;
     }
-    
+
     internal static bool IsCardWrittenTo(this MicrosoftTeamsAdaptiveCard microsoftTeamsAdaptiveCard)
     {
         return microsoftTeamsAdaptiveCard.AdditionalProperties.TryGetValue("ShouldReturn", out var objBool)

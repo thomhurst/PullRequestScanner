@@ -19,7 +19,7 @@ public abstract class MicrosoftTeamsWebHookPublisherBase : IPullRequestPlugin
     internal async Task Publish(Func<IEnumerable<MicrosoftTeamsAdaptiveCard>> cardGenerator)
     {
         var cards = cardGenerator();
-        
+
         foreach (var microsoftTeamsAdaptiveCard in cards)
         {
             await _microsoftTeamsWebhookClient.CreateTeamsNotification(microsoftTeamsAdaptiveCard);

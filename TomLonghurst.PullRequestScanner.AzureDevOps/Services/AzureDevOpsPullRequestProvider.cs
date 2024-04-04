@@ -30,7 +30,7 @@ internal class AzureDevOpsPullRequestProvider : IPullRequestProvider
     {
         if (_azureDevOpsOptions?.IsEnabled != true)
         {
-            return Array.Empty<PullRequest>();
+            return [];
         }
 
         var repositories = await _devOpsGitRepositoryService.GetGitRepositories();
@@ -47,24 +47,24 @@ internal class AzureDevOpsPullRequestProvider : IPullRequestProvider
 
         return mappedPullRequests;
     }
-    
+
     private void ValidateOptions()
     {
         if (_azureDevOpsOptions.IsEnabled != true)
         {
             return;
         }
-        
+
         ValidatePopulated(_azureDevOpsOptions.Organization, nameof(_azureDevOpsOptions.Organization));
-        
+
         if (_azureDevOpsOptions.ProjectGuid == default)
         {
             ValidatePopulated(_azureDevOpsOptions.ProjectName, nameof(_azureDevOpsOptions.ProjectName));
         }
 
         ValidatePopulated(_azureDevOpsOptions.PersonalAccessToken, nameof(_azureDevOpsOptions.PersonalAccessToken));
-        
-        void ValidatePopulated(string value, string propertyName)
+
+        static void ValidatePopulated(string value, string propertyName)
         {
             if (string.IsNullOrEmpty(value))
             {

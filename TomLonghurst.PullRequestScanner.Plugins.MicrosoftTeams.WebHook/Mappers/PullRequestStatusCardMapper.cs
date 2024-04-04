@@ -16,7 +16,7 @@ internal class PullRequestStatusCardMapper : IPullRequestStatusCardMapper
         return Map(pullRequests, pullRequestStatus, 0);
     }
 
-    private IEnumerable<MicrosoftTeamsAdaptiveCard> Map(IReadOnlyList<PullRequest> pullRequests, PullRequestStatus pullRequestStatus, int cardCount)
+    private static IEnumerable<MicrosoftTeamsAdaptiveCard> Map(IReadOnlyList<PullRequest> pullRequests, PullRequestStatus pullRequestStatus, int cardCount)
     {
         var pullRequestsWithStatus = pullRequests
             .Where(x => x.PullRequestStatus == pullRequestStatus)
@@ -90,7 +90,7 @@ internal class PullRequestStatusCardMapper : IPullRequestStatusCardMapper
                     }
                 }
             };
-            
+
             teamsNotificationCard.Body.Add(adaptiveContainer);
 
             foreach (var pullRequest in pullRequestsInRepo)
@@ -127,22 +127,22 @@ internal class PullRequestStatusCardMapper : IPullRequestStatusCardMapper
                         }
                     }
                 });
-                
+
                 var jsonString = JsonConvert.SerializeObject(teamsNotificationCard, Formatting.None);
                 if (Encoding.Unicode.GetByteCount(jsonString) > Constants.TeamsCardSizeLimit)
                 {
                     yield return teamsNotificationCard;
-                
+
                     foreach (var microsoftTeamsAdaptiveCard in Map(pullRequestsWithStatus.ToList(), pullRequestStatus, cardCount + 1))
                     {
                         yield return microsoftTeamsAdaptiveCard;
                     }
-                
+
                     yield break;
                 }
             }
         }
-        
+
         if (!teamsNotificationCard.IsCardWrittenTo())
         {
             yield break;

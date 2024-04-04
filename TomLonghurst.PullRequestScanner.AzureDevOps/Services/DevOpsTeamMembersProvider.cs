@@ -8,24 +8,18 @@ using TeamMember = Microsoft.VisualStudio.Services.WebApi.TeamMember;
 
 namespace TomLonghurst.PullRequestScanner.AzureDevOps.Services;
 
-internal class AzureDevOpsTeamMembersProvider : ITeamMembersProvider
+internal class AzureDevOpsTeamMembersProvider(AzureDevOpsOptions azureDevOpsOptions, VssConnection vssConnection) : ITeamMembersProvider
 {
-    private readonly AzureDevOpsOptions _azureDevOpsOptions;
-    private readonly VssConnection _vssConnection;
-
-    public AzureDevOpsTeamMembersProvider(AzureDevOpsOptions azureDevOpsOptions, VssConnection vssConnection)
-    {
-        _azureDevOpsOptions = azureDevOpsOptions;
-        _vssConnection = vssConnection;
-    }
+    private readonly AzureDevOpsOptions _azureDevOpsOptions = azureDevOpsOptions;
+    private readonly VssConnection _vssConnection = vssConnection;
 
     public async Task<IEnumerable<ITeamMember>> GetTeamMembers()
     {
         if (!_azureDevOpsOptions.IsEnabled)
         {
-            return Array.Empty<ITeamMember>();
+            return [];
         }
-        
+
         var teams = new List<WebApiTeam>();
 
         var iteration = 0;
@@ -49,7 +43,7 @@ internal class AzureDevOpsTeamMembersProvider : ITeamMembersProvider
         var membersResponses = membersResponsesArrays
             .SelectMany(x => x)
             .ToList();
-        
+
         return membersResponses
             .Where(x => x.Identity.DisplayName != Constants.VstsDisplayName)
             .Where(x => !x.Identity.UniqueName.StartsWith(Constants.VstfsUniqueNamePrefix))

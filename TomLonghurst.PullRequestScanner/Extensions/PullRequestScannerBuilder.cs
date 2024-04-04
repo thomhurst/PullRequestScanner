@@ -31,19 +31,19 @@ public class PullRequestScannerBuilder
         Services.AddTransient(pullRequestProviderFactory);
         return this;
     }
-    
+
     public PullRequestScannerBuilder AddPullRequestProvider<TPullRequestProvider>() where TPullRequestProvider : class, IPullRequestProvider
     {
         Services.AddTransient<IPullRequestProvider, TPullRequestProvider>();
         return this;
     }
-    
+
     public PullRequestScannerBuilder AddPlugin(Func<IServiceProvider, IPullRequestPlugin> pullRequestPluginFactory)
     {
         Services.AddTransient(pullRequestPluginFactory);
         return this;
     }
-    
+
     public PullRequestScannerBuilder AddPlugin<TPullRequestPlugin>() where TPullRequestPlugin : class, IPullRequestPlugin
     {
         Services.AddTransient<IPullRequestPlugin, TPullRequestPlugin>();

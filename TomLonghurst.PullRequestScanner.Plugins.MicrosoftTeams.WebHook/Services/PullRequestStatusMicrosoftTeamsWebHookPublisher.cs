@@ -17,7 +17,7 @@ public class PullRequestStatusMicrosoftTeamsWebHookPublisher : MicrosoftTeamsWeb
         _pullRequestStatusCardMapper = pullRequestStatusCardMapper;
         _options = options;
     }
-    
+
     public override async Task ExecuteAsync(IReadOnlyList<PullRequest> pullRequests)
     {
         foreach (var pullRequestStatus in _options.StatusesToPublish)
@@ -25,7 +25,7 @@ public class PullRequestStatusMicrosoftTeamsWebHookPublisher : MicrosoftTeamsWeb
             await ExecuteAsync(pullRequests, pullRequestStatus);
         }
     }
-    
+
     public Task ExecuteAsync(IReadOnlyList<PullRequest> pullRequests, PullRequestStatus pullRequestStatus)
     {
         return Publish(() => _pullRequestStatusCardMapper.Map(pullRequests, pullRequestStatus));

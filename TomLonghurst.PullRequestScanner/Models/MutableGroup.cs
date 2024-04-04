@@ -7,7 +7,7 @@ public class MutableGroup<TKey, TValue>
         Key = key;
         Values = values.ToList();
     }
-    
+
     public TKey Key { get; }
     public List<TValue> Values { get; }
 }

@@ -9,7 +9,7 @@ public interface IPullRequestScanner : IHasPlugins
 
     Task ExecutePluginsAsync() => ExecutePluginsAsync(null as Func<IPullRequestPlugin, bool>);
     Task ExecutePluginsAsync(IReadOnlyList<PullRequest> pullRequests) => ExecutePluginsAsync(pullRequests, null);
-    
+
     Task ExecutePluginsAsync(Func<IPullRequestPlugin, bool>? predicate);
     Task ExecutePluginsAsync(IReadOnlyList<PullRequest> pullRequests, Func<IPullRequestPlugin, bool>? predicate);
 }

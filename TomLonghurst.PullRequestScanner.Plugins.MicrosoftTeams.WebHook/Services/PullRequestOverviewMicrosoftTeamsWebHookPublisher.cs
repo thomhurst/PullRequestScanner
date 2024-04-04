@@ -13,7 +13,7 @@ public class PullRequestOverviewMicrosoftTeamsWebHookPublisher : MicrosoftTeamsW
     {
         _pullRequestsOverviewCardMapper = pullRequestsOverviewCardMapper;
     }
-    
+
     public override Task ExecuteAsync(IReadOnlyList<PullRequest> pullRequests)
     {
         return Publish(() => _pullRequestsOverviewCardMapper.Map(pullRequests));

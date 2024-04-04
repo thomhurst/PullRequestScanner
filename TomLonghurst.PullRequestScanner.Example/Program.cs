@@ -31,9 +31,9 @@ var host = Host.CreateDefaultBuilder(args)
                 RepositoriesToScan = repository => true
             })
             .AddMicrosoftTeamsWebHookPublisher(new MicrosoftTeamsOptions
-                {
-                    WebHookUri = new Uri("")
-                },
+            {
+                WebHookUri = new Uri("")
+            },
                 microsoftTeamsWebHookPublisherBuilder =>
                 {
                     microsoftTeamsWebHookPublisherBuilder.AddOverviewCardPublisher();
@@ -61,4 +61,3 @@ await pullRequestScanner.ExecutePluginsAsync();
 var pullRequests = await pullRequestScanner.GetPullRequests();
 var statusPublisherPlugin = pullRequestScanner.GetPlugin<PullRequestStatusMicrosoftTeamsWebHookPublisher>();
 await statusPublisherPlugin.ExecuteAsync(pullRequests, PullRequestStatus.NeedsReviewing);
- 

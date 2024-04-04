@@ -24,7 +24,7 @@ internal class PullRequestsOverviewCardMapper : IPullRequestsOverviewCardMapper
             .OrderByDescending(x => x.Created)
             .GroupBy(x => x.Repository.Id)
             .ToMutableGrouping();
-        
+
         var teamsNotificationCard = new MicrosoftTeamsAdaptiveCard
         {
             MsTeams = new MicrosoftTeamsProperties
@@ -41,7 +41,7 @@ internal class PullRequestsOverviewCardMapper : IPullRequestsOverviewCardMapper
                 },
             }
         };
-        
+
         var mentionedUsers = new List<TeamMember>();
 
         foreach (var repo in repos.ToList())
@@ -111,7 +111,7 @@ internal class PullRequestsOverviewCardMapper : IPullRequestsOverviewCardMapper
                     }
                 }
             };
-            
+
             teamsNotificationCard.Body.Add(adaptiveContainer);
 
             foreach (var pullRequest in repo.Values.ToList())
@@ -172,23 +172,23 @@ internal class PullRequestsOverviewCardMapper : IPullRequestsOverviewCardMapper
                         }
                     }
                 });
-                
+
                 teamsNotificationCard.MsTeams.Entitities = mentionedUsers.ToAdaptiveCardMentionEntities();
 
                 var jsonString = JsonConvert.SerializeObject(teamsNotificationCard, Formatting.None);
                 if (Encoding.Unicode.GetByteCount(jsonString) > Constants.TeamsCardSizeLimit)
                 {
                     yield return teamsNotificationCard;
-                
+
                     foreach (var microsoftTeamsAdaptiveCard in Map(repos.SelectMany(x => x.Values).ToList(), cardCount + 1))
                     {
                         yield return microsoftTeamsAdaptiveCard;
                     }
-                
+
                     yield break;
                 }
             }
-            
+
             repos.Remove(repo);
         }
 
@@ -196,11 +196,11 @@ internal class PullRequestsOverviewCardMapper : IPullRequestsOverviewCardMapper
         {
             yield break;
         }
-        
+
         yield return teamsNotificationCard;
     }
-    
-        private static string GetAge(DateTimeOffset dateTime)
+
+    private static string GetAge(DateTimeOffset dateTime)
     {
         var timeSpanSinceCreation = DateTime.UtcNow - dateTime;
 
@@ -208,16 +208,16 @@ internal class PullRequestsOverviewCardMapper : IPullRequestsOverviewCardMapper
         {
             return $"{(int)timeSpanSinceCreation.TotalDays}d";
         }
-        
+
         if (timeSpanSinceCreation.TotalHours >= 1)
         {
             return $"{(int)timeSpanSinceCreation.TotalHours}h";
         }
-        
+
         return $"{(int)timeSpanSinceCreation.TotalMinutes}m";
     }
 
-    private AdaptiveTextColor GetColorForAge(DateTimeOffset dateTime)
+    private static AdaptiveTextColor GetColorForAge(DateTimeOffset dateTime)
     {
         var timeSpanSinceCreation = DateTime.UtcNow - dateTime;
 
@@ -225,7 +225,7 @@ internal class PullRequestsOverviewCardMapper : IPullRequestsOverviewCardMapper
         {
             return AdaptiveTextColor.Warning;
         }
-        
+
         if (timeSpanSinceCreation.TotalDays >= 7)
         {
             return AdaptiveTextColor.Attention;
@@ -234,35 +234,25 @@ internal class PullRequestsOverviewCardMapper : IPullRequestsOverviewCardMapper
         return AdaptiveTextColor.Default;
     }
 
-    private string GetCardNumberString(int cardNumber)
+    private static string GetCardNumberString(int cardNumber)
     {
         return cardNumber == 1 ? string.Empty : $"Part {cardNumber}";
     }
 
-    private AdaptiveTextColor GetColorForStatus(PullRequestStatus status)
+    private static AdaptiveTextColor GetColorForStatus(PullRequestStatus status)
     {
-        switch (status)
+        return status switch
         {
-            case PullRequestStatus.FailingChecks:
-                return AdaptiveTextColor.Attention;
-            case PullRequestStatus.OutStandingComments:
-                return AdaptiveTextColor.Warning;
-            case PullRequestStatus.NeedsReviewing:
-                return AdaptiveTextColor.Warning;
-            case PullRequestStatus.MergeConflicts:
-                return AdaptiveTextColor.Attention;
-            case PullRequestStatus.Rejected:
-                return AdaptiveTextColor.Attention;
-            case PullRequestStatus.ReadyToMerge:
-                return AdaptiveTextColor.Good;
-            case PullRequestStatus.Completed:
-                return AdaptiveTextColor.Good;
-            case PullRequestStatus.FailedToMerge:
-                return AdaptiveTextColor.Attention;
-            case PullRequestStatus.Draft:
-                return AdaptiveTextColor.Accent;
-            default:
-                return AdaptiveTextColor.Default;
-        }
+            PullRequestStatus.FailingChecks => AdaptiveTextColor.Attention,
+            PullRequestStatus.OutStandingComments => AdaptiveTextColor.Warning,
+            PullRequestStatus.NeedsReviewing => AdaptiveTextColor.Warning,
+            PullRequestStatus.MergeConflicts => AdaptiveTextColor.Attention,
+            PullRequestStatus.Rejected => AdaptiveTextColor.Attention,
+            PullRequestStatus.ReadyToMerge => AdaptiveTextColor.Good,
+            PullRequestStatus.Completed => AdaptiveTextColor.Good,
+            PullRequestStatus.FailedToMerge => AdaptiveTextColor.Attention,
+            PullRequestStatus.Draft => AdaptiveTextColor.Accent,
+            _ => AdaptiveTextColor.Default,
+        };
     }
 }

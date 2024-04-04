@@ -9,7 +9,7 @@ public record PullRequest
     public string Url { get; set; }
     public string Id { get; set; }
     public string Number { get; set; }
-    public Repository Repository { get; set;}
+    public Repository Repository { get; set; }
     public TeamMember Author { get; set; }
     public List<CommentThread> CommentThreads { get; set; } = new();
     public List<Comment> AllComments => CommentThreads.SelectMany(t => t.Comments).ToList();
@@ -67,13 +67,13 @@ public record PullRequest
             // We don't count comments on your own PR!
             return 0;
         }
-        
+
         return CommentThreads
             .SelectMany(c => c.Comments)
             .Where(c => condition?.Invoke(c) ?? true)
             .Count(c => c.Author == teamMember);
     }
-    
+
     public bool HasVotedWhere(TeamMember teamMember, Func<Approver, bool> condition)
     {
         if (teamMember == Author)
@@ -81,7 +81,7 @@ public record PullRequest
             // You can't vote for your own PR
             return false;
         }
-        
+
         return Approvers
             .Where(a => a.TeamMember == teamMember)
             .Where(a => condition?.Invoke(a) ?? true)
