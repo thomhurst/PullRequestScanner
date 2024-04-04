@@ -1,6 +1,6 @@
-﻿using Microsoft.TeamFoundation.Core.WebApi;
+﻿using Initialization.Microsoft.Extensions.DependencyInjection;
+using Microsoft.TeamFoundation.Core.WebApi;
 using Microsoft.VisualStudio.Services.WebApi;
-using TomLonghurst.Microsoft.Extensions.DependencyInjection.ServiceInitialization;
 using TomLonghurst.PullRequestScanner.AzureDevOps.Options;
 
 namespace TomLonghurst.PullRequestScanner.AzureDevOps.Services;

@@ -1,8 +1,6 @@
-﻿using Microsoft.TeamFoundation.Core.WebApi;
-using Microsoft.VisualStudio.Services.Identity.Client;
-using Microsoft.VisualStudio.Services.Profile.Client;
+﻿using EnumerableAsyncProcessor.Extensions;
+using Microsoft.TeamFoundation.Core.WebApi;
 using Microsoft.VisualStudio.Services.WebApi;
-using TomLonghurst.EnumerableAsyncProcessor.Extensions;
 using TomLonghurst.PullRequestScanner.AzureDevOps.Options;
 using TomLonghurst.PullRequestScanner.Contracts;
 using TomLonghurst.PullRequestScanner.Models;

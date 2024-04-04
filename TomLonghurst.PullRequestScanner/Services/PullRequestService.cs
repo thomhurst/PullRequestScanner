@@ -1,6 +1,6 @@
 ﻿using System.Collections.Immutable;
+using Initialization.Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Caching.Memory;
-using TomLonghurst.Microsoft.Extensions.DependencyInjection.ServiceInitialization.Extensions;
 using TomLonghurst.PullRequestScanner.Contracts;
 using TomLonghurst.PullRequestScanner.Exceptions;
 using TomLonghurst.PullRequestScanner.Models;

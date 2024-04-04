@@ -1,5 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using TomLonghurst.Microsoft.Extensions.DependencyInjection.ServiceInitialization.Extensions;
+﻿using Initialization.Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 using TomLonghurst.PullRequestScanner.Contracts;
 using TomLonghurst.PullRequestScanner.Services;
 

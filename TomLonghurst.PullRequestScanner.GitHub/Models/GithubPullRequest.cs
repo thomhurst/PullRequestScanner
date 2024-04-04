@@ -1,5 +1,7 @@
-﻿using Octokit.GraphQL.Core;
+﻿using Octokit;
 using Octokit.GraphQL.Model;
+using LockReason = Octokit.LockReason;
+using MergeableState = Octokit.MergeableState;
 
 namespace TomLonghurst.PullRequestScanner.GitHub.Models;
 
@@ -11,7 +13,7 @@ public record GithubPullRequest
     public string Id { get; set; }
     public bool IsDraft { get; set; }
     public MergeableState Mergeable { get; set; }
-    public PullRequestState State { get; set; }
+    public ItemState State { get; set; }
     public DateTimeOffset Created { get; set; }
     public string Author { get; set; }
     public PullRequestReviewDecision? ReviewDecision { get; set; }

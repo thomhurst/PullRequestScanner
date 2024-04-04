@@ -2,6 +2,8 @@
 using System.Reflection;
 using System.Text;
 using Microsoft.Extensions.DependencyInjection;
+using Octokit;
+using Octokit.Internal;
 using TomLonghurst.PullRequestScanner.Contracts;
 using TomLonghurst.PullRequestScanner.Extensions;
 using TomLonghurst.PullRequestScanner.GitHub.Http;
@@ -9,6 +11,7 @@ using TomLonghurst.PullRequestScanner.GitHub.Mappers;
 using TomLonghurst.PullRequestScanner.GitHub.Options;
 using TomLonghurst.PullRequestScanner.GitHub.Services;
 using TomLonghurst.PullRequestScanner.Services;
+using ProductHeaderValue = Octokit.ProductHeaderValue;
 
 namespace TomLonghurst.PullRequestScanner.GitHub.Extensions;
 
@@ -42,6 +45,21 @@ public static class PullRequestScannerBuilderExtensions
             });
 
         pullRequestScannerBuilder.Services
+            .AddSingleton<IGitHubClient>(serviceProvider =>
+            {
+                var githubOptions = serviceProvider.GetRequiredService<GithubOptions>();
+                
+                var version = Assembly.GetAssembly(typeof(GithubRepositoryService))?.GetName()?.Version?.ToString() ?? "1.0";
+        
+                var accessToken = githubOptions.PersonalAccessToken;
+
+                if (accessToken.Contains(':'))
+                {
+                    accessToken = accessToken.Split(':').Last();
+                }
+        
+                return new GitHubClient(new Connection(new ProductHeaderValue("pr-scanner", version), new InMemoryCredentialStore(new Credentials(accessToken))));
+            })
             .AddSingleton<IGithubGraphQlClientProvider, GithubGraphQlClientProvider>()
             .AddSingleton<IGithubQueryRunner, GithubQueryRunner>()
             .AddSingleton<ITeamMembersProvider, GithubTeamMembersProvider>()

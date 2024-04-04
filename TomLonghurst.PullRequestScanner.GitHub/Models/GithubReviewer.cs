@@ -1,4 +1,5 @@
-﻿using Octokit.GraphQL.Model;
+﻿using Octokit;
+using PullRequestReviewState = Octokit.GraphQL.Model.PullRequestReviewState;
 
 namespace TomLonghurst.PullRequestScanner.GitHub.Models;
 

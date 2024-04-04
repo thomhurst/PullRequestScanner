@@ -1,9 +1,12 @@
-﻿using Octokit.GraphQL.Model;
+﻿using Octokit;
+using Octokit.GraphQL.Model;
 using TomLonghurst.PullRequestScanner.Enums;
 using TomLonghurst.PullRequestScanner.GitHub.Models;
 using TomLonghurst.PullRequestScanner.Models;
 using TomLonghurst.PullRequestScanner.Services;
+using MergeableState = Octokit.MergeableState;
 using PullRequest = TomLonghurst.PullRequestScanner.Models.PullRequest;
+using PullRequestReviewState = Octokit.PullRequestReviewState;
 using Repository = TomLonghurst.PullRequestScanner.Models.Repository;
 
 namespace TomLonghurst.PullRequestScanner.GitHub.Mappers;
@@ -67,7 +70,7 @@ internal class GithubMapper : IGithubMapper
             return false;
         }
         
-        return githubPullRequest.State == PullRequestState.Open;
+        return githubPullRequest.State == ItemState.Open;
     }
 
     private TeamMember GetPerson(string author)
@@ -125,9 +128,9 @@ internal class GithubMapper : IGithubMapper
         };
     }
     
-    private Vote GetVote(PullRequestReviewState vote)
+    private Vote GetVote(Octokit.GraphQL.Model.PullRequestReviewState vote)
     {
-        if (vote == PullRequestReviewState.Approved)
+        if (vote == Octokit.GraphQL.Model.PullRequestReviewState.Approved)
         {
             return Vote.Approved;
         }
@@ -137,17 +140,17 @@ internal class GithubMapper : IGithubMapper
     
     private PullRequestStatus GetStatus(GithubPullRequest pullRequest)
     {
-        if (pullRequest.State == PullRequestState.Merged)
+        if (pullRequest.State == ItemState.Closed)
         {
             return PullRequestStatus.Completed;
         }
         
-        if (pullRequest.State == PullRequestState.Closed)
+        if (pullRequest.State == ItemState.Closed)
         {
             return PullRequestStatus.Abandoned;
         }
         
-        if (pullRequest.Mergeable == MergeableState.Conflicting)
+        if (pullRequest.Mergeable == MergeableState.Dirty)
         {
             return PullRequestStatus.MergeConflicts;
         }
@@ -167,7 +170,7 @@ internal class GithubMapper : IGithubMapper
             return PullRequestStatus.OutStandingComments;
         }
 
-        if(pullRequest.Reviewers.Any(r => r.State == PullRequestReviewState.Approved))
+        if(pullRequest.Reviewers.Any(r => r.State == Octokit.GraphQL.Model.PullRequestReviewState.Approved))
         {
             return PullRequestStatus.ReadyToMerge;
         }

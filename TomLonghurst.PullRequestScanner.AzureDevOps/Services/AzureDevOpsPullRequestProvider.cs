@@ -1,5 +1,5 @@
 ﻿using System.Collections.Immutable;
-using TomLonghurst.EnumerableAsyncProcessor.Extensions;
+using EnumerableAsyncProcessor.Extensions;
 using TomLonghurst.PullRequestScanner.AzureDevOps.Mappers;
 using TomLonghurst.PullRequestScanner.AzureDevOps.Options;
 using TomLonghurst.PullRequestScanner.Contracts;

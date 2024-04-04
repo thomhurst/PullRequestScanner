@@ -1,5 +1,5 @@
 ﻿using System.Collections.Immutable;
-using TomLonghurst.EnumerableAsyncProcessor.Extensions;
+using EnumerableAsyncProcessor.Extensions;
 using TomLonghurst.PullRequestScanner.Contracts;
 using TomLonghurst.PullRequestScanner.GitHub.Mappers;
 using TomLonghurst.PullRequestScanner.GitHub.Options;
