@@ -1,6 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-
 namespace TomLonghurst.PullRequestScanner.Extensions;
+
+using Microsoft.Extensions.DependencyInjection;
 
 public static class DependencyInjectionExtensions
 {

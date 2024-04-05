@@ -1,11 +1,11 @@
-﻿using System.Collections.Immutable;
-using TomLonghurst.EnumerableAsyncProcessor.Extensions;
-using TomLonghurst.PullRequestScanner.AzureDevOps.Mappers;
-using TomLonghurst.PullRequestScanner.AzureDevOps.Options;
-using TomLonghurst.PullRequestScanner.Contracts;
-using TomLonghurst.PullRequestScanner.Models;
+﻿namespace TomLonghurst.PullRequestScanner.AzureDevOps.Services;
 
-namespace TomLonghurst.PullRequestScanner.AzureDevOps.Services;
+using System.Collections.Immutable;
+using EnumerableAsyncProcessor.Extensions;
+using Mappers;
+using Options;
+using Contracts;
+using TomLonghurst.PullRequestScanner.Models;
 
 internal class AzureDevOpsPullRequestProvider : IPullRequestProvider
 {
@@ -14,7 +14,8 @@ internal class AzureDevOpsPullRequestProvider : IPullRequestProvider
     private readonly IAzureDevOpsPullRequestService _devOpsPullRequestService;
     private readonly IAzureDevOpsMapper _devOpsMapper;
 
-    public AzureDevOpsPullRequestProvider(AzureDevOpsOptions azureDevOpsOptions,
+    public AzureDevOpsPullRequestProvider(
+        AzureDevOpsOptions azureDevOpsOptions,
         IAzureDevOpsGitRepositoryService azureDevOpsGitRepositoryService,
         IAzureDevOpsPullRequestService azureDevOpsPullRequestService,
         IAzureDevOpsMapper azureDevOpsMapper)
@@ -26,11 +27,12 @@ internal class AzureDevOpsPullRequestProvider : IPullRequestProvider
 
         ValidateOptions();
     }
+
     public async Task<IReadOnlyList<PullRequest>> GetPullRequests()
     {
         if (_azureDevOpsOptions?.IsEnabled != true)
         {
-            return Array.Empty<PullRequest>();
+            return [];
         }
 
         var repositories = await _devOpsGitRepositoryService.GetGitRepositories();
@@ -47,24 +49,24 @@ internal class AzureDevOpsPullRequestProvider : IPullRequestProvider
 
         return mappedPullRequests;
     }
-    
+
     private void ValidateOptions()
     {
         if (_azureDevOpsOptions.IsEnabled != true)
         {
             return;
         }
-        
+
         ValidatePopulated(_azureDevOpsOptions.Organization, nameof(_azureDevOpsOptions.Organization));
-        
+
         if (_azureDevOpsOptions.ProjectGuid == default)
         {
             ValidatePopulated(_azureDevOpsOptions.ProjectName, nameof(_azureDevOpsOptions.ProjectName));
         }
 
         ValidatePopulated(_azureDevOpsOptions.PersonalAccessToken, nameof(_azureDevOpsOptions.PersonalAccessToken));
-        
-        void ValidatePopulated(string value, string propertyName)
+
+        static void ValidatePopulated(string value, string propertyName)
         {
             if (string.IsNullOrEmpty(value))
             {

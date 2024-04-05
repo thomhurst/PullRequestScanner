@@ -1,7 +1,7 @@
-﻿namespace TomLonghurst.PullRequestScanner.Models;
+namespace TomLonghurst.PullRequestScanner.Models;
 
 public enum ThreadStatus
 {
     Active,
-    Closed
+    Closed,
 }

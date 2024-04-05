@@ -1,8 +1,8 @@
-﻿using TomLonghurst.Microsoft.Extensions.DependencyInjection.ServiceInitialization;
-using TomLonghurst.PullRequestScanner.Contracts;
-using TomLonghurst.PullRequestScanner.Models;
-
 namespace TomLonghurst.PullRequestScanner.Services;
+
+using Initialization.Microsoft.Extensions.DependencyInjection;
+using Contracts;
+using Models;
 
 internal class TeamMembersService : ITeamMembersService, IInitializer
 {
@@ -18,7 +18,7 @@ internal class TeamMembersService : ITeamMembersService, IInitializer
 
     public async Task InitializeAsync()
     {
-        if(_isInitialized)
+        if (_isInitialized)
         {
             return;
         }
@@ -29,16 +29,16 @@ internal class TeamMembersService : ITeamMembersService, IInitializer
         foreach (var teamMember in teamMembers)
         {
             var foundUser = FindTeamMember(teamMember);
-            
+
             if (foundUser == null)
             {
                 _teamMembers.Add(new TeamMember
                 {
                     Email = teamMember.Email,
-                    Ids = { teamMember.Id }, 
+                    Ids = { teamMember.Id },
                     UniqueNames = { teamMember.UniqueName },
                     DisplayName = teamMember.DisplayName,
-                    ImageUrls = { teamMember.ImageUrl }
+                    ImageUrls = { teamMember.ImageUrl },
                 });
             }
             else
@@ -68,35 +68,35 @@ internal class TeamMembersService : ITeamMembersService, IInitializer
         {
             return !string.IsNullOrEmpty(value1) && !string.IsNullOrEmpty(value2) && string.Equals(value1, value2, StringComparison.InvariantCultureIgnoreCase);
         }
-        
+
         bool NotEmptyAndInList(IList<string> list, string value)
         {
             return !string.IsNullOrEmpty(value) && list.Contains(value, StringComparer.InvariantCultureIgnoreCase);
         }
     }
 
-    private void UpdateFoundUser(TeamMember foundUser, ITeamMember newUserDetails)
+    private static void UpdateFoundUser(TeamMember foundUser, ITeamMember newUserDetails)
     {
         if (string.IsNullOrEmpty(foundUser.Email) && !string.IsNullOrEmpty(newUserDetails.Email))
         {
             foundUser.Email = newUserDetails.Email;
         }
-        
+
         if (!string.IsNullOrEmpty(newUserDetails.Id))
         {
             foundUser.Ids.Add(newUserDetails.Id);
         }
-        
+
         if (!string.IsNullOrEmpty(newUserDetails.UniqueName))
         {
             foundUser.UniqueNames.Add(newUserDetails.UniqueName);
         }
-        
+
         if (string.IsNullOrEmpty(foundUser.DisplayName) && !string.IsNullOrEmpty(newUserDetails.DisplayName))
         {
             foundUser.DisplayName = newUserDetails.DisplayName;
         }
-        
+
         if (!string.IsNullOrEmpty(newUserDetails.ImageUrl))
         {
             foundUser.ImageUrls.Add(newUserDetails.ImageUrl);

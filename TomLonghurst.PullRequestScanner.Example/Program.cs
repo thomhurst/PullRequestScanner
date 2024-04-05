@@ -1,5 +1,3 @@
-﻿// See https://aka.ms/new-console-template for more information
-
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using TomLonghurst.PullRequestScanner.AzureDevOps.Extensions;
@@ -17,22 +15,23 @@ var host = Host.CreateDefaultBuilder(args)
     .ConfigureServices(services =>
     {
         services.AddPullRequestScanner()
-            .AddGithub(new GithubOrganizationTeamOptions()
+            .AddGithub(new GithubOrganizationTeamOptions
             {
-                OrganizationSlug = "",
-                PersonalAccessToken = "",
-                RepositoriesToScan = repository => true
+                OrganizationSlug = string.Empty,
+                PersonalAccessToken = string.Empty,
+                RepositoriesToScan = repository => true,
             })
-            .AddAzureDevOps(new AzureDevOpsOptions()
+            .AddAzureDevOps(new AzureDevOpsOptions
             {
-                Organization = "",
-                ProjectName = "",
-                PersonalAccessToken = "",
-                RepositoriesToScan = repository => true
+                Organization = string.Empty,
+                ProjectName = string.Empty,
+                PersonalAccessToken = string.Empty,
+                RepositoriesToScan = repository => true,
             })
-            .AddMicrosoftTeamsWebHookPublisher(new MicrosoftTeamsOptions
+            .AddMicrosoftTeamsWebHookPublisher(
+                new MicrosoftTeamsOptions
                 {
-                    WebHookUri = new Uri("")
+                    WebHookUri = new Uri(string.Empty),
                 },
                 microsoftTeamsWebHookPublisherBuilder =>
                 {
@@ -40,14 +39,14 @@ var host = Host.CreateDefaultBuilder(args)
                     microsoftTeamsWebHookPublisherBuilder.AddLeaderboardCardPublisher();
                     microsoftTeamsWebHookPublisherBuilder.AddStatusCardsPublisher(new MicrosoftTeamsStatusPublishOptions
                     {
-                        StatusesToPublish = new()
-                        {
+                        StatusesToPublish =
+                        [
                             PullRequestStatus.MergeConflicts,
                             PullRequestStatus.ReadyToMerge,
                             PullRequestStatus.FailingChecks,
                             PullRequestStatus.NeedsReviewing,
                             PullRequestStatus.Rejected
-                        }
+                        ],
                     });
                 });
     })
@@ -56,9 +55,7 @@ var host = Host.CreateDefaultBuilder(args)
 var pullRequestScanner = host.Services.GetRequiredService<IPullRequestScanner>();
 await pullRequestScanner.ExecutePluginsAsync();
 
-
 // More Granular Control
 var pullRequests = await pullRequestScanner.GetPullRequests();
 var statusPublisherPlugin = pullRequestScanner.GetPlugin<PullRequestStatusMicrosoftTeamsWebHookPublisher>();
 await statusPublisherPlugin.ExecuteAsync(pullRequests, PullRequestStatus.NeedsReviewing);
- 

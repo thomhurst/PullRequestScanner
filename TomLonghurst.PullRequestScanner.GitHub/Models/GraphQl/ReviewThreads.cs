@@ -1,7 +1,6 @@
-﻿using System.Text.Json.Serialization;
+﻿namespace TomLonghurst.PullRequestScanner.GitHub.Models.GraphQl;
 
-namespace TomLonghurst.PullRequestScanner.GitHub.Models.GraphQl;
+using System.Text.Json.Serialization;
 
 public record ReviewThreads(
-    [property: JsonPropertyName("edges")] IReadOnlyList<Edge> Edges
-);
+    [property: JsonPropertyName("edges")] IReadOnlyList<Edge> Edges);

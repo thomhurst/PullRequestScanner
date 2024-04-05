@@ -1,6 +1,6 @@
-using System.Text.Json.Serialization;
-
 namespace TomLonghurst.PullRequestScanner.GitHub.Models;
+
+using System.Text.Json.Serialization;
 
 public record Owner(
     [property: JsonPropertyName("login")] string Login,
@@ -20,5 +20,4 @@ public record Owner(
     [property: JsonPropertyName("events_url")] string EventsUrl,
     [property: JsonPropertyName("received_events_url")] string ReceivedEventsUrl,
     [property: JsonPropertyName("type")] string Type,
-    [property: JsonPropertyName("site_admin")] bool SiteAdmin
-);
+    [property: JsonPropertyName("site_admin")] bool SiteAdmin);

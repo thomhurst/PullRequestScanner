@@ -1,13 +1,13 @@
-﻿using System.Text;
+namespace TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Mappers;
+
+using System.Text;
 using AdaptiveCards;
 using Newtonsoft.Json;
-using TomLonghurst.PullRequestScanner.Enums;
+using Enums;
 using TomLonghurst.PullRequestScanner.Mappers;
 using TomLonghurst.PullRequestScanner.Models;
-using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Extensions;
-using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Models;
-
-namespace TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Mappers;
+using Extensions;
+using Models;
 
 internal class PullRequestStatusCardMapper : IPullRequestStatusCardMapper
 {
@@ -16,7 +16,7 @@ internal class PullRequestStatusCardMapper : IPullRequestStatusCardMapper
         return Map(pullRequests, pullRequestStatus, 0);
     }
 
-    private IEnumerable<MicrosoftTeamsAdaptiveCard> Map(IReadOnlyList<PullRequest> pullRequests, PullRequestStatus pullRequestStatus, int cardCount)
+    private static IEnumerable<MicrosoftTeamsAdaptiveCard> Map(IReadOnlyList<PullRequest> pullRequests, PullRequestStatus pullRequestStatus, int cardCount)
     {
         var pullRequestsWithStatus = pullRequests
             .Where(x => x.PullRequestStatus == pullRequestStatus)
@@ -31,17 +31,17 @@ internal class PullRequestStatusCardMapper : IPullRequestStatusCardMapper
         {
             MsTeams = new MicrosoftTeamsProperties
             {
-                Width = "full"
+                Width = "full",
             },
-            Body = new List<AdaptiveElement>
-            {
+            Body =
+            [
                 new AdaptiveTextBlock
                 {
                     Weight = AdaptiveTextWeight.Bolder,
                     Size = AdaptiveTextSize.ExtraLarge,
                     Text = pullRequestStatus.GetMessage()
                 }
-            }
+            ],
         };
 
         var mentionedUsers = new List<TeamMember>();
@@ -52,45 +52,47 @@ internal class PullRequestStatusCardMapper : IPullRequestStatusCardMapper
             {
                 Spacing = AdaptiveSpacing.ExtraLarge,
                 Style = AdaptiveContainerStyle.Emphasis,
-                Items = new List<AdaptiveElement>
-                {
+                Items =
+                [
                     new AdaptiveTextBlock
                     {
                         Text =
                             $"**Repository:** [{pullRequestsInRepo.First().Repository.Name}]({pullRequestsInRepo.First().Repository.Url})"
                     },
+
                     new AdaptiveColumnSet
                     {
-                        Columns = new List<AdaptiveColumn>
-                        {
-                            new()
+                        Columns =
+                        [
+                            new AdaptiveColumn
                             {
-                                Items = new List<AdaptiveElement>
-                                {
+                                Items =
+                                [
                                     new AdaptiveTextBlock
                                     {
                                         Weight = AdaptiveTextWeight.Bolder,
                                         Text = "Pull Request"
                                     }
-                                }
+                                ]
                             },
-                            new()
+
+                            new AdaptiveColumn
                             {
-                                Items = new List<AdaptiveElement>
-                                {
+                                Items =
+                                [
                                     new AdaptiveTextBlock
                                     {
                                         Weight = AdaptiveTextWeight.Bolder,
                                         Text = "Author"
                                     }
-                                },
+                                ],
                                 Width = "auto"
                             }
-                        }
+                        ]
                     }
-                }
+                ],
             };
-            
+
             teamsNotificationCard.Body.Add(adaptiveContainer);
 
             foreach (var pullRequest in pullRequestsInRepo)
@@ -102,47 +104,48 @@ internal class PullRequestStatusCardMapper : IPullRequestStatusCardMapper
 
                 adaptiveContainer.Items.Add(new AdaptiveColumnSet
                 {
-                    Columns = new List<AdaptiveColumn>
-                    {
-                        new()
+                    Columns =
+                    [
+                        new AdaptiveColumn
                         {
-                            Items = new List<AdaptiveElement>
-                            {
+                            Items =
+                            [
                                 new AdaptiveTextBlock
                                 {
                                     Text = $"[#{pullRequest.Number}]({pullRequest.Url}) {pullRequest.Title}"
                                 }
-                            }
+                            ]
                         },
-                        new()
+
+                        new AdaptiveColumn
                         {
-                            Items = new List<AdaptiveElement>
-                            {
+                            Items =
+                            [
                                 new AdaptiveTextBlock
                                 {
                                     Text = pullRequest.Author.ToAtMarkupTag()
                                 }
-                            },
+                            ],
                             Width = "auto"
                         }
-                    }
+                    ],
                 });
-                
+
                 var jsonString = JsonConvert.SerializeObject(teamsNotificationCard, Formatting.None);
                 if (Encoding.Unicode.GetByteCount(jsonString) > Constants.TeamsCardSizeLimit)
                 {
                     yield return teamsNotificationCard;
-                
+
                     foreach (var microsoftTeamsAdaptiveCard in Map(pullRequestsWithStatus.ToList(), pullRequestStatus, cardCount + 1))
                     {
                         yield return microsoftTeamsAdaptiveCard;
                     }
-                
+
                     yield break;
                 }
             }
         }
-        
+
         if (!teamsNotificationCard.IsCardWrittenTo())
         {
             yield break;

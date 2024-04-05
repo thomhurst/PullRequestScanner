@@ -1,4 +1,4 @@
-﻿namespace TomLonghurst.PullRequestScanner.Enums;
+namespace TomLonghurst.PullRequestScanner.Enums;
 
 public enum PullRequestStatus
 {
@@ -11,5 +11,5 @@ public enum PullRequestStatus
     Completed,
     Abandoned,
     Draft,
-    FailedToMerge
+    FailedToMerge,
 }

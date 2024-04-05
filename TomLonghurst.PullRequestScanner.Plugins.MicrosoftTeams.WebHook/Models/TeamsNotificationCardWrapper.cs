@@ -1,6 +1,6 @@
-﻿using Newtonsoft.Json;
-
 namespace TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Models;
+
+using Newtonsoft.Json;
 
 internal class TeamsNotificationCardWrapper
 {
@@ -15,14 +15,14 @@ internal class TeamsNotificationCardWrapper
         return new TeamsNotificationCardWrapper
         {
             Type = "message",
-            Attachments = new[]
-            {
+            Attachments =
+            [
                 new Attachment
                 {
                     ContentType = "application/vnd.microsoft.card.adaptive",
                     Content = adaptiveCard
                 }
-            }
+            ],
         };
     }
 }

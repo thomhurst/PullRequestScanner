@@ -1,4 +1,4 @@
-﻿namespace TomLonghurst.PullRequestScanner.Models;
+namespace TomLonghurst.PullRequestScanner.Models;
 
 public class MutableGroup<TKey, TValue>
 {
@@ -7,7 +7,8 @@ public class MutableGroup<TKey, TValue>
         Key = key;
         Values = values.ToList();
     }
-    
+
     public TKey Key { get; }
+
     public List<TValue> Values { get; }
 }

@@ -1,8 +1,8 @@
-﻿using System.Net;
+namespace TomLonghurst.PullRequestScanner.GitHub.Services;
+
+using System.Net;
 using Octokit.GraphQL;
 using Polly;
-
-namespace TomLonghurst.PullRequestScanner.GitHub.Services;
 
 internal class GithubQueryRunner : IGithubQueryRunner
 {
@@ -12,7 +12,7 @@ internal class GithubQueryRunner : IGithubQueryRunner
     {
         _githubGraphQlClientProvider = githubGraphQlClientProvider;
     }
-    
+
     public async Task<T> RunQuery<T>(ICompiledQuery<T> query)
     {
         return await Policy.Handle<HttpRequestException>(ShouldHandleException)
@@ -28,7 +28,7 @@ internal class GithubQueryRunner : IGithubQueryRunner
             return true;
         }
 
-        if ((int) httpRequestException.StatusCode >= 500)
+        if ((int)httpRequestException.StatusCode >= 500)
         {
             return true;
         }

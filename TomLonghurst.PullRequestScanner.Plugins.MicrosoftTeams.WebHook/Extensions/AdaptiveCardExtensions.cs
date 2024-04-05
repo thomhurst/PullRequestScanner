@@ -1,7 +1,7 @@
-﻿using TomLonghurst.PullRequestScanner.Models;
-using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Models;
-
 namespace TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Extensions;
+
+using TomLonghurst.PullRequestScanner.Models;
+using Models;
 
 internal static class AdaptiveCardExtensions
 {
@@ -12,8 +12,7 @@ internal static class AdaptiveCardExtensions
             .Select(x => new AdaptiveCardMentionedEntity(
                 Type: "mention",
                 Text: x.ToAtMarkupTag(),
-                Mentioned: new Mentioned(Id: x.Email!, Name: x.DisplayOrUniqueName)
-            ))
+                Mentioned: new Mentioned(Id: x.Email!, Name: x.DisplayOrUniqueName)))
             .ToArray();
     }
 
@@ -31,7 +30,7 @@ internal static class AdaptiveCardExtensions
     {
         microsoftTeamsAdaptiveCard.AdditionalProperties["ShouldReturn"] = true;
     }
-    
+
     internal static bool IsCardWrittenTo(this MicrosoftTeamsAdaptiveCard microsoftTeamsAdaptiveCard)
     {
         return microsoftTeamsAdaptiveCard.AdditionalProperties.TryGetValue("ShouldReturn", out var objBool)

@@ -1,12 +1,12 @@
-﻿using System.Text;
+namespace TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Http;
+
+using System.Text;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Polly;
 using Polly.Extensions.Http;
-using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Models;
-using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Options;
-
-namespace TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Http;
+using Models;
+using Options;
 
 internal class MicrosoftTeamsWebhookClient
 {
@@ -25,11 +25,11 @@ internal class MicrosoftTeamsWebhookClient
     public async Task CreateTeamsNotification(MicrosoftTeamsAdaptiveCard adaptiveCard)
     {
         ArgumentNullException.ThrowIfNull(_microsoftTeamsOptions.WebHookUri);
-            
+
         var adaptiveTeamsCardJsonString = JsonConvert.SerializeObject(TeamsNotificationCardWrapper.Wrap(adaptiveCard), Formatting.None);
 
         _logger.LogTrace("Microsoft Teams Webhook Request Payload: {Payload}", adaptiveTeamsCardJsonString);
-        
+
         try
         {
             var teamsNotificationResponse = await HttpPolicyExtensions.HandleTransientHttpError()
@@ -40,14 +40,14 @@ internal class MicrosoftTeamsWebhookClient
                     {
                         Method = HttpMethod.Post,
                         Content = new StringContent(adaptiveTeamsCardJsonString),
-                        RequestUri = _microsoftTeamsOptions.WebHookUri
+                        RequestUri = _microsoftTeamsOptions.WebHookUri,
                     };
 
                     return _httpClient.SendAsync(cardsRequest);
                 });
 
             _logger.LogTrace("Microsoft Teams Webhook Response: {Response}", await teamsNotificationResponse.Content.ReadAsStringAsync());
-            
+
             teamsNotificationResponse.EnsureSuccessStatusCode();
         }
         catch (HttpRequestException e)
@@ -57,7 +57,7 @@ internal class MicrosoftTeamsWebhookClient
                 var byteCount = Encoding.Unicode.GetByteCount(adaptiveTeamsCardJsonString);
                 throw new HttpRequestException($"Teams card payload is too big - {byteCount} bytes", e);
             }
-            
+
             throw;
         }
     }

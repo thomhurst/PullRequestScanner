@@ -1,6 +1,6 @@
-﻿using TomLonghurst.PullRequestScanner.Enums;
-
 namespace TomLonghurst.PullRequestScanner.Mappers;
+
+using Enums;
 
 public static class PullRequestStatusMapper
 {
@@ -18,7 +18,7 @@ public static class PullRequestStatusMapper
             PullRequestStatus.Abandoned => "Abandoned",
             PullRequestStatus.Draft => "Draft",
             PullRequestStatus.FailedToMerge => "Failed to merge",
-            _ => throw new ArgumentOutOfRangeException(nameof(pullRequestStatus), pullRequestStatus, null)
+            _ => throw new ArgumentOutOfRangeException(nameof(pullRequestStatus), pullRequestStatus, null),
         };
     }
 }

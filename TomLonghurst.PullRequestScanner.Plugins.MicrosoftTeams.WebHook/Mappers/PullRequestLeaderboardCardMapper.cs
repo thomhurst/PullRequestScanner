@@ -1,11 +1,11 @@
-﻿using System.Collections.Concurrent;
+namespace TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Mappers;
+
+using System.Collections.Concurrent;
 using AdaptiveCards;
 using TomLonghurst.PullRequestScanner.Extensions;
 using TomLonghurst.PullRequestScanner.Models;
-using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Extensions;
-using TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Models;
-
-namespace TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Mappers;
+using Extensions;
+using Models;
 
 internal class PullRequestLeaderboardCardMapper : IPullRequestLeaderboardCardMapper
 {
@@ -14,82 +14,86 @@ internal class PullRequestLeaderboardCardMapper : IPullRequestLeaderboardCardMap
         return Map(pullRequests.ToList());
     }
 
-    private IEnumerable<MicrosoftTeamsAdaptiveCard> Map(List<PullRequest> pullRequests)
+    private static IEnumerable<MicrosoftTeamsAdaptiveCard> Map(List<PullRequest> pullRequests)
     {
-       if(!pullRequests.Any(x => x.Approvers.Any(a => a.Time.IsYesterday()))
-           && !pullRequests.Any(x => x.AllComments.Any(c => c.LastUpdated.IsYesterday())))
+        if (!pullRequests.Any(x => x.Approvers.Any(a => a.Time.IsYesterday()))
+            && !pullRequests.Any(x => x.AllComments.Any(c => c.LastUpdated.IsYesterday())))
         {
             yield break;
         }
-        
+
         var teamsNotificationCard = new MicrosoftTeamsAdaptiveCard
         {
             MsTeams = new MicrosoftTeamsProperties
             {
-                Width = "full"
+                Width = "full",
             },
-            Body = new List<AdaptiveElement>
-            {
+            Body =
+            [
                 new AdaptiveTextBlock
                 {
                     Weight = AdaptiveTextWeight.Bolder,
                     Size = AdaptiveTextSize.ExtraLarge,
                     Text = "Yesterday's Pull Request Reviewer Leaderboard"
                 },
+
                 new AdaptiveColumnSet
                 {
-                    Columns = new List<AdaptiveColumn>
-                    {
-                        new()
+                    Columns =
+                    [
+                        new AdaptiveColumn
                         {
-                            Items = new List<AdaptiveElement>
-                            {
+                            Items =
+                            [
                                 new AdaptiveTextBlock
                                 {
                                     Weight = AdaptiveTextWeight.Bolder,
                                     Text = "Image"
                                 }
-                            },
+                            ],
                             Width = "50px"
                         },
-                        new()
+
+                        new AdaptiveColumn
                         {
-                            Items = new List<AdaptiveElement>
-                            {
+                            Items =
+                            [
                                 new AdaptiveTextBlock
                                 {
                                     Weight = AdaptiveTextWeight.Bolder,
                                     Text = "Name"
                                 }
-                            }
+                            ]
                         },
-                        new()
+
+                        new AdaptiveColumn
                         {
-                            Items = new List<AdaptiveElement>
-                            {
+                            Items =
+                            [
                                 new AdaptiveTextBlock
                                 {
                                     Weight = AdaptiveTextWeight.Bolder,
                                     Text = "Comments"
                                 }
-                            }
+                            ]
                         },
-                        new()
+
+                        new AdaptiveColumn
                         {
-                            Items = new List<AdaptiveElement>
-                            {
+                            Items =
+                            [
                                 new AdaptiveTextBlock
                                 {
                                     Weight = AdaptiveTextWeight.Bolder,
                                     Text = "Pull Requests Reviewed"
                                 }
-                            }
+                            ]
                         }
-                    }
+                    ]
                 }
-            }
+            ],
         };
-        
+
         var personsCommentsAndReviews = new ConcurrentDictionary<TeamMember, PullRequestReviewLeaderboardModel>();
         foreach (var pullRequest in pullRequests)
         {
@@ -98,17 +102,18 @@ internal class PullRequestLeaderboardCardMapper : IPullRequestLeaderboardCardMap
             {
                 var yesterdaysCommentCount = pullRequest.GetCommentCountWhere(uniqueReviewer, c => c.LastUpdated.IsYesterday());
                 var hasVoted = pullRequest.HasVotedWhere(uniqueReviewer, a => a.Vote != Vote.NoVote && a.Time.IsYesterday());
-                
+
                 var record = personsCommentsAndReviews.GetOrAdd(uniqueReviewer, new PullRequestReviewLeaderboardModel());
-                
+
                 record.CommentsCount += yesterdaysCommentCount;
-                
+
                 if (yesterdaysCommentCount != 0 || hasVoted)
                 {
                     record.ReviewedCount++;
                 }
             });
         }
+
         foreach (var personsCommentsAndReview in personsCommentsAndReviews
                      .Where(x => x.Value.CommentsCount != 0 || x.Value.ReviewedCount != 0)
                      .OrderByDescending(x => x.Value.CommentsCount)
@@ -118,59 +123,62 @@ internal class PullRequestLeaderboardCardMapper : IPullRequestLeaderboardCardMap
             teamsNotificationCard.Body.Add(
                 new AdaptiveColumnSet
                 {
-                    Columns = new List<AdaptiveColumn>
-                    {
-                        new()
+                    Columns =
+                    [
+                        new AdaptiveColumn
                         {
-                            Items = new List<AdaptiveElement>
-                            {
+                            Items =
+                            [
                                 new AdaptiveImage
                                 {
                                     PixelWidth = 50,
                                     PixelHeight = 50,
-                                    Url = 
+                                    Url =
                                         new Uri(
                                             personsCommentsAndReview.Key.ImageUrls.FirstOrDefault()
-                                            ?? "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
-                                        )
+                                            ??
+                                            "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png")
                                 }
-                            },
+                            ],
                             Width = "50px"
                         },
-                        new()
+
+                        new AdaptiveColumn
                         {
-                            Items = new List<AdaptiveElement>
-                            {
+                            Items =
+                            [
                                 new AdaptiveTextBlock
                                 {
                                     Text = personsCommentsAndReview.Key.ToAtMarkupTag()
                                 }
-                            }
+                            ]
                         },
-                        new()
+
+                        new AdaptiveColumn
                         {
-                            Items = new List<AdaptiveElement>
-                            {
+                            Items =
+                            [
                                 new AdaptiveTextBlock
                                 {
                                     Text = personsCommentsAndReview.Value.CommentsCount.ToString()
                                 }
-                            }
+                            ]
                         },
-                        new()
+
+                        new AdaptiveColumn
                         {
-                            Items = new List<AdaptiveElement>
-                            {
+                            Items =
+                            [
                                 new AdaptiveTextBlock
                                 {
-                                    Text = personsCommentsAndReview.Value.ReviewedCount.ToString()                                
+                                    Text = personsCommentsAndReview.Value.ReviewedCount.ToString()
                                 }
-                            }
+                            ]
                         }
-                    }
+                    ],
                 });
         }
-        
+
         teamsNotificationCard.MsTeams.Entitities = personsCommentsAndReviews
             .Where(x => x.Value.CommentsCount != 0 || x.Value.ReviewedCount != 0)
             .Select(x => x.Key)
@@ -180,7 +188,7 @@ internal class PullRequestLeaderboardCardMapper : IPullRequestLeaderboardCardMap
         {
             yield break;
         }
-        
+
         yield return teamsNotificationCard;
     }
 }

@@ -1,24 +1,17 @@
-﻿using Microsoft.TeamFoundation.SourceControl.WebApi;
-using TomLonghurst.PullRequestScanner.AzureDevOps.Models;
+namespace TomLonghurst.PullRequestScanner.AzureDevOps.Mappers;
+
+using Microsoft.TeamFoundation.SourceControl.WebApi;
+using Models;
 using TomLonghurst.PullRequestScanner.Models;
 using TomLonghurst.PullRequestScanner.Services;
 using Comment = TomLonghurst.PullRequestScanner.Models.Comment;
 using CommentThread = TomLonghurst.PullRequestScanner.Models.CommentThread;
-using PullRequestStatus = TomLonghurst.PullRequestScanner.Enums.PullRequestStatus;
+using PullRequestStatus = Enums.PullRequestStatus;
 using Repository = TomLonghurst.PullRequestScanner.Models.Repository;
 using TeamFoundation = Microsoft.TeamFoundation;
 
-namespace TomLonghurst.PullRequestScanner.AzureDevOps.Mappers;
-
-internal class AzureDevOpsMapper : IAzureDevOpsMapper
+internal class AzureDevOpsMapper(ITeamMembersService teamMembersService) : IAzureDevOpsMapper
 {
-    private readonly ITeamMembersService _teamMembersService;
-
-    public AzureDevOpsMapper(ITeamMembersService teamMembersService)
-    {
-        _teamMembersService = teamMembersService;
-    }
-    
     public PullRequest ToPullRequestModel(AzureDevOpsPullRequestContext pullRequestContext)
     {
         var pullRequest = pullRequestContext.AzureDevOpsPullRequest;
@@ -27,7 +20,7 @@ internal class AzureDevOpsMapper : IAzureDevOpsMapper
             Title = pullRequest.Title,
             Created = pullRequest.CreationDate,
             Description = pullRequest.Description,
-            Url = GetPullRequestUIUrl(pullRequest.Url),
+            Url = GetPullRequestUiUrl(pullRequest.Url),
             Id = pullRequest.PullRequestId.ToString(),
             Number = pullRequest.PullRequestId.ToString(),
             Repository = GetRepository(pullRequest.Repository),
@@ -46,9 +39,9 @@ internal class AzureDevOpsMapper : IAzureDevOpsMapper
                 .Select(GetCommentThread)
                 .ToList(),
             Platform = "AzureDevOps",
-            Labels = pullRequest.Labels?.Where(x => x.Active != false).Select(x => x.Name).ToList() ?? new List<string>()
+            Labels = pullRequest.Labels?.Where(x => x.Active != false).Select(x => x.Name).ToList() ?? [],
         };
-        
+
         foreach (var thread in pullRequestModel.CommentThreads)
         {
             thread.ParentPullRequest = pullRequestModel;
@@ -62,7 +55,7 @@ internal class AzureDevOpsMapper : IAzureDevOpsMapper
         {
             approver.PullRequest = pullRequestModel;
         }
-        
+
         return pullRequestModel;
     }
 
@@ -76,7 +69,7 @@ internal class AzureDevOpsMapper : IAzureDevOpsMapper
                 .Where(x => !x.Author.UniqueName.StartsWith(Constants.VstfsUniqueNamePrefix))
                 .Where(x => x.Author.DisplayName != Constants.VstsDisplayName)
                 .Select(GetComment)
-                .ToList()
+                .ToList(),
         };
     }
 
@@ -85,27 +78,27 @@ internal class AzureDevOpsMapper : IAzureDevOpsMapper
         return new Comment
         {
             LastUpdated = azureDevOpsComment.LastUpdatedDate,
-            Author = GetPerson(azureDevOpsComment.Author.UniqueName, azureDevOpsComment.Author.DisplayName, azureDevOpsComment.Author.Id)
+            Author = GetPerson(azureDevOpsComment.Author.UniqueName, azureDevOpsComment.Author.DisplayName, azureDevOpsComment.Author.Id),
         };
     }
 
     private TeamMember GetPerson(string uniqueName, string displayName, string id)
     {
-        var foundTeamMember = _teamMembersService.FindTeamMember(uniqueName, id);
+        var foundTeamMember = teamMembersService.FindTeamMember(uniqueName, id);
 
         if (foundTeamMember == null)
         {
             return new TeamMember
             {
                 UniqueNames = { uniqueName },
-                DisplayName = displayName
+                DisplayName = displayName,
             };
         }
 
         return foundTeamMember;
     }
 
-    private ThreadStatus GetThreadStatus(CommentThreadStatus threadStatus)
+    private static ThreadStatus GetThreadStatus(CommentThreadStatus threadStatus)
     {
         if (threadStatus is CommentThreadStatus.Active or CommentThreadStatus.Pending)
         {
@@ -117,7 +110,6 @@ internal class AzureDevOpsMapper : IAzureDevOpsMapper
 
     private Approver GetApprover(IdentityRefWithVote reviewer, List<GitPullRequestCommentThread> azureDevOpsPullRequestThreads)
     {
-        
         return new Approver
         {
             Vote = GetVote(reviewer.Vote),
@@ -126,11 +118,11 @@ internal class AzureDevOpsMapper : IAzureDevOpsMapper
             Time = azureDevOpsPullRequestThreads
                 .Where(x => x.Properties.GetValue("codeReviewThreadType", string.Empty) == "VoteUpdate")
                 .LastOrDefault(x => x.Comments?.SingleOrDefault(c => c.Author.UniqueName == reviewer.UniqueName) != null)
-                ?.LastUpdatedDate
+                ?.LastUpdatedDate,
         };
     }
-    
-    private Vote GetVote(int? vote)
+
+    private static Vote GetVote(int? vote)
     {
         if (vote is null or 0)
         {
@@ -145,18 +137,18 @@ internal class AzureDevOpsMapper : IAzureDevOpsMapper
         return Vote.Rejected;
     }
 
-    private PullRequestStatus GetStatus(AzureDevOpsPullRequestContext azureDevOpsPullRequestContext)
+    private static PullRequestStatus GetStatus(AzureDevOpsPullRequestContext azureDevOpsPullRequestContext)
     {
         if (azureDevOpsPullRequestContext.AzureDevOpsPullRequest.Status == TeamFoundation.SourceControl.WebApi.PullRequestStatus.Completed)
         {
             return PullRequestStatus.Completed;
         }
-        
+
         if (azureDevOpsPullRequestContext.AzureDevOpsPullRequest.Status == TeamFoundation.SourceControl.WebApi.PullRequestStatus.Abandoned)
         {
             return PullRequestStatus.Abandoned;
         }
-        
+
         if (azureDevOpsPullRequestContext.AzureDevOpsPullRequest.MergeStatus == PullRequestAsyncStatus.Conflicts)
         {
             return PullRequestStatus.MergeConflicts;
@@ -166,7 +158,7 @@ internal class AzureDevOpsMapper : IAzureDevOpsMapper
         {
             return PullRequestStatus.Draft;
         }
-        
+
         if (azureDevOpsPullRequestContext.AzureDevOpsPullRequest.Reviewers.Any(r => r.Vote == -10))
         {
             return PullRequestStatus.Rejected;
@@ -175,7 +167,7 @@ internal class AzureDevOpsMapper : IAzureDevOpsMapper
         if (azureDevOpsPullRequestContext.Iterations.Any())
         {
             var lastCommitIterationId = azureDevOpsPullRequestContext.Iterations.Max(x => x.IterationId);
-            
+
             var checksInLastIteration = azureDevOpsPullRequestContext.Iterations
                 .Where(x => x.IterationId == lastCommitIterationId);
 
@@ -191,7 +183,7 @@ internal class AzureDevOpsMapper : IAzureDevOpsMapper
         {
             return PullRequestStatus.OutStandingComments;
         }
-        
+
         if (!string.IsNullOrEmpty(azureDevOpsPullRequestContext.AzureDevOpsPullRequest.MergeFailureMessage))
         {
             return PullRequestStatus.FailedToMerge;
@@ -210,17 +202,17 @@ internal class AzureDevOpsMapper : IAzureDevOpsMapper
         return PullRequestStatus.NeedsReviewing;
     }
 
-    private Repository GetRepository(GitRepository azureDevOpsRepository)
+    private static Repository GetRepository(GitRepository azureDevOpsRepository)
     {
         return new Repository
         {
             Name = azureDevOpsRepository.Name,
             Id = azureDevOpsRepository.Id.ToString(),
-            Url = GetRepositoryUiUrl(azureDevOpsRepository.Url)
+            Url = GetRepositoryUiUrl(azureDevOpsRepository.Url),
         };
     }
-    
-    private string GetPullRequestUIUrl(string pullRequestUrl)
+
+    private static string GetPullRequestUiUrl(string pullRequestUrl)
     {
         return pullRequestUrl
             .Replace("pullRequests", "pullrequest")
@@ -228,8 +220,8 @@ internal class AzureDevOpsMapper : IAzureDevOpsMapper
             .Replace("/repositories/", "/")
             .Replace("/_apis/", "/");
     }
-    
-    private string GetRepositoryUiUrl(string repositoryUrl)
+
+    private static string GetRepositoryUiUrl(string repositoryUrl)
     {
         return repositoryUrl
             .Replace("/git/", "/_git/")

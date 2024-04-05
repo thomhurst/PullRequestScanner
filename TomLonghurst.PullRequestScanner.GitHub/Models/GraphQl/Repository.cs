@@ -1,7 +1,6 @@
-﻿using System.Text.Json.Serialization;
+﻿namespace TomLonghurst.PullRequestScanner.GitHub.Models.GraphQl;
 
-namespace TomLonghurst.PullRequestScanner.GitHub.Models.GraphQl;
+using System.Text.Json.Serialization;
 
 public record Repository(
-    [property: JsonPropertyName("pullRequest")] PullRequest PullRequest
-);
+    [property: JsonPropertyName("pullRequest")] PullRequest PullRequest);

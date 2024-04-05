@@ -1,6 +1,6 @@
-﻿using Octokit.GraphQL;
-
 namespace TomLonghurst.PullRequestScanner.GitHub.Services;
+
+using Octokit.GraphQL;
 
 internal interface IGithubGraphQlClientProvider
 {

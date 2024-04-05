@@ -1,6 +1,6 @@
-﻿using Newtonsoft.Json;
-
 namespace TomLonghurst.PullRequestScanner.Plugins.MicrosoftTeams.WebHook.Models;
+
+using Newtonsoft.Json;
 
 internal class MicrosoftTeamsProperties
 {

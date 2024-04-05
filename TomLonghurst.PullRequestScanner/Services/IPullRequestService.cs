@@ -1,6 +1,6 @@
-﻿using TomLonghurst.PullRequestScanner.Models;
-
 namespace TomLonghurst.PullRequestScanner.Services;
+
+using Models;
 
 internal interface IPullRequestService
 {

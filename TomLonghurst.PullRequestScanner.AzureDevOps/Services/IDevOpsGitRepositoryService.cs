@@ -1,6 +1,6 @@
-﻿using Microsoft.TeamFoundation.SourceControl.WebApi;
-
 namespace TomLonghurst.PullRequestScanner.AzureDevOps.Services;
+
+using Microsoft.TeamFoundation.SourceControl.WebApi;
 
 internal interface IAzureDevOpsGitRepositoryService
 {

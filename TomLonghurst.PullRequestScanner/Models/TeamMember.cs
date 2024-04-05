@@ -1,11 +1,15 @@
-﻿namespace TomLonghurst.PullRequestScanner.Models;
+namespace TomLonghurst.PullRequestScanner.Models;
 
 public class TeamMember : IEquatable<TeamMember>
 {
     public string? DisplayName { get; set; }
+
     public List<string> UniqueNames { get; } = new();
+
     public string? Email { get; set; }
+
     public List<string> Ids { get; } = new();
+
     public List<string> ImageUrls { get; } = new();
 
     public string DisplayOrUniqueName
@@ -18,7 +22,7 @@ public class TeamMember : IEquatable<TeamMember>
             }
 
             var userName = UniqueNames.FirstOrDefault(u => !string.IsNullOrWhiteSpace(u));
-            
+
             if (userName != null)
             {
                 return userName;
@@ -38,12 +42,12 @@ public class TeamMember : IEquatable<TeamMember>
             {
                 return uniqueName;
             }
-            
+
             if (!string.IsNullOrWhiteSpace(Email))
             {
                 return Email;
             }
-            
+
             var id = Ids?.FirstOrDefault(x => !string.IsNullOrWhiteSpace(x));
 
             if (!string.IsNullOrWhiteSpace(id))
@@ -61,7 +65,7 @@ public class TeamMember : IEquatable<TeamMember>
         {
             return false;
         }
-        
+
         return UniqueIdentifier == other.UniqueIdentifier;
     }
 

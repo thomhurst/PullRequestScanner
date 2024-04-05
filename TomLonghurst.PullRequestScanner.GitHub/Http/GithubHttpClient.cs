@@ -1,25 +1,26 @@
-﻿using System.Net.Http.Json;
+namespace TomLonghurst.PullRequestScanner.GitHub.Http;
+
+using System.Net.Http.Json;
 using Microsoft.Extensions.Logging;
 using Polly;
 using Polly.Extensions.Http;
-
-namespace TomLonghurst.PullRequestScanner.GitHub.Http;
 
 internal class GithubHttpClient
 {
     private readonly HttpClient _client;
     private readonly ILogger<GithubHttpClient> _logger;
 
-    public GithubHttpClient(HttpClient httpClient,
+    public GithubHttpClient(
+        HttpClient httpClient,
         ILogger<GithubHttpClient> logger)
     {
         _client = httpClient;
         _logger = logger;
     }
-    
+
     public async Task<T?> Get<T>(string path)
     {
-        var response = await 
+        var response = await
             HttpPolicyExtensions.HandleTransientHttpError()
                 .WaitAndRetryAsync(5, i => TimeSpan.FromSeconds(i * 2))
                 .ExecuteAsync(() => _client.GetAsync(path));

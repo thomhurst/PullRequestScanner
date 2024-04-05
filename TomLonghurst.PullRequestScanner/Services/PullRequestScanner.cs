@@ -1,7 +1,7 @@
-using TomLonghurst.PullRequestScanner.Contracts;
-using TomLonghurst.PullRequestScanner.Models;
-
 namespace TomLonghurst.PullRequestScanner.Services;
+
+using Contracts;
+using Models;
 
 internal class PullRequestScanner : IPullRequestScanner
 {
@@ -9,7 +9,10 @@ internal class PullRequestScanner : IPullRequestScanner
     private readonly IPluginService _pluginService;
 
     public IEnumerable<IPullRequestPlugin> Plugins => _pluginService.Plugins;
-    public TPlugin GetPlugin<TPlugin>() where TPlugin : IPullRequestPlugin => _pluginService.GetPlugin<TPlugin>();
+
+    public TPlugin GetPlugin<TPlugin>()
+        where TPlugin : IPullRequestPlugin
+        => _pluginService.GetPlugin<TPlugin>();
 
     public PullRequestScanner(IPullRequestService pullRequestService, IPluginService pluginService)
     {

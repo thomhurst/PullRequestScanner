@@ -1,11 +1,11 @@
-﻿using System.Collections.Immutable;
-using TomLonghurst.EnumerableAsyncProcessor.Extensions;
-using TomLonghurst.PullRequestScanner.Contracts;
-using TomLonghurst.PullRequestScanner.GitHub.Mappers;
-using TomLonghurst.PullRequestScanner.GitHub.Options;
-using TomLonghurst.PullRequestScanner.Models;
+﻿namespace TomLonghurst.PullRequestScanner.GitHub.Services;
 
-namespace TomLonghurst.PullRequestScanner.GitHub.Services;
+using System.Collections.Immutable;
+using EnumerableAsyncProcessor.Extensions;
+using Contracts;
+using Mappers;
+using Options;
+using TomLonghurst.PullRequestScanner.Models;
 
 internal class GitHubPullRequestProvider : IPullRequestProvider
 {
@@ -14,7 +14,8 @@ internal class GitHubPullRequestProvider : IPullRequestProvider
     private readonly IGithubPullRequestService _githubPullRequestService;
     private readonly IGithubMapper _githubMapper;
 
-    public GitHubPullRequestProvider(GithubOptions githubOptions,
+    public GitHubPullRequestProvider(
+        GithubOptions githubOptions,
         IGithubRepositoryService githubRepositoryService,
         IGithubPullRequestService githubPullRequestService,
         IGithubMapper githubMapper)
@@ -26,7 +27,7 @@ internal class GitHubPullRequestProvider : IPullRequestProvider
 
         ValidateOptions();
     }
-    
+
     public async Task<IReadOnlyList<PullRequest>> GetPullRequests()
     {
         if (_githubOptions?.IsEnabled != true)
@@ -48,14 +49,14 @@ internal class GitHubPullRequestProvider : IPullRequestProvider
 
         return mappedPullRequests;
     }
-    
+
     private void ValidateOptions()
     {
         if (_githubOptions.IsEnabled != true)
         {
             return;
         }
-        
+
         if (_githubOptions is GithubOrganizationTeamOptions githubOrganizationTeamOptions)
         {
             ValidatePopulated(githubOrganizationTeamOptions.OrganizationSlug, nameof(githubOrganizationTeamOptions.OrganizationSlug));
@@ -68,8 +69,8 @@ internal class GitHubPullRequestProvider : IPullRequestProvider
         }
 
         ValidatePopulated(_githubOptions.PersonalAccessToken, nameof(_githubOptions.PersonalAccessToken));
-        
-        void ValidatePopulated(string value, string propertyName)
+
+        static void ValidatePopulated(string value, string propertyName)
         {
             if (string.IsNullOrEmpty(value))
             {

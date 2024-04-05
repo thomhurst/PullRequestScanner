@@ -1,6 +1,6 @@
-﻿using System.Web;
-
 namespace TomLonghurst.PullRequestScanner.Extensions;
+
+using System.Web;
 
 public static class UriExtensions
 {

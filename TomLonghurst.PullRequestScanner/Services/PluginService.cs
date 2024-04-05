@@ -1,9 +1,9 @@
-﻿using TomLonghurst.EnumerableAsyncProcessor.Extensions;
-using TomLonghurst.PullRequestScanner.Contracts;
-using TomLonghurst.PullRequestScanner.Exceptions;
-using TomLonghurst.PullRequestScanner.Models;
+﻿namespace TomLonghurst.PullRequestScanner.Services;
 
-namespace TomLonghurst.PullRequestScanner.Services;
+using EnumerableAsyncProcessor.Extensions;
+using Contracts;
+using Exceptions;
+using Models;
 
 internal class PluginService : IPluginService
 {
@@ -30,7 +30,8 @@ internal class PluginService : IPluginService
             .ProcessInParallel();
     }
 
-    public TPlugin GetPlugin<TPlugin>() where TPlugin : IPullRequestPlugin
+    public TPlugin GetPlugin<TPlugin>()
+        where TPlugin : IPullRequestPlugin
     {
         return Plugins.OfType<TPlugin>().Single();
     }
