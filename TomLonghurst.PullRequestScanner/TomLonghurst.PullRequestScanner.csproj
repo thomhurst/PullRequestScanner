@@ -11,9 +11,9 @@
       <PackageReference Include="AdaptiveCards" Version="3.1.0" />
       <PackageReference Include="EnumerableAsyncProcessor" Version="2.1.0" />
       <PackageReference Include="Initialization.Microsoft.Extensions.DependencyInjection" Version="1.1.44" />
-      <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.3" />
-      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.3" />
-      <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.3" />
+      <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.4" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.4" />
+      <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.4" />
       <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="9.0.3" />
     </ItemGroup>
 
