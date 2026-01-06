@@ -13,7 +13,7 @@
 
     <ItemGroup>
       <PackageReference Include="Microsoft.TeamFoundationServer.Client" Version="19.225.1" />
-      <PackageReference Include="Microsoft.VisualStudio.Services.Client" Version="19.225.1" />
+      <PackageReference Include="Microsoft.VisualStudio.Services.Client" Version="19.225.2" />
     </ItemGroup>
 
 </Project>
